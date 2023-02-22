@@ -12,12 +12,10 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <Provider store={store}>
-        <Routes>
-          <Route path={'/'} element={<Project />} />
-          <Route path={'/App'} element={<App />} />
-        </Routes>
-      </Provider>
+      <Routes>
+        <Route path={'/'} element={<Project />} />
+        <Route path={'/App'} element={<Provider store={store}><App /></Provider>} />
+      </Routes>
     </BrowserRouter>
   </React.StrictMode>
 );
