@@ -1,0 +1,56 @@
+./TechnoTrance/Synth/0/TB Dist 4.wav
+./TechnoTrance/Synth/0/TB Dist 7.wav
+./TechnoTrance/Synth/0/TB Dist 2.wav
+./TechnoTrance/Synth/0/TB Dist 5.wav
+./TechnoTrance/Synth/0/TB Dist 1.wav
+./TechnoTrance/Synth/0/TB Dist 6.wav
+./TechnoTrance/Synth/0/TB Dist 3.wav
+./TechnoTrance/Synth/1/Stack A 5.wav
+./TechnoTrance/Synth/1/Stack A 7.wav
+./TechnoTrance/Synth/1/Stack A 1.wav
+./TechnoTrance/Synth/1/Stack A 3.wav
+./TechnoTrance/Synth/1/Stack A 6.wav
+./TechnoTrance/Synth/1/Stack A 2.wav
+./TechnoTrance/Synth/1/Stack A 4.wav
+./TechnoTrance/Synth/2/Shrabnelle 2.wav
+./TechnoTrance/Synth/2/Shrabnelle 1.wav
+./TechnoTrance/Synth/2/Shrabnelle 4.wav
+./TechnoTrance/Synth/2/Shrabnelle 5.wav
+./TechnoTrance/Synth/2/Shrabnelle 3.wav
+./TechnoTrance/Synth/2/Shrabnelle 6.wav
+./TechnoTrance/Synth/2/Shrabnelle 7.wav
+./TechnoTrance/Synth/3/BigLead Low 5.wav
+./TechnoTrance/Synth/3/BigLead Low 2.wav
+./TechnoTrance/Synth/3/AlarmLead 3.wav
+./TechnoTrance/Synth/3/AlarmLead 6.wav
+./TechnoTrance/Synth/3/BigLead Low 6.wav
+./TechnoTrance/Synth/3/BigLead Low 4.wav
+./TechnoTrance/Synth/3/AlarmLead 5.wav
+./TechnoTrance/Synth/3/AlarmLead 2.wav
+./TechnoTrance/Synth/3/AlarmLead 7.wav
+./TechnoTrance/Synth/3/AlarmLead 4.wav
+./TechnoTrance/Synth/3/BigLead Low 3.wav
+./TechnoTrance/Synth/3/BigLead Low 1.wav
+./TechnoTrance/Synth/3/AlarmLead 1.wav
+./TechnoTrance/Synth/3/BigLead Low 7.wav
+./TechnoTrance/Synth/4/BigLead High 7.wav
+./TechnoTrance/Synth/4/BigLead High 5.wav
+./TechnoTrance/Synth/4/Leader 4.wav
+./TechnoTrance/Synth/4/BigLead High 1.wav
+./TechnoTrance/Synth/4/Lead 3.wav
+./TechnoTrance/Synth/4/BigLead High 3.wav
+./TechnoTrance/Synth/4/Leader 5.wav
+./TechnoTrance/Synth/4/BigLead High 4.wav
+./TechnoTrance/Synth/4/Lead 2.wav
+./TechnoTrance/Synth/4/BigLead High 6.wav
+./TechnoTrance/Synth/4/Leader 7.wav
+./TechnoTrance/Synth/4/BigLead High 2.wav
+./TechnoTrance/Synth/4/Leader 6.wav
+./TechnoTrance/Synth/4/Lead 7.wav
+./TechnoTrance/Synth/4/Lead 1.wav
+./TechnoTrance/Synth/4/Lead 4.wav
+./TechnoTrance/Synth/4/Leader 2.wav
+./TechnoTrance/Synth/4/Leader 3.wav
+./TechnoTrance/Synth/4/Leader 1.wav
+./TechnoTrance/Synth/4/Lead 5.wav
+./TechnoTrance/Synth/4/Lead 6.wav

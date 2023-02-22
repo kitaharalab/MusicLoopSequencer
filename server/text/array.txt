@@ -1,0 +1,128 @@
+./TechnoTrance/Drums/3/Knarzer Beat K.wav
+./TechnoTrance/Bass/3/OfflineB 2.wav
+null
+./TechnoTrance/Sequence/3/TB 3003 2.wav
+./TechnoTrance/Drums/3/Knarzer Beat K.wav
+./TechnoTrance/Bass/3/OfflineB 5.wav
+null
+./TechnoTrance/Sequence/3/TB 3003 5.wav
+./TechnoTrance/Drums/3/Knarzer Beat K.wav
+./TechnoTrance/Bass/3/OfflineB 3.wav
+null
+./TechnoTrance/Sequence/3/TB 3003 3.wav
+./TechnoTrance/Drums/3/Knarzer Beat K.wav
+./TechnoTrance/Bass/3/OfflineB 6.wav
+null
+./TechnoTrance/Sequence/3/TB 3003 6.wav
+./TechnoTrance/Drums/3/Hard Beat B.wav
+./TechnoTrance/Bass/3/DanceOff 4.wav
+null
+./TechnoTrance/Sequence/3/Backing 4.wav
+./TechnoTrance/Drums/3/Hard Beat B.wav
+./TechnoTrance/Bass/3/DanceOff 6.wav
+null
+./TechnoTrance/Sequence/3/Backing 6.wav
+./TechnoTrance/Drums/3/Hard Beat B.wav
+./TechnoTrance/Bass/3/DanceOff 7.wav
+null
+./TechnoTrance/Sequence/3/Backing 7.wav
+./TechnoTrance/Drums/3/Hard Beat B.wav
+./TechnoTrance/Bass/3/DanceOff 1.wav
+null
+./TechnoTrance/Sequence/3/Backing 1.wav
+./TechnoTrance/Drums/3/Knarzer Beat K.wav
+./TechnoTrance/Bass/3/Simplic 2.wav
+null
+./TechnoTrance/Sequence/3/TB 3003 2.wav
+./TechnoTrance/Drums/3/Knarzer Beat K.wav
+./TechnoTrance/Bass/3/Simplic 5.wav
+null
+./TechnoTrance/Sequence/3/TB 3003 5.wav
+./TechnoTrance/Drums/4/Knarzer Beat A.wav
+./TechnoTrance/Bass/4/ShuffleBass 3.wav
+./TechnoTrance/Synth/4/Lead 3.wav
+./TechnoTrance/Sequence/4/TB Wild 3.wav
+./TechnoTrance/Drums/4/Knarzer Beat A.wav
+./TechnoTrance/Bass/4/ShuffleBass 6.wav
+./TechnoTrance/Synth/4/Lead 6.wav
+./TechnoTrance/Sequence/4/TB Wild 6.wav
+./TechnoTrance/Drums/3/Hard Beat C.wav
+./TechnoTrance/Bass/3/DanceOff 4.wav
+null
+./TechnoTrance/Sequence/3/TB 3003 4.wav
+./TechnoTrance/Drums/3/Hard Beat C.wav
+./TechnoTrance/Bass/3/DanceOff 6.wav
+null
+./TechnoTrance/Sequence/3/TB 3003 6.wav
+./TechnoTrance/Drums/3/Hard Beat C.wav
+./TechnoTrance/Bass/3/DanceOff 7.wav
+null
+./TechnoTrance/Sequence/3/TB 3003 7.wav
+./TechnoTrance/Drums/3/Hard Beat C.wav
+./TechnoTrance/Bass/3/DanceOff 1.wav
+null
+./TechnoTrance/Sequence/3/TB 3003 1.wav
+./TechnoTrance/Drums/3/Hard Beat C.wav
+./TechnoTrance/Bass/3/OfflineB 2.wav
+null
+./TechnoTrance/Sequence/3/TB 3003 2.wav
+./TechnoTrance/Drums/3/Hard Beat C.wav
+./TechnoTrance/Bass/3/OfflineB 5.wav
+null
+./TechnoTrance/Sequence/3/TB 3003 5.wav
+./TechnoTrance/Drums/3/Hard Beat C.wav
+./TechnoTrance/Bass/3/OfflineB 3.wav
+null
+./TechnoTrance/Sequence/3/TB 3003 3.wav
+./TechnoTrance/Drums/4/Knarzer Beat A.wav
+./TechnoTrance/Bass/4/SeqBass 6.wav
+./TechnoTrance/Synth/4/Lead 6.wav
+./TechnoTrance/Sequence/4/TB Wild 6.wav
+./TechnoTrance/Drums/3/Knarzer Beat L.wav
+./TechnoTrance/Bass/3/OfflineB 4.wav
+null
+./TechnoTrance/Sequence/3/TB 3003 4.wav
+null
+./TechnoTrance/Bass/2/OfflineA 6.wav
+null
+./TechnoTrance/Sequence/2/TB 3003 C 6.wav
+null
+./TechnoTrance/Bass/2/OfflineA 7.wav
+null
+./TechnoTrance/Sequence/2/TB 3003 C 7.wav
+null
+./TechnoTrance/Bass/2/OfflineA 1.wav
+null
+./TechnoTrance/Sequence/2/TB 3003 C 1.wav
+null
+./TechnoTrance/Bass/2/TB Off 2.wav
+null
+./TechnoTrance/Sequence/2/TB 3003 C 2.wav
+./TechnoTrance/Drums/3/Hard Beat B.wav
+./TechnoTrance/Bass/3/OfflineB 5.wav
+null
+./TechnoTrance/Sequence/3/Romancer 5.wav
+./TechnoTrance/Drums/1/Knarzer Beat I.wav
+./TechnoTrance/Bass/1/TB Bass 3.wav
+null
+null
+./TechnoTrance/Drums/0/Shuffle Beat M.wav
+null
+null
+null
+./TechnoTrance/Drums/0/Shuffle Beat L.wav
+null
+null
+null
+./TechnoTrance/Drums/0/Shuffle Beat L.wav
+null
+null
+null
+./TechnoTrance/Drums/0/Shuffle Beat L.wav
+null
+null
+null
+./TechnoTrance/Drums/0/Shuffle Beat L.wav
+null
+null
+null

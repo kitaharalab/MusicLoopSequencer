@@ -1,0 +1,7 @@
+./TechnoTrance/Synth/1/Stack A 5.wav
+./TechnoTrance/Synth/1/Stack A 7.wav
+./TechnoTrance/Synth/1/Stack A 1.wav
+./TechnoTrance/Synth/1/Stack A 3.wav
+./TechnoTrance/Synth/1/Stack A 6.wav
+./TechnoTrance/Synth/1/Stack A 2.wav
+./TechnoTrance/Synth/1/Stack A 4.wav

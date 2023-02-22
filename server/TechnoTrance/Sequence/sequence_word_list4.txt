@@ -1,0 +1,14 @@
+./TechnoTrance/Sequence/4/TB Wild 5.wav
+./TechnoTrance/Sequence/4/Faster 7.wav
+./TechnoTrance/Sequence/4/Faster 2.wav
+./TechnoTrance/Sequence/4/Faster 4.wav
+./TechnoTrance/Sequence/4/Faster 6.wav
+./TechnoTrance/Sequence/4/TB Wild 7.wav
+./TechnoTrance/Sequence/4/TB Wild 3.wav
+./TechnoTrance/Sequence/4/TB Wild 2.wav
+./TechnoTrance/Sequence/4/Faster 1.wav
+./TechnoTrance/Sequence/4/Faster 5.wav
+./TechnoTrance/Sequence/4/Faster 3.wav
+./TechnoTrance/Sequence/4/TB Wild 1.wav
+./TechnoTrance/Sequence/4/TB Wild 6.wav
+./TechnoTrance/Sequence/4/TB Wild 4.wav

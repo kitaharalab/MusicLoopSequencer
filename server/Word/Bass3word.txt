@@ -1,0 +1,4 @@
+./TechnoTrance/Bass/3/Simplic 1.wav
+./TechnoTrance/Bass/3/Solar 1.wav
+./TechnoTrance/Bass/3/DanceOff 1.wav
+./TechnoTrance/Bass/3/OfflineB 1.wav

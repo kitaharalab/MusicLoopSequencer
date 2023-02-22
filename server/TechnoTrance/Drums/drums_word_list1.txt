@@ -1,0 +1,9 @@
+./TechnoTrance/Drums/1/Tchacka Beat S.wav
+./TechnoTrance/Drums/1/Hard Beat E.wav
+./TechnoTrance/Drums/1/Knarzer Beat Z.wav
+./TechnoTrance/Drums/1/Knarzer Beat G.wav
+./TechnoTrance/Drums/1/Knarzer Beat P.wav
+./TechnoTrance/Drums/1/Shuffle Beat J.wav
+./TechnoTrance/Drums/1/Shuffle Beat I.wav
+./TechnoTrance/Drums/1/Knarzer Beat O.wav
+./TechnoTrance/Drums/1/Knarzer Beat I.wav

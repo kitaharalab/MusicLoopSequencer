@@ -1,0 +1,14 @@
+./TechnoTrance/Synth/3/BigLead Low 5.wav
+./TechnoTrance/Synth/3/BigLead Low 2.wav
+./TechnoTrance/Synth/3/AlarmLead 3.wav
+./TechnoTrance/Synth/3/AlarmLead 6.wav
+./TechnoTrance/Synth/3/BigLead Low 6.wav
+./TechnoTrance/Synth/3/BigLead Low 4.wav
+./TechnoTrance/Synth/3/AlarmLead 5.wav
+./TechnoTrance/Synth/3/AlarmLead 2.wav
+./TechnoTrance/Synth/3/AlarmLead 7.wav
+./TechnoTrance/Synth/3/AlarmLead 4.wav
+./TechnoTrance/Synth/3/BigLead Low 3.wav
+./TechnoTrance/Synth/3/BigLead Low 1.wav
+./TechnoTrance/Synth/3/AlarmLead 1.wav
+./TechnoTrance/Synth/3/BigLead Low 7.wav

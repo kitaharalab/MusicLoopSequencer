@@ -1,0 +1,2 @@
+./TechnoTrance/Bass/0/EightBass 1.wav
+./TechnoTrance/Bass/0/SoftDeep 1.wav

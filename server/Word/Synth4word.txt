@@ -1,0 +1,3 @@
+./TechnoTrance/Synth/4/BigLead High 1.wav
+./TechnoTrance/Synth/4/Lead 1.wav
+./TechnoTrance/Synth/4/Leader 1.wav

@@ -1,0 +1,5 @@
+./TechnoTrance/Sequence/1/DistTB 1.wav
+./TechnoTrance/Sequence/1/Belzebub 1.wav
+./TechnoTrance/Sequence/1/Hard Edge 1.wav
+./TechnoTrance/Sequence/1/TB Add 1.wav
+./TechnoTrance/Sequence/1/TB Answer 1.wav

@@ -1,0 +1,21 @@
+./TechnoTrance/Synth/4/BigLead High 7.wav
+./TechnoTrance/Synth/4/BigLead High 5.wav
+./TechnoTrance/Synth/4/Leader 4.wav
+./TechnoTrance/Synth/4/BigLead High 1.wav
+./TechnoTrance/Synth/4/Lead 3.wav
+./TechnoTrance/Synth/4/BigLead High 3.wav
+./TechnoTrance/Synth/4/Leader 5.wav
+./TechnoTrance/Synth/4/BigLead High 4.wav
+./TechnoTrance/Synth/4/Lead 2.wav
+./TechnoTrance/Synth/4/BigLead High 6.wav
+./TechnoTrance/Synth/4/Leader 7.wav
+./TechnoTrance/Synth/4/BigLead High 2.wav
+./TechnoTrance/Synth/4/Leader 6.wav
+./TechnoTrance/Synth/4/Lead 7.wav
+./TechnoTrance/Synth/4/Lead 1.wav
+./TechnoTrance/Synth/4/Lead 4.wav
+./TechnoTrance/Synth/4/Leader 2.wav
+./TechnoTrance/Synth/4/Leader 3.wav
+./TechnoTrance/Synth/4/Leader 1.wav
+./TechnoTrance/Synth/4/Lead 5.wav
+./TechnoTrance/Synth/4/Lead 6.wav

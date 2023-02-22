@@ -1,0 +1,4 @@
+./TechnoTrance/Sequence/3/Romancer 1.wav
+./TechnoTrance/Sequence/3/Hackerseq 1.wav
+./TechnoTrance/Sequence/3/TB 3003 1.wav
+./TechnoTrance/Sequence/3/Backing 1.wav

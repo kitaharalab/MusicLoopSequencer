@@ -1,0 +1,5 @@
+./TechnoTrance/Drums/3/Hard Beat C.wav
+./TechnoTrance/Drums/3/Knarzer Beat K.wav
+./TechnoTrance/Drums/3/Knarzer Beat C.wav
+./TechnoTrance/Drums/3/Knarzer Beat L.wav
+./TechnoTrance/Drums/3/Hard Beat B.wav

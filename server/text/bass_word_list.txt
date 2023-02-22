@@ -1,0 +1,105 @@
+./TechnoTrance/Bass/0/EightBass 2.wav
+./TechnoTrance/Bass/0/EightBass 1.wav
+./TechnoTrance/Bass/0/EightBass 6.wav
+./TechnoTrance/Bass/0/EightBass 3.wav
+./TechnoTrance/Bass/0/EightBass 7.wav
+./TechnoTrance/Bass/0/EightBass 5.wav
+./TechnoTrance/Bass/0/SoftDeep 6.wav
+./TechnoTrance/Bass/0/SoftDeep 3.wav
+./TechnoTrance/Bass/0/SoftDeep 4.wav
+./TechnoTrance/Bass/0/SoftDeep 5.wav
+./TechnoTrance/Bass/0/EightBass 4.wav
+./TechnoTrance/Bass/0/SoftDeep 1.wav
+./TechnoTrance/Bass/0/SoftDeep 7.wav
+./TechnoTrance/Bass/0/SoftDeep 2.wav
+./TechnoTrance/Bass/1/Hardclick 4.wav
+./TechnoTrance/Bass/1/Hardclick 3.wav
+./TechnoTrance/Bass/1/Hardclick 7.wav
+./TechnoTrance/Bass/1/TB Bass 1.wav
+./TechnoTrance/Bass/1/TB Bass 6.wav
+./TechnoTrance/Bass/1/Hardclick 5.wav
+./TechnoTrance/Bass/1/TB Bass 7.wav
+./TechnoTrance/Bass/1/TB Bass 3.wav
+./TechnoTrance/Bass/1/Hardclick 1.wav
+./TechnoTrance/Bass/1/TB Bass 4.wav
+./TechnoTrance/Bass/1/TB Bass 2.wav
+./TechnoTrance/Bass/1/TB Bass 5.wav
+./TechnoTrance/Bass/1/Hardclick 6.wav
+./TechnoTrance/Bass/1/Hardclick 2.wav
+./TechnoTrance/Bass/2/SawBass 1.wav
+./TechnoTrance/Bass/2/OfflineA 6.wav
+./TechnoTrance/Bass/2/SawBass 5.wav
+./TechnoTrance/Bass/2/TB Off 6.wav
+./TechnoTrance/Bass/2/SawBass 2.wav
+./TechnoTrance/Bass/2/TB Off 7.wav
+./TechnoTrance/Bass/2/TB Off 5.wav
+./TechnoTrance/Bass/2/MaasedBass 6.wav
+./TechnoTrance/Bass/2/TB Off 4.wav
+./TechnoTrance/Bass/2/OfflineA 3.wav
+./TechnoTrance/Bass/2/TB Off 3.wav
+./TechnoTrance/Bass/2/SawBass 7.wav
+./TechnoTrance/Bass/2/OfflineA 5.wav
+./TechnoTrance/Bass/2/OfflineA 4.wav
+./TechnoTrance/Bass/2/OfflineA 2.wav
+./TechnoTrance/Bass/2/MaasedBass 2.wav
+./TechnoTrance/Bass/2/TB Off 1.wav
+./TechnoTrance/Bass/2/OfflineA 7.wav
+./TechnoTrance/Bass/2/SawBass 3.wav
+./TechnoTrance/Bass/2/MaasedBass 1.wav
+./TechnoTrance/Bass/2/SawBass 4.wav
+./TechnoTrance/Bass/2/MaasedBass 3.wav
+./TechnoTrance/Bass/2/MaasedBass 7.wav
+./TechnoTrance/Bass/2/MaasedBass 5.wav
+./TechnoTrance/Bass/2/OfflineA 1.wav
+./TechnoTrance/Bass/2/SawBass 6.wav
+./TechnoTrance/Bass/2/MaasedBass 4.wav
+./TechnoTrance/Bass/2/TB Off 2.wav
+./TechnoTrance/Bass/3/OfflineB 2.wav
+./TechnoTrance/Bass/3/DanceOff 5.wav
+./TechnoTrance/Bass/3/Simplic 3.wav
+./TechnoTrance/Bass/3/OfflineB 6.wav
+./TechnoTrance/Bass/3/Simplic 5.wav
+./TechnoTrance/Bass/3/OfflineB 4.wav
+./TechnoTrance/Bass/3/Solar 4.wav
+./TechnoTrance/Bass/3/DanceOff 2.wav
+./TechnoTrance/Bass/3/Simplic 1.wav
+./TechnoTrance/Bass/3/Simplic 7.wav
+./TechnoTrance/Bass/3/Solar 1.wav
+./TechnoTrance/Bass/3/Simplic 6.wav
+./TechnoTrance/Bass/3/Solar 6.wav
+./TechnoTrance/Bass/3/OfflineB 5.wav
+./TechnoTrance/Bass/3/Simplic 2.wav
+./TechnoTrance/Bass/3/DanceOff 1.wav
+./TechnoTrance/Bass/3/Solar 3.wav
+./TechnoTrance/Bass/3/DanceOff 3.wav
+./TechnoTrance/Bass/3/Simplic 4.wav
+./TechnoTrance/Bass/3/DanceOff 6.wav
+./TechnoTrance/Bass/3/Solar 2.wav
+./TechnoTrance/Bass/3/DanceOff 4.wav
+./TechnoTrance/Bass/3/Solar 5.wav
+./TechnoTrance/Bass/3/OfflineB 3.wav
+./TechnoTrance/Bass/3/Solar 7.wav
+./TechnoTrance/Bass/3/OfflineB 1.wav
+./TechnoTrance/Bass/3/DanceOff 7.wav
+./TechnoTrance/Bass/3/OfflineB 7.wav
+./TechnoTrance/Bass/4/RoomBass 5.wav
+./TechnoTrance/Bass/4/SeqBass 1.wav
+./TechnoTrance/Bass/4/RoomBass 3.wav
+./TechnoTrance/Bass/4/ShuffleBass 7.wav
+./TechnoTrance/Bass/4/SeqBass 7.wav
+./TechnoTrance/Bass/4/SeqBass 5.wav
+./TechnoTrance/Bass/4/ShuffleBass 6.wav
+./TechnoTrance/Bass/4/SeqBass 2.wav
+./TechnoTrance/Bass/4/RoomBass 2.wav
+./TechnoTrance/Bass/4/SeqBass 4.wav
+./TechnoTrance/Bass/4/ShuffleBass 4.wav
+./TechnoTrance/Bass/4/RoomBass 6.wav
+./TechnoTrance/Bass/4/SeqBass 6.wav
+./TechnoTrance/Bass/4/ShuffleBass 5.wav
+./TechnoTrance/Bass/4/SeqBass 3.wav
+./TechnoTrance/Bass/4/RoomBass 7.wav
+./TechnoTrance/Bass/4/ShuffleBass 3.wav
+./TechnoTrance/Bass/4/RoomBass 1.wav
+./TechnoTrance/Bass/4/ShuffleBass 1.wav
+./TechnoTrance/Bass/4/RoomBass 4.wav
+./TechnoTrance/Bass/4/ShuffleBass 2.wav

@@ -1,0 +1,28 @@
+./TechnoTrance/Sequence/3/Hackerseq 2.wav
+./TechnoTrance/Sequence/3/TB 3003 2.wav
+./TechnoTrance/Sequence/3/Backing 7.wav
+./TechnoTrance/Sequence/3/Romancer 1.wav
+./TechnoTrance/Sequence/3/TB 3003 6.wav
+./TechnoTrance/Sequence/3/Romancer 4.wav
+./TechnoTrance/Sequence/3/Hackerseq 3.wav
+./TechnoTrance/Sequence/3/Romancer 6.wav
+./TechnoTrance/Sequence/3/Romancer 2.wav
+./TechnoTrance/Sequence/3/Backing 2.wav
+./TechnoTrance/Sequence/3/TB 3003 3.wav
+./TechnoTrance/Sequence/3/Romancer 7.wav
+./TechnoTrance/Sequence/3/TB 3003 5.wav
+./TechnoTrance/Sequence/3/Hackerseq 5.wav
+./TechnoTrance/Sequence/3/TB 3003 7.wav
+./TechnoTrance/Sequence/3/Hackerseq 7.wav
+./TechnoTrance/Sequence/3/Backing 6.wav
+./TechnoTrance/Sequence/3/Backing 5.wav
+./TechnoTrance/Sequence/3/Hackerseq 4.wav
+./TechnoTrance/Sequence/3/Hackerseq 1.wav
+./TechnoTrance/Sequence/3/Romancer 3.wav
+./TechnoTrance/Sequence/3/Romancer 5.wav
+./TechnoTrance/Sequence/3/Backing 3.wav
+./TechnoTrance/Sequence/3/Backing 4.wav
+./TechnoTrance/Sequence/3/Hackerseq 6.wav
+./TechnoTrance/Sequence/3/TB 3003 4.wav
+./TechnoTrance/Sequence/3/TB 3003 1.wav
+./TechnoTrance/Sequence/3/Backing 1.wav

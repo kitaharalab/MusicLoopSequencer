@@ -1,0 +1,21 @@
+./TechnoTrance/Sequence/2/GoSeq 1.wav
+./TechnoTrance/Sequence/2/TB 3003 C 6.wav
+./TechnoTrance/Sequence/2/TB 3003 C 3.wav
+./TechnoTrance/Sequence/2/TB 3003 C 2.wav
+./TechnoTrance/Sequence/2/GoSeq 5.wav
+./TechnoTrance/Sequence/2/TB 3003 B 4.wav
+./TechnoTrance/Sequence/2/TB 3003 C 5.wav
+./TechnoTrance/Sequence/2/TB 3003 B 5.wav
+./TechnoTrance/Sequence/2/TB 3003 B 3.wav
+./TechnoTrance/Sequence/2/GoSeq 3.wav
+./TechnoTrance/Sequence/2/GoSeq 7.wav
+./TechnoTrance/Sequence/2/TB 3003 B 2.wav
+./TechnoTrance/Sequence/2/TB 3003 B 1.wav
+./TechnoTrance/Sequence/2/TB 3003 B 7.wav
+./TechnoTrance/Sequence/2/TB 3003 C 4.wav
+./TechnoTrance/Sequence/2/TB 3003 B 6.wav
+./TechnoTrance/Sequence/2/GoSeq 2.wav
+./TechnoTrance/Sequence/2/GoSeq 4.wav
+./TechnoTrance/Sequence/2/TB 3003 C 1.wav
+./TechnoTrance/Sequence/2/TB 3003 C 7.wav
+./TechnoTrance/Sequence/2/GoSeq 6.wav

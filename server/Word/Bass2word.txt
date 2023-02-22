@@ -1,0 +1,4 @@
+./TechnoTrance/Bass/2/SawBass 1.wav
+./TechnoTrance/Bass/2/TB Off 1.wav
+./TechnoTrance/Bass/2/MaasedBass 1.wav
+./TechnoTrance/Bass/2/OfflineA 1.wav

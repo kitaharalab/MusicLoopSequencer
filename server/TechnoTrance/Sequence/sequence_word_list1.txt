@@ -1,0 +1,35 @@
+./TechnoTrance/Sequence/1/DistTB 4.wav
+./TechnoTrance/Sequence/1/Hard Edge 3.wav
+./TechnoTrance/Sequence/1/Belzebub 3.wav
+./TechnoTrance/Sequence/1/Belzebub 7.wav
+./TechnoTrance/Sequence/1/TB Answer 7.wav
+./TechnoTrance/Sequence/1/TB Add 6.wav
+./TechnoTrance/Sequence/1/TB Answer 3.wav
+./TechnoTrance/Sequence/1/DistTB 1.wav
+./TechnoTrance/Sequence/1/TB Answer 4.wav
+./TechnoTrance/Sequence/1/Hard Edge 6.wav
+./TechnoTrance/Sequence/1/Belzebub 1.wav
+./TechnoTrance/Sequence/1/TB Answer 2.wav
+./TechnoTrance/Sequence/1/DistTB 7.wav
+./TechnoTrance/Sequence/1/Belzebub 4.wav
+./TechnoTrance/Sequence/1/Belzebub 2.wav
+./TechnoTrance/Sequence/1/TB Add 2.wav
+./TechnoTrance/Sequence/1/Hard Edge 1.wav
+./TechnoTrance/Sequence/1/TB Add 4.wav
+./TechnoTrance/Sequence/1/TB Answer 6.wav
+./TechnoTrance/Sequence/1/TB Answer 5.wav
+./TechnoTrance/Sequence/1/Belzebub 6.wav
+./TechnoTrance/Sequence/1/TB Add 7.wav
+./TechnoTrance/Sequence/1/Belzebub 5.wav
+./TechnoTrance/Sequence/1/Hard Edge 4.wav
+./TechnoTrance/Sequence/1/DistTB 6.wav
+./TechnoTrance/Sequence/1/Hard Edge 5.wav
+./TechnoTrance/Sequence/1/TB Add 3.wav
+./TechnoTrance/Sequence/1/TB Add 1.wav
+./TechnoTrance/Sequence/1/DistTB 5.wav
+./TechnoTrance/Sequence/1/DistTB 2.wav
+./TechnoTrance/Sequence/1/TB Add 5.wav
+./TechnoTrance/Sequence/1/Hard Edge 2.wav
+./TechnoTrance/Sequence/1/Hard Edge 7.wav
+./TechnoTrance/Sequence/1/TB Answer 1.wav
+./TechnoTrance/Sequence/1/DistTB 3.wav

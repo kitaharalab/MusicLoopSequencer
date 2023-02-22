@@ -1,0 +1,7 @@
+./TechnoTrance/Synth/0/TB Dist 4.wav
+./TechnoTrance/Synth/0/TB Dist 7.wav
+./TechnoTrance/Synth/0/TB Dist 2.wav
+./TechnoTrance/Synth/0/TB Dist 5.wav
+./TechnoTrance/Synth/0/TB Dist 1.wav
+./TechnoTrance/Synth/0/TB Dist 6.wav
+./TechnoTrance/Synth/0/TB Dist 3.wav

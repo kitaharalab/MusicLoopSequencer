@@ -1,0 +1,2 @@
+./TechnoTrance/Bass/1/Hardclick 1.wav
+./TechnoTrance/Bass/1/TB Bass 1.wav

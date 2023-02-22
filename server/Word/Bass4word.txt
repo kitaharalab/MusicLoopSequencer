@@ -1,0 +1,3 @@
+./TechnoTrance/Bass/4/SeqBass 1.wav
+./TechnoTrance/Bass/4/RoomBass 1.wav
+./TechnoTrance/Bass/4/ShuffleBass 1.wav

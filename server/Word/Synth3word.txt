@@ -1,0 +1,2 @@
+./TechnoTrance/Synth/3/BigLead Low 1.wav
+./TechnoTrance/Synth/3/AlarmLead 1.wav
