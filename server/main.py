@@ -6,6 +6,7 @@ from model import Model
 import tkinter as tk
 import os
 import re
+import math
 import numpy as np
 import pandas as pd
 import urllib.parse
@@ -41,12 +42,48 @@ def infoSounds(partid):
     print(sounds[len(sounds)-1])
     if sounds[len(sounds)-1] == '':
         sounds.pop()
-    print(sounds)
     soundIds= []
     for i in range(len(sounds)):
         soundIds.append(i)
-
-    response = {'sound-ids': soundIds}
+        
+    pass_movedpointx = "./text/" + partName + "_movedpointx_list" + ".txt"
+    pass_movedpointy = "./text/" + partName + "_movedpointy_list" + ".txt"
+    pass_range = "./text/" + partName + "_range_list" + ".txt"
+    x_coordinate = []
+    y_coordinate = []
+    range_lists = []
+    
+    with open(pass_movedpointx) as f:
+        x_coordinate = f.read().split("\n")
+    with open(pass_movedpointy) as f:
+        y_coordinate = f.read().split("\n")
+    with open(pass_range) as f:
+        range_lists = f.read().split("\n")
+    
+    if x_coordinate[len(x_coordinate)-1] == '':
+        x_coordinate.pop()
+        
+    if y_coordinate[len(y_coordinate)-1] == '':
+        y_coordinate.pop()
+    
+    if range_lists[len(range_lists)-1] == '':
+        range_lists.pop()
+        
+    for i in range(len(x_coordinate)):
+    	x_coordinate[i] = math.floor(float(x_coordinate[i]))
+    	y_coordinate[i] = math.floor(float(y_coordinate[i]))
+    	
+    for i in range(len(range_lists)):
+    	range_lists[i] = int(range_lists[i])
+    
+    	
+    print(x_coordinate)
+    print()
+    print(y_coordinate)
+    response = {'sound-ids': soundIds,
+    		'x_coordinate': x_coordinate,
+    		'y_coordinate': y_coordinate,
+    		'range_lists': range_lists}
     return make_response(jsonify(response))
 @app.route("/parts/<partid>/sounds/<soundid>", methods=['GET'])
 def infoSound(partid,soundid):
@@ -464,5 +501,32 @@ def downloadSong(projectid,songid,filename):
 @app.route("/projects/<projectid>/songs/<songid>/wav", methods=['GET'])
 def downloadSong(projectid,songid):
     return send_file("./project/" + projectid + "/songs/" + songid + "/song" +songid + ".wav", as_attachment=True)
+@app.route("/parts/<partid>/musicloops/<musicloopid>/wav", methods=['GET'])
+def downloadMusicLoop(partid,musicloopid):
+    part = "null"
+    if partid == "0":
+        part = "sequence"
+    elif partid == "1":
+        part = "synth"
+    elif partid == "2":
+        part = "bass"
+    else:
+        part = "drums"
+    	
+    musicLoop_list = []
+    """bass_word_list.txt"""
+    with open("./text/" + part +"_word_list.txt") as f:
+        musicLoop_list = f.read().split("\n")
+    if musicLoop_list[len(musicLoop_list)-1] == '':
+        musicLoop_list.pop()
+    musicLoopName = "null"
+    for i in range(len(musicLoop_list)):
+        if i == int(musicloopid):
+            musicLoopName = musicLoop_list[i]
+    split_name = re.split('/|\.', musicLoopName)
+    print(split_name)
+    print(split_name[3], split_name[4], split_name[5])
+    
+    return send_file("./TechnoTrance/" + split_name[3] + "/" + split_name[4] + "/" + split_name[5] + ".wav", as_attachment=True)
 if __name__ == '__main__':
     app.run(debug=True, port=5000, threaded=True)

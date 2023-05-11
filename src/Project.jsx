@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import './Project.css';
 
 function Project() {
     const [done, setDone] = useState(false);

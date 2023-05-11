@@ -6,7 +6,7 @@ import axios from 'axios';
 
 
 
-export default function createMusic(canvas, linesY) {
+export default function createMusic(projectid, linesY) {
     let excitement_array = new Array(32);
     for (let i = 0; i < 32; i++) {
         //１ブロックの範囲を決定
@@ -23,7 +23,7 @@ export default function createMusic(canvas, linesY) {
         }
     }
     console.log("button pushed")
-    const url = "http://127.0.0.1:5000/projects/0/songs";
+    const url = "http://127.0.0.1:5000/projects/" + String(projectid) + "/songs";
 
     const data = {
         curves: excitement_array      //盛り上がり度曲線のパラメーターを格納した配列をJSONデータにする
