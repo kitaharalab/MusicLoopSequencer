@@ -1,2 +1,2 @@
-# MusicLoopSequencer
-# これは
+# MusicLoopSequencer(仮名)
+これは
