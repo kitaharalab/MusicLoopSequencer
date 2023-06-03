@@ -6,6 +6,7 @@ import projectIdSlice from './projectIdSlice';
 import musicDataSlice from './musicDataSlice';
 import songIdSlice from './songIdSlice';
 import musicLoopSlice from './musicLoopSlice';
+import soundDataSlice from './soundDataSlice';
 
 export const store = configureStore({
     reducer: {
@@ -16,5 +17,6 @@ export const store = configureStore({
         musicData: musicDataSlice,
         songId: songIdSlice,
         musicLoop: musicLoopSlice,
+        soundData: soundDataSlice,
     },
 });

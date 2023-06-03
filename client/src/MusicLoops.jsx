@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import onMusicLoop from './onMusicLoop';
 import { setPos } from './redux/blockCanvasSlice';
 import { setMusicLoopId } from './redux/musicLoopSlice';
+import { setJson } from './redux/soundDataSlice';
 
 export default function MusicLoops() {
     // const selectedMeasureId = useSelector((state) => state.block.posRectX);
@@ -134,6 +135,18 @@ export default function MusicLoops() {
                     }
                 }
             }
-        }}></canvas>
+        }}
+            onMouseDown={({ nativeEvent }) => {
+                let a = {
+                    "partid": 1,
+                    "measure": 2,
+                    "soundId": 300
+                }
+                dispatch(setJson(a))
+            }
+            }
+
+
+        ></canvas >
     );
 }

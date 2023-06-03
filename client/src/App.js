@@ -15,6 +15,8 @@ import { Link, useSearchParams } from "react-router-dom";
 
 function App() {
   const [searchParams] = useSearchParams();
+
+  const json = useSelector((state) => state.soundData.json)
   const musicLoopId = useSelector((state) => state.musicLoop.musicLoopId)
   const measureId = useSelector((state) => state.canvas.measureId)
   const parts = useSelector((state) => state.sounds.parts)
@@ -91,6 +93,13 @@ function App() {
 
   return (
     <>
+      <p>curve: <code id='count'>{json.curve}</code></p>
+      <p>partid: <code id='count'>{json.sounds[0].partid}</code></p>
+      <p>measure: <code id='count'>{json.sounds[0].measure}</code></p>
+      <p>soundid: <code id='count'>{json.sounds[0].soundId}</code></p>
+      <p>partid: <code id='count'>{json.sounds[1].partid}</code></p>
+      <p>measure: <code id='count'>{json.sounds[1].measure}</code></p>
+      <p>soundid: <code id='count'>{json.sounds[1].soundId}</code></p>
       <Link to={'/'}>Back</Link>
       <select id="number" onChange={handleChange}>
       </select>
@@ -126,3 +135,11 @@ export default App;
 //<p>count: <code id='count'>{measureId}</code></p>
 //      <p>count: <code id='count'>{partId}</code></p>
 //      <p>count: <code id='count'>{musicLoopId}</code></p>
+
+//<p>curve: <code id='count'>{json.curve}</code></p>
+//      <p>partid: <code id='count'>{json.sounds[0].partid}</code></p>
+//      <p>measure: <code id='count'>{json.sounds[0].measure}</code></p>
+//      <p>soundid: <code id='count'>{json.sounds[0].soundId}</code></p>
+//      <p>partid: <code id='count'>{json.sounds[1].partid}</code></p>
+//      <p>measure: <code id='count'>{json.sounds[1].measure}</code></p>
+//      <p>soundid: <code id='count'>{json.sounds[1].soundId}</code></p>
