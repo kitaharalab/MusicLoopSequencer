@@ -1,14 +1,15 @@
 import numpy as np
-from hmmlearn import hmm 
+from hmmlearn import hmm
 import os
 import re
-from pydub import AudioSegment  
-from pydub.playback import play  
-# import pyaudio 
-import wave 
+from pydub import AudioSegment
+from pydub.playback import play
+# import pyaudio
+import wave
 import random
 import cv2
 import time
+
 
 class Model():
     """
@@ -21,30 +22,29 @@ class Model():
     テキストの読み込み
     動画の分析
     """
+
     def __init__(self, line_height, block_width, line_block_height):
         # Viewクラスから使用したい値を初期化
         self.line_height = line_height
         self.block_width = block_width
         self.line_block_height = line_block_height
-        #音素材を固定する小節数
+        # 音素材を固定する小節数
         self.fix_len = 4
         # HMMのモデルを初期化
         self.initializationHmm()
         # 動画の盛り上がりを初期化
         self.motion_excitement_array = list()
-        #前回のデータを消去
+        # 前回のデータを消去
         if os.path.exists("./TechnoTrance/output.wav"):
-            os.remove("./TechnoTrance/output.wav") 
+            os.remove("./TechnoTrance/output.wav")
 
-
-
-    def initializationExcitement(self,pixel_array):
+    def initializationExcitement(self, pixel_array):
         """盛り上がりの初期化"""
         self.excitement_len = int(len(pixel_array) / self.block_width)
         self.excitement_array = [0] * self.excitement_len
-        #前回のデータを消去
+        # 前回のデータを消去
         if os.path.exists("./TechnoTrance/output.wav"):
-            os.remove("./TechnoTrance/output.wav") 
+            os.remove("./TechnoTrance/output.wav")
 
     def chengeExcitement(self, pixcel_array):
         """盛り上がり度に変換"""
@@ -59,7 +59,7 @@ class Model():
 
             self.excitement_array[i] = int(
                 block_total / self.block_width / (self.line_block_height))
-        
+
         return self.excitement_array
 
     def initializationHmm(self):
@@ -106,7 +106,7 @@ class Model():
 
         # no part
         no_part_startprob = np.array([0, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666,
-                              0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666])
+                                      0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666])
         no_part_transmat = np.array(
             [[0, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666]] * 16)
         self.no_part_hmm_model = hmm.MultinomialHMM(n_components=16)
@@ -275,112 +275,115 @@ class Model():
     def useHMM(self, excitement_array):
         """HMMを使用する"""
         observation_data = np.atleast_2d(
-                    excitement_array).T
-        hmm_array,hmm_array = self.no_part_hmm_model.decode(observation_data)
+            excitement_array).T
+        hmm_array, hmm_array = self.no_part_hmm_model.decode(observation_data)
         return hmm_array
 
-    def useAutoHMM(self,excitement_array):
+    def useAutoHMM(self, excitement_array):
         """構成を考慮したHMMを使用する"""
         self.section_array = self.dtw(excitement_array)
-        #パート毎にリストを用意する
+        # パート毎にリストを用意する
         intro_array = list()
         breakdown_array = list()
         buildup_array = list()
         drop_array = list()
         outro_array = list()
 
-        for i,e in enumerate(excitement_array):
+        for i, e in enumerate(excitement_array):
             if self.section_array[i] == 0:
                 intro_array.append(e)
-            elif self.section_array[i]==1:
+            elif self.section_array[i] == 1:
                 breakdown_array.append(e)
-            elif self.section_array[i]==2:
+            elif self.section_array[i] == 2:
                 buildup_array.append(e)
-            elif self.section_array[i]==3:
+            elif self.section_array[i] == 3:
                 drop_array.append(e)
-            elif self.section_array[i]==4:
+            elif self.section_array[i] == 4:
                 outro_array.append(e)
-        
-        #intro
+
+        # intro
         intro_data = np.atleast_2d(
-                    intro_array).T
-        intro_hmm_array,intro_hmm_array = self.intro_hmm_model.decode(intro_data)
-        #breakdown
+            intro_array).T
+        intro_hmm_array, intro_hmm_array = self.intro_hmm_model.decode(
+            intro_data)
+        # breakdown
         breakdown_data = np.atleast_2d(
-                    breakdown_array).T
-        breakdown_hmm_array,breakdown_hmm_array = self.breakdown_hmm_model.decode(breakdown_data)
+            breakdown_array).T
+        breakdown_hmm_array, breakdown_hmm_array = self.breakdown_hmm_model.decode(
+            breakdown_data)
         # buildup
         buildup_data = np.atleast_2d(
-                    buildup_array).T
-        buildup_hmm_array,buildup_hmm_array = self.buildup_hmm_model.decode(buildup_data)
+            buildup_array).T
+        buildup_hmm_array, buildup_hmm_array = self.buildup_hmm_model.decode(
+            buildup_data)
         # drop
         drop_data = np.atleast_2d(
-                    drop_array).T
-        drop_hmm_array,drop_hmm_array = self.drop_hmm_model.decode(drop_data)
+            drop_array).T
+        drop_hmm_array, drop_hmm_array = self.drop_hmm_model.decode(drop_data)
         # outro
         outro_data = np.atleast_2d(
-                    outro_array).T
-        outro_hmm_array,outro_hmm_array = self.outro_hmm_model.decode(outro_data)
+            outro_array).T
+        outro_hmm_array, outro_hmm_array = self.outro_hmm_model.decode(
+            outro_data)
 
-        return (np.concatenate([intro_hmm_array,breakdown_hmm_array, buildup_hmm_array, drop_hmm_array ,outro_hmm_array]))
+        return (np.concatenate([intro_hmm_array, breakdown_hmm_array, buildup_hmm_array, drop_hmm_array, outro_hmm_array]))
 
-
-    def dtw(self,excitement_array):
+    def dtw(self, excitement_array):
         """DTWの計算を行う"""
-        #セクションは4小節ごとに考慮する
+        # セクションは4小節ごとに考慮する
         short_excitement_array = list()
         sum = 0
-        for i,e in enumerate(excitement_array,1):
+        for i, e in enumerate(excitement_array, 1):
             if i % 4 == 0 and i != 0:
                 short_excitement_array.append(round(sum/4))
-                sum=0
+                sum = 0
             sum += e
-        excitement_array = short_excitement_array                
-        #セクションが取るであろう盛り上がり度
-        #intro, breakdown + buildup, drop, outro
+        excitement_array = short_excitement_array
+        # セクションが取るであろう盛り上がり度
+        # intro, breakdown + buildup, drop, outro
         section_excitement = [0, 1, 3.3, 0]
-        #2つの時系列の長さ
+        # 2つの時系列の長さ
         excitement_len = len(excitement_array)
         section_len = len(section_excitement)
-        #初期化
+        # 初期化
         dtw = [[float("inf") for i in range(section_len+1)]
-             for j in range(excitement_len + 1)]
+               for j in range(excitement_len + 1)]
         dtw[0][0] = 0
-        #累積を考える
-        for i in range(1,excitement_len+1):
-            for j in range(1,section_len+1):
+        # 累積を考える
+        for i in range(1, excitement_len+1):
+            for j in range(1, section_len+1):
                 cost = abs(excitement_array[i-1]-section_excitement[j-1])
                 dtw[i][j] = cost + min(dtw[i-1][j-1],
-                dtw[i-1][j])       
-        #セクションを決定する
+                                       dtw[i-1][j])
+        # セクションを決定する
         self.section_array = list()
-        #逆から考える
+        # 逆から考える
         dtw = dtw[::-1]
-        #outroで終わるように調整
+        # outroで終わるように調整
         for i in range(4):
             self.section_array.append(4)
-        #最小値を見ながらセクションを決定する
+        # 最小値を見ながらセクションを決定する
         for d in dtw[1:]:
-            #見る範囲
+            # 見る範囲
             start = self.section_array[-1]-1
-            end = self.section_array[-1]+1       
+            end = self.section_array[-1]+1
             section = d.index(min(d[start:end]))
             for i in range(4):
                 self.section_array.append(section)
-        #もとに戻す
+        # もとに戻す
         self.section_array = self.section_array[::-1]
         self.section_array = self.section_array[4:]
         self.section_array = [s-1 for s in self.section_array]
         for i in range(len(self.section_array)):
-            if self.section_array[i] == 2 or self.section_array[i]==3:
-                self.section_array[i]+=1
+            if self.section_array[i] == 2 or self.section_array[i] == 3:
+                self.section_array[i] += 1
         buildup_start = self.section_array.index(3)-2
         buildup_end = self.section_array.index(3)
-        self.section_array[buildup_start:buildup_end] = [2,2]
+        self.section_array[buildup_start:buildup_end] = [2, 2]
 
         return (self.section_array)
 
-    def fixHmm(self,hmm_array,excitement_array):
+    def fixHmm(self, hmm_array, excitement_array):
         """小節毎に揃える"""
         for i in range(len(hmm_array)):
             if i % self.fix_len == 0:
@@ -388,21 +391,20 @@ class Model():
                 e = excitement_array[i]
             hmm_array[i] = h
             excitement_array[i] = e
-        return hmm_array,excitement_array
-    
-    def fixAutoHmm(self,hmm_array,excitement_array,section_array):
+        return hmm_array, excitement_array
+
+    def fixAutoHmm(self, hmm_array, excitement_array, section_array):
         """セクションに合わせて揃える"""
         pre_section = -1
         for i in range(len(hmm_array)):
             if pre_section != section_array[i] or i % self.fix_len == 0:
                 h = hmm_array[i]
                 e = excitement_array[i]
-            hmm_array[i]=h
+            hmm_array[i] = h
             excitement_array[i] = e
             pre_section = section_array[i]
 
-        return hmm_array,excitement_array
-
+        return hmm_array, excitement_array
 
     def randomChoiceSound(self):
         """音素材をランダムに選択する"""
@@ -414,16 +416,20 @@ class Model():
 
         for i in range(5):
             drums_file = os.listdir("./TechnoTrance/Drums/"+str(i))
-            drums_list.append("./TechnoTrance/Drums/"+ str(i) + "/" +  random.choice(drums_file))
+            drums_list.append("./TechnoTrance/Drums/" +
+                              str(i) + "/" + random.choice(drums_file))
 
             bass_file = os.listdir("./TechnoTrance/Bass/"+str(i))
-            bass_list.append("./TechnoTrance/Bass/"+ str(i) + "/" +  random.choice(bass_file))
+            bass_list.append("./TechnoTrance/Bass/" + str(i) +
+                             "/" + random.choice(bass_file))
 
             synth_file = os.listdir("./TechnoTrance/Synth/"+str(i))
-            synth_list.append("./TechnoTrance/Synth/"+ str(i) + "/" +  random.choice(synth_file))
+            synth_list.append("./TechnoTrance/Synth/" +
+                              str(i) + "/" + random.choice(synth_file))
 
             sequence_file = os.listdir("./TechnoTrance/Sequence/"+str(i))
-            sequence_list.append("./TechnoTrance/Sequence/"+ str(i) + "/" +  random.choice(sequence_file))
+            sequence_list.append("./TechnoTrance/Sequence/" +
+                                 str(i) + "/" + random.choice(sequence_file))
 
         random_sound_list.append(drums_list)
         random_sound_list.append(bass_list)
@@ -432,16 +438,15 @@ class Model():
 
         return random_sound_list
 
-
-    def choiceSound(self,excitement_array,hmm_array):
+    def choiceSound(self, excitement_array, hmm_array):
         """使用する音素材を選択する"""
         sound_list = list()
         for i in range(self.excitement_len):
             binary = format(hmm_array[i], 'b').zfill(4)
             binary = binary[::-1]
             excitement = excitement_array[i]
-            if i % self.fix_len == 0 : 
-                random_sound_list = self.randomChoiceSound()            
+            if i % self.fix_len == 0:
+                random_sound_list = self.randomChoiceSound()
             block_sound = list()
             for part in range(4):
                 if binary[part] == "1":
@@ -452,42 +457,45 @@ class Model():
 
         return sound_list
 
-    def giveChord(self,sound_list):
+    def giveChord(self, sound_list):
         """コードを付与"""
         chord = ["2", "5", "3", "6", "4", "6", "7", "1"]
-        for i,sound in enumerate(sound_list,0):
-            for part in range(1,4):
-                sound[part] = re.sub('[0-9].wav',chord[i%8]+".wav",sound[part])
-              
+        for i, sound in enumerate(sound_list, 0):
+            for part in range(1, 4):
+                sound[part] = re.sub('[0-9].wav', chord[i %
+                                     8]+".wav", sound[part])
+
         return sound_list
 
-    def connectSound(self,sound_list, projectid):
+    def connectSound(self, sound_list, projectid):
         """音素材を繋げる"""
         self.output_sound = AudioSegment.silent()
         self.output_sound = self.output_sound[0:0]
-        for sound in sound_list: 
+        for sound in sound_list:
             block_sound_exist = False
             for s in sound:
                 if s != "null":
                     if block_sound_exist:
-                        block_sound = block_sound.overlay(AudioSegment.from_file(s))
+                        block_sound = block_sound.overlay(
+                            AudioSegment.from_file(s))
                     else:
-                        block_sound = AudioSegment.from_file(s) 
+                        block_sound = AudioSegment.from_file(s)
                         block_sound_exist = True
-            
+
             self.output_sound = self.output_sound + block_sound
-           
+
         # 楽曲を更新する
         songid = 0
         created = False
         while created == False:
-            if os.path.exists("./project/" + projectid + "/songs/"+ str(songid)) == False:
-                os.mkdir("./project/" + projectid + "/songs/"+ str(songid))
-                self.output_sound.export("./project/" + projectid + "/songs/" + str(songid) + "/song" + str(songid) + ".wav", format="wav")
+            if os.path.exists("./project/" + projectid + "/songs/" + str(songid)) == False:
+                os.mkdir("./project/" + projectid + "/songs/" + str(songid))
+                self.output_sound.export("./project/" + projectid + "/songs/" + str(
+                    songid) + "/song" + str(songid) + ".wav", format="wav")
                 created = True
             else:
                 songid = songid + 1
-        
+
         return str(songid)
 
     def initializationAnalysisMovie(self):
@@ -507,14 +515,14 @@ class Model():
         # 進捗の属性
         self.movie_analysis_progress = 0
         self.movie_analysising = True
-    
-    def analysisMovie(self,movie_file_path):
+
+    def analysisMovie(self, movie_file_path):
         """動画の分析を行う"""
-        #初期化
+        # 初期化
         self.initializationAnalysisMovie()
         # 動画を読み込む
         self.movie = cv2.VideoCapture(movie_file_path)
-        #動画の幅を取得，分割する幅を決定
+        # 動画の幅を取得，分割する幅を決定
         w = self.movie.get(cv2.CAP_PROP_FRAME_WIDTH)
         self.GRID_WIDTH = int(w / 64)
         # 最初のフレームを読み込む
@@ -566,15 +574,15 @@ class Model():
             # 次のフレームの読み込み
             frame_pre = frame_next.copy()
             end_flag, frame_next = self.movie.read()
-        
+
         if self.movie_analysising:
-            self.movie_analysising = False 
+            self.movie_analysising = False
             self.calcMovieExcitement(self.movie, self.direction_cnt_array)
-            print("finish analysising movie")   
+            print("finish analysising movie")
         else:
             print("cancel analysising movie")
 
-    def calcMovieExcitement(self,movie, direction_cnt_array):
+    def calcMovieExcitement(self, movie, direction_cnt_array):
         """動画の盛り上がり度を計算する"""
         # FPSを取得
         fps = movie.get(cv2.CAP_PROP_FPS)
@@ -598,14 +606,4 @@ class Model():
                 e = 0
             else:
                 e = ((i / self.block_max))
-            self.motion_excitement_array.append((e))   
-
-
-
-        
-        
-
-
-
-
-                    
+            self.motion_excitement_array.append((e))
