@@ -408,26 +408,42 @@ def infoSongPartMeasure(projectid,songid,partid, measureid):
                 'sound':partid_measureid_sound}
                          
     return make_response(jsonify(response))
-@app.route("/projects/<projectid>/songs/<songid>/parts/<partid>/measures/<measureid>", methods=['POST'])
-def insertSound(projectid,songid, partid, measureid):
+@app.route("/projects/<projectid>/parts/<partid>/measures/<measureid>/musicloops/<musicloopid>", methods=['POST'])
+def insertSound(projectid,partid, measureid, musicloopid):
     data = request.get_json()      #WebページからのJSONデータを受け取る．
-    sound_id = data['sound-id']         
-    
+    sequence_list = data['sequenceList']
+    synth_list = data['synthList']
+    bass_list = data['bassList']
+    drums_list =  data['drumsList']
+
     sounds_ids = [["null" for i in range(4)] for j in range(32)]
     sound_array = [["null" for i in range(4)] for j in range(32)]
-    id_list = []
-    path = "./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt"
-    with open("./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt") as f:
-        id_list = f.read().split("\n")
-    if id_list[len(id_list)-1] == '':
-        id_list.pop()
-    count = 0
+
+    for i in range(len(sound_array)):
+        for j in range(len(sound_array[0])):
+            if j == 0:
+                sound_array[i][j] = drums_list[i]
+            elif j == 1:
+                sound_array[i][j] = bass_list[i]
+            elif j == 2:
+                sound_array[i][j] = synth_list[i]
+            else:
+                sound_array[i][j] = sequence_list[i]
     
-    for i in range(len(id_list)):
-        sounds_ids[count][i%4] = id_list[i]
-        if i%4 == 3:
-            count = count + 1
-    sound_list = []
+    
+    #id_list = []
+    #path = "./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt"
+    #with open("./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt") as f:
+    #    id_list = f.read().split("\n")
+    #if id_list[len(id_list)-1] == '':
+    #    id_list.pop()
+    #count = 0
+    
+    #for i in range(len(id_list)):
+    #    sounds_ids[count][i%4] = id_list[i]
+    #    if i%4 == 3:
+    #        count = count + 1
+    #sound_list = []
     
     drums_list = []
     bass_list = []
@@ -442,54 +458,134 @@ def insertSound(projectid,songid, partid, measureid):
     with open("./text/sequence_word_list.txt") as f:
         sequence_list = f.read().split("\n")
 
-    if partid == '0':
-        sound_list = sequence_list
-    elif partid == '1':
-        sound_list = synth_list
-    elif partid == '2':
-        sound_list = bass_list
+    #if partid == '0':
+    #    sound_list = sequence_list
+    #elif partid == '1':
+    #    sound_list = synth_list
+    #elif partid == '2':
+    #    sound_list = bass_list
+    #else:
+    #    sound_list = drums_list
+    if int(partid) == 0:
+        sound_array[int(measureid)][3-int(partid)] = int(musicloopid)
+    elif int(partid) == 1:
+        sound_array[int(measureid)][3-int(partid)] = int(musicloopid)
+    elif int(partid) == 2:
+        sound_array[int(measureid)][3-int(partid)] = int(musicloopid)
     else:
-        sound_list = drums_list
-
-    soundName = ''
-    for i in range(len(sound_list)):
-        if i == int(sound_id):
-            soundName = sound_list[i]
-
-    sounds_ids[int(measureid)][3-int(partid)] = str(sound_id)
+        sound_array[int(measureid)][3-int(partid)] = int(musicloopid)
+        
+    #for i in range(len(sound_list)):
+    #    if i == int(sound_id):
+    #        soundName = sound_list[i]
     
     for i in range(len(sound_array)):
         for j in range(len(sound_array[0])):
             if j == 0:
                 for k in range(len(drums_list)):
-                    if sounds_ids[i][j] == str(k):
+                    if sound_array[i][j] == k:
                         sound_array[i][j] = drums_list[k]
+                    elif sound_array[i][j] == None:
+                        sound_array[i][j] = 'null'
             elif j == 1:
                 for k in range(len(bass_list)):
-                    if sounds_ids[i][j] == str(k):
+                    if sound_array[i][j] == k:
                         sound_array[i][j] = bass_list[k]
+                    elif sound_array[i][j] == None:
+                        sound_array[i][j] = 'null'
             elif j == 2:
                 for k in range(len(synth_list)):
-                    if sounds_ids[i][j] == str(k):
+                    if sound_array[i][j] == k:
                         sound_array[i][j] = synth_list[k]
+                    elif sound_array[i][j] == None:
+                        sound_array[i][j] = 'null'
             else:
                 for k in range(len(sequence_list)):
-                    if sounds_ids[i][j] == str(k):
+                    if sound_array[i][j] == k:
                         sound_array[i][j] = sequence_list[k]
+                    elif sound_array[i][j] == None:
+                        sound_array[i][j] = 'null'
+
+    
+    
+    
     root = tk.Tk()                 
     view = View(master=root)
+    print(sound_array)
+    print("OKOKOKOKOKOKOKOKOKOKOKOKOKOKOKOK")
     songid = view.model.connectSound(sound_array, projectid)
     
+    for i in range(len(sound_array)):
+        for j in range(len(sound_array[0])):
+            if j == 0:
+                for k in range(len(drums_list)):
+                    if sound_array[i][j] == drums_list[k]:
+                        sound_array[i][j] = str(k)
+            elif j == 1:
+                for k in range(len(bass_list)):
+                    if sound_array[i][j] == bass_list[k]:
+                        sound_array[i][j] = str(k)
+            elif j == 2:
+                for k in range(len(synth_list)):
+                    if sound_array[i][j] == synth_list[k]:
+                        sound_array[i][j] = str(k)
+            else:
+                for k in range(len(sequence_list)):
+                    if sound_array[i][j] == sequence_list[k]:
+                        sound_array[i][j] = str(k)
     with open("./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt", mode='w') as f:
-        for i in range(len(sounds_ids)):
-            for j in range(len(sounds_ids[0])):
+        for i in range(len(sound_array)):
+            for j in range(len(sound_array[0])):
                 if i == 0 and j == 0:
-                    f.write(str(sounds_ids[i][j]))
+                    f.write(str(sound_array[i][j]))
                 else:
-                    f.write("\n" + str(sounds_ids[i][j]))
-    
-    response = {"sounds_ids": sounds_ids,
-                "songid": songid}
+                    f.write("\n" + str(sound_array[i][j]))
+
+    sequence_list = ["null" for i in range(32)]
+    synth_list = ["null" for i in range(32)]
+    bass_list = ["null" for i in range(32)]
+    drums_list = ["null" for i in range(32)]
+
+    for i in range(32):
+        if sound_array[i][3] == "null":
+            sequence_list[i] = None
+        else:
+            sequence_list[i] = int(sound_array[i][3])
+        if sound_array[i][2] == "null":
+            synth_list[i] = None
+        else:
+            synth_list[i] = int(sound_array[i][2])
+        if sound_array[i][1] == "null":
+            bass_list[i] = None
+        else:
+            bass_list[i] = int(sound_array[i][1])
+        if sound_array[i][0] == "null":
+            drums_list[i] = None
+        else:
+            drums_list[i] = int(sound_array[i][0])
+    print(sequence_list)
+
+    print(songid)
+        
+    response = {'songid': int(songid),
+                'parts':[{
+                          'partid':0,
+                          'sounds':sequence_list
+                         },
+                         {
+                          'partid':1,
+                          'sounds':synth_list
+                         },
+                         {
+                          'partid':2,
+                          'sounds':bass_list
+                         },
+                         {
+                          'partid':3,
+                          'sounds':drums_list
+                         }
+                         ]
+                         }
     return make_response(jsonify(response))
 """@app.route("/projects/<projectid>/songs/<songid>/<filename>", methods=['GET'])
 def downloadSong(projectid,songid,filename):

@@ -28,7 +28,7 @@ function App() {
   const yCoordinate = useSelector((state) => state.musicData.yCoordinate)
   const rangeList = useSelector((state) => state.musicData.rangeList)
   const dispatch = useDispatch();
-  dispatch(setProjectId({ projectid }))
+  dispatch(setProjectId(projectid))
   const [context1, setContext1] = useState(null)
   const [audio, setAudio] = useState(null);
   const [context2, setContext2] = useState(null)
@@ -100,6 +100,7 @@ function App() {
       <p>partid: <code id='count'>{json.sounds[1].partid}</code></p>
       <p>measure: <code id='count'>{json.sounds[1].measure}</code></p>
       <p>soundid: <code id='count'>{json.sounds[1].soundId}</code></p>
+      <p>soundid: <code id='count'>{musicLoopId}</code></p>
       <Link to={'/'}>Back</Link>
       <select id="number" onChange={handleChange}>
       </select>
@@ -126,6 +127,14 @@ function App() {
 }
 
 export default App;
+
+//<p>curve: <code id='count'>{json.curve}</code></p>
+//      <p>partid: <code id='count'>{json.sounds[0].partid}</code></p>
+//      <p>measure: <code id='count'>{json.sounds[0].measure}</code></p>
+//      <p>soundid: <code id='count'>{json.sounds[0].soundId}</code></p>
+//      <p>partid: <code id='count'>{json.sounds[1].partid}</code></p>
+//      <p>measure: <code id='count'>{json.sounds[1].measure}</code></p>
+//      <p>soundid: <code id='count'>{json.sounds[1].soundId}</code></p>
 
 //<div className='music-loops-container'>
 //        <MusicLoops />

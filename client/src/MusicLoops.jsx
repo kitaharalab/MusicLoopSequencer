@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import insertSound from './insertSound';
 import onMusicLoop from './onMusicLoop';
 import { setPos } from './redux/blockCanvasSlice';
 import { setMusicLoopId } from './redux/musicLoopSlice';
 import { setJson } from './redux/soundDataSlice';
+import { setParts } from './redux/soundsSlice';
+import { setId } from './redux/songIdSlice';
 
 export default function MusicLoops() {
     // const selectedMeasureId = useSelector((state) => state.block.posRectX);
@@ -29,6 +32,12 @@ export default function MusicLoops() {
 
     //};
 
+    const sleep = (waitMsec) => {
+        var startMsec = new Date();
+
+        // 指定ミリ秒間だけループさせる（CPUは常にビジー状態）
+        while (new Date() - startMsec < waitMsec);
+    };
 
 
 
@@ -125,24 +134,33 @@ export default function MusicLoops() {
                     ctx.fill();
                     ctx.stroke()
                     ctx.closePath();
-
+                    dispatch(setMusicLoopId(i))
                     if (currentMusicLoop != i) {
                         dispatch(setMusicLoopId(i))
                         const test = await onMusicLoop(partId, i);
                         setAudio(test)
-                        audio.play()
+                        test.play()
                         setCurrentMusicLoop(i)
                     }
                 }
             }
         }}
-            onMouseDown={({ nativeEvent }) => {
-                let a = {
-                    "partid": 1,
-                    "measure": 2,
-                    "soundId": 300
+            onMouseDown={async ({ nativeEvent }) => {
+                const { offsetX, offsetY } = nativeEvent
+                for (let i = 0; i < xCoordinate.length; i++) {
+                    if (Math.sqrt((xCoordinate[i] - offsetX) * (xCoordinate[i] - offsetX) + (yCoordinate[i] - offsetY) * (yCoordinate[i] - offsetY)) <= 4) {
+                        let a = {
+                            "partid": 1,
+                            "measure": 2,
+                            "soundId": 300
+                        }
+                        const music = await insertSound(projectId, partId, measureId, musicLoopId, parts)
+                        dispatch(setParts(music.parts))
+                        dispatch(setId(music.songid))
+
+                    }
                 }
-                dispatch(setJson(a))
+
             }
             }
 

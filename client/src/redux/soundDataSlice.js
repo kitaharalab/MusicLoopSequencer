@@ -28,6 +28,7 @@ export const soundDataSlice = createSlice({
         setJson: (state, action) => {
             const json = action.payload;
             state.json.sounds.push(json)
+            state.json.sounds[0] = state.json.sounds[1];
             state.json.sounds[1] = state.json.sounds[2];
         },
     },
