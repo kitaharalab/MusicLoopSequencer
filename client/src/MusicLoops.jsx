@@ -24,14 +24,14 @@ export default function MusicLoops() {
   const dispatch = useDispatch();
   const canvasRef = useRef();
 
-  //const clickRect = ({ nativeEvent }) => {
+  // const clickRect = ({ nativeEvent }) => {
   //    const { offsetX, offsetY } = nativeEvent;
   //    dispatch(setPos({ offsetX, offsetY }))
 
-  //};
+  // };
 
   const sleep = (waitMsec) => {
-    var startMsec = new Date();
+    const startMsec = new Date();
 
     // 指定ミリ秒間だけループさせる（CPUは常にビジー状態）
     while (new Date() - startMsec < waitMsec);
@@ -53,7 +53,7 @@ export default function MusicLoops() {
     ctx.strokeRect(0, 0, canvas.width, canvas.height);
 
     let range_pos = 0;
-    for (var i = 0; i < xCoordinate.length; i++) {
+    for (let i = 0; i < xCoordinate.length; i++) {
       if (range_pos != 4) {
         if (i == Number(rangeList[range_pos])) {
           range_pos += 1;
@@ -153,7 +153,7 @@ export default function MusicLoops() {
                 (yCoordinate[i] - offsetY) * (yCoordinate[i] - offsetY),
             ) <= 4
           ) {
-            let a = {
+            const a = {
               partid: 1,
               measure: 2,
               soundId: 300,
@@ -170,6 +170,6 @@ export default function MusicLoops() {
           }
         }
       }}
-    ></canvas>
+    />
   );
 }

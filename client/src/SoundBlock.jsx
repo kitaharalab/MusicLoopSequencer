@@ -13,11 +13,11 @@ export default function SoundBlock() {
   const dispatch = useDispatch();
   const canvasRef = useRef();
 
-  //const clickRect = ({ nativeEvent }) => {
+  // const clickRect = ({ nativeEvent }) => {
   //    const { offsetX, offsetY } = nativeEvent;
   //    dispatch(setPos({ offsetX, offsetY }))
 
-  //};
+  // };
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -58,10 +58,8 @@ export default function SoundBlock() {
             if (bassList[j] != null) {
               ctx.fillRect(j * 36, i * 50, 36, 50);
             }
-          } else {
-            if (drumsList[j] != null) {
-              ctx.fillRect(j * 36, i * 50, 36, 50);
-            }
+          } else if (drumsList[j] != null) {
+            ctx.fillRect(j * 36, i * 50, 36, 50);
           }
           ctx.fill();
         }
@@ -145,10 +143,8 @@ export default function SoundBlock() {
           if (bassList[j] != null) {
             ctx.fillRect(j * 36, i * 50, 36, 50);
           }
-        } else {
-          if (drumsList[j] != null) {
-            ctx.fillRect(j * 36, i * 50, 36, 50);
-          }
+        } else if (drumsList[j] != null) {
+          ctx.fillRect(j * 36, i * 50, 36, 50);
         }
         ctx.fill();
       }
@@ -176,6 +172,6 @@ export default function SoundBlock() {
         const rangeList = musicData.range_lists;
         dispatch(setMusicData({ xCoordinate, yCoordinate, rangeList }));
       }}
-    ></canvas>
+    />
   );
 }

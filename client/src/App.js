@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import useSound from "use-sound";
+import { Link, useSearchParams } from "react-router-dom";
 import Sound from "./song0.wav";
 import ExcitementCurve from "./ExcitementCurve";
 import SoundBlock from "./SoundBlock";
@@ -11,7 +12,6 @@ import createMusic from "./createMusic";
 import { setParts } from "./redux/soundsSlice";
 import { setProjectId } from "./redux/projectIdSlice";
 import { setId } from "./redux/songIdSlice";
-import { Link, useSearchParams } from "react-router-dom";
 
 function App() {
   const [searchParams] = useSearchParams();
@@ -38,21 +38,20 @@ function App() {
   const [asdf, setasdf] = useState([0]);
   const [ctx2Width, setCtx2Width] = useState(0);
   const [ctx2Height, setCtx2Height] = useState(0);
-  let [play, { stop, pause }] = useSound(Sound);
+  const [play, { stop, pause }] = useSound(Sound);
 
-  console.log("projectID:" + String(projectid));
+  console.log(`projectID:${String(projectid)}`);
 
   useEffect(() => {
-    const url2 =
-      "http://127.0.0.1:8080/projects/" + String(projectid) + "/songs";
+    const url2 = `http://127.0.0.1:8080/projects/${String(projectid)}/songs`;
     let temp2 = 0;
     axios
-      .get(url2) //サーバーから音素材の配列を受け取った後，then部分を実行する．
-      .then(function (response) {
+      .get(url2) // サーバーから音素材の配列を受け取った後，then部分を実行する．
+      .then((response) => {
         setasdf(1234);
         temp2 = response.data.songids[response.data.songids.length - 1];
         console.log(temp2);
-        let select = document.getElementById("number");
+        const select = document.getElementById("number");
         if (done1 == false) {
           for (let i = 0; i <= temp2; i++) {
             select.add(new Option(String(i), String(i)));
@@ -66,17 +65,14 @@ function App() {
     if (songid === 0) {
       return;
     }
-    const url1 =
-      "http://127.0.0.1:8080/projects/" +
-      String(projectid) +
-      "/songs/" +
-      String(songid) +
-      "/wav";
+    const url1 = `http://127.0.0.1:8080/projects/${String(
+      projectid,
+    )}/songs/${String(songid)}/wav`;
 
     axios
-      .get(url1, { responseType: "blob" }) //サーバーから音素材の配列を受け取った後，then部分を実行する．
-      .then(function (response) {
-        var FILE = window.URL.createObjectURL(
+      .get(url1, { responseType: "blob" }) // サーバーから音素材の配列を受け取った後，then部分を実行する．
+      .then((response) => {
+        const FILE = window.URL.createObjectURL(
           new Blob([response.data], { type: "audio/wav" }),
         );
         const newCount = count + 1;
@@ -84,12 +80,12 @@ function App() {
         const test1 = new Audio(FILE);
         setAudio(test1);
       });
-    let select = document.getElementById("number");
+    const select = document.getElementById("number");
     select.add(new Option(String(songid), String(songid)));
   }, [songid]);
 
   const addSelect = () => {
-    var select = document.getElementById("number");
+    const select = document.getElementById("number");
     select.add(new Option("a", "1"));
   };
 
@@ -123,8 +119,8 @@ function App() {
       <p>
         soundid: <code id="count">{musicLoopId}</code>
       </p>
-      <Link to={"/"}>Back</Link>
-      <select id="number" onChange={handleChange}></select>
+      <Link to="/">Back</Link>
+      <select id="number" onChange={handleChange} />
       <button type="button" onClick={() => audio.play()}>
         play
       </button>
@@ -168,7 +164,7 @@ function App() {
 
 export default App;
 
-//<p>curve: <code id='count'>{json.curve}</code></p>
+// <p>curve: <code id='count'>{json.curve}</code></p>
 //      <p>partid: <code id='count'>{json.sounds[0].partid}</code></p>
 //      <p>measure: <code id='count'>{json.sounds[0].measure}</code></p>
 //      <p>soundid: <code id='count'>{json.sounds[0].soundId}</code></p>
@@ -176,16 +172,16 @@ export default App;
 //      <p>measure: <code id='count'>{json.sounds[1].measure}</code></p>
 //      <p>soundid: <code id='count'>{json.sounds[1].soundId}</code></p>
 
-//<div className='music-loops-container'>
+// <div className='music-loops-container'>
 //        <MusicLoops />
 //      </div>
-//<p>count: <code id='count'>{linesY}</code></p>
-//<p>count: <code id='count'>{linesY}</code></p>
-//<p>count: <code id='count'>{measureId}</code></p>
+// <p>count: <code id='count'>{linesY}</code></p>
+// <p>count: <code id='count'>{linesY}</code></p>
+// <p>count: <code id='count'>{measureId}</code></p>
 //      <p>count: <code id='count'>{partId}</code></p>
 //      <p>count: <code id='count'>{musicLoopId}</code></p>
 
-//<p>curve: <code id='count'>{json.curve}</code></p>
+// <p>curve: <code id='count'>{json.curve}</code></p>
 //      <p>partid: <code id='count'>{json.sounds[0].partid}</code></p>
 //      <p>measure: <code id='count'>{json.sounds[0].measure}</code></p>
 //      <p>soundid: <code id='count'>{json.sounds[0].soundId}</code></p>
