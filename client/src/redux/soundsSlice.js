@@ -1,18 +1,17 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-    parts: [],
-}
-
+  parts: [],
+};
 
 export const soundsSlice = createSlice({
-    name: 'sounds',
-    initialState,
-    reducers: {
-        setParts: (state, action) => {
-            state.parts = action.payload;
-        },
+  name: "sounds",
+  initialState,
+  reducers: {
+    setParts: (state, action) => {
+      state.parts = action.payload;
     },
+  },
 });
 
 export const { setParts } = soundsSlice.actions;

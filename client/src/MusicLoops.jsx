@@ -136,6 +136,7 @@ export default function MusicLoops() {
             dispatch(setMusicLoopId(i));
             if (currentMusicLoop !== i) {
               dispatch(setMusicLoopId(i));
+              // eslint-disable-next-line no-await-in-loop
               const test = await onMusicLoop(partId, i);
               setAudio(test);
               test.play();
@@ -153,11 +154,12 @@ export default function MusicLoops() {
                 (yCoordinate[i] - offsetY) * (yCoordinate[i] - offsetY),
             ) <= 4
           ) {
-            const a = {
-              partid: 1,
-              measure: 2,
-              soundId: 300,
-            };
+            // const a = {
+            //   partid: 1,
+            //   measure: 2,
+            //   soundId: 300,
+            // };
+            // eslint-disable-next-line no-await-in-loop
             const music = await insertSound(
               projectId,
               partId,
