@@ -170,28 +170,3 @@ function App() {
 }
 
 export default App;
-
-// <p>curve: <code id='count'>{json.curve}</code></p>
-//      <p>partid: <code id='count'>{json.sounds[0].partid}</code></p>
-//      <p>measure: <code id='count'>{json.sounds[0].measure}</code></p>
-//      <p>soundid: <code id='count'>{json.sounds[0].soundId}</code></p>
-//      <p>partid: <code id='count'>{json.sounds[1].partid}</code></p>
-//      <p>measure: <code id='count'>{json.sounds[1].measure}</code></p>
-//      <p>soundid: <code id='count'>{json.sounds[1].soundId}</code></p>
-
-// <div className='music-loops-container'>
-//        <MusicLoops />
-//      </div>
-// <p>count: <code id='count'>{linesY}</code></p>
-// <p>count: <code id='count'>{linesY}</code></p>
-// <p>count: <code id='count'>{measureId}</code></p>
-//      <p>count: <code id='count'>{partId}</code></p>
-//      <p>count: <code id='count'>{musicLoopId}</code></p>
-
-// <p>curve: <code id='count'>{json.curve}</code></p>
-//      <p>partid: <code id='count'>{json.sounds[0].partid}</code></p>
-//      <p>measure: <code id='count'>{json.sounds[0].measure}</code></p>
-//      <p>soundid: <code id='count'>{json.sounds[0].soundId}</code></p>
-//      <p>partid: <code id='count'>{json.sounds[1].partid}</code></p>
-//      <p>measure: <code id='count'>{json.sounds[1].measure}</code></p>
-//      <p>soundid: <code id='count'>{json.sounds[1].soundId}</code></p>
