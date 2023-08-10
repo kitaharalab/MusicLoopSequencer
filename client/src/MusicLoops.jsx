@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import insertSound from "./insertSound";
 import onMusicLoop from "./onMusicLoop";
-import { setPos } from "./redux/blockCanvasSlice";
+// import { setPos } from "./redux/blockCanvasSlice";
 import { setMusicLoopId } from "./redux/musicLoopSlice";
-import { setJson } from "./redux/soundDataSlice";
+// import { setJson } from "./redux/soundDataSlice";
 import { setParts } from "./redux/soundsSlice";
 import { setId } from "./redux/songIdSlice";
 
@@ -12,7 +12,7 @@ export default function MusicLoops() {
   // const selectedMeasureId = useSelector((state) => state.block.posRectX);
   // const selectedPartId = useSelector((state) => state.block.posRectY)
   const musicLoopId = useSelector((state) => state.musicLoop.musicLoopId);
-  const [audio, setAudio] = useState(null);
+  const [_audio, setAudio] = useState(null);
   const [currentMusicLoop, setCurrentMusicLoop] = useState(null);
   const parts = useSelector((state) => state.sounds.parts);
   const measureId = useSelector((state) => state.canvas.measureId);
@@ -30,12 +30,12 @@ export default function MusicLoops() {
 
   // };
 
-  const sleep = (waitMsec) => {
-    const startMsec = new Date();
+  // const sleep = (waitMsec) => {
+  //   const startMsec = new Date();
 
-    // 指定ミリ秒間だけループさせる（CPUは常にビジー状態）
-    while (new Date() - startMsec < waitMsec);
-  };
+  //   // 指定ミリ秒間だけループさせる（CPUは常にビジー状態）
+  //   while (new Date() - startMsec < waitMsec);
+  // };
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -52,20 +52,20 @@ export default function MusicLoops() {
     ctx.clearRect(0, 0, 400, 400);
     ctx.strokeRect(0, 0, canvas.width, canvas.height);
 
-    let range_pos = 0;
+    let rangeos = 0;
     for (let i = 0; i < xCoordinate.length; i++) {
-      if (range_pos != 4) {
-        if (i == Number(rangeList[range_pos])) {
-          range_pos += 1;
+      if (rangeos !== 4) {
+        if (i === Number(rangeList[rangeos])) {
+          rangeos += 1;
         }
       }
-      if (range_pos == 0) {
+      if (rangeos === 0) {
         ctx.fillStyle = "gray";
-      } else if (range_pos == 1) {
+      } else if (rangeos === 1) {
         ctx.fillStyle = "blue";
-      } else if (range_pos == 2) {
+      } else if (rangeos === 2) {
         ctx.fillStyle = "green";
-      } else if (range_pos == 3) {
+      } else if (rangeos === 3) {
         ctx.fillStyle = "yellow";
       } else {
         ctx.fillStyle = "red";
@@ -93,20 +93,20 @@ export default function MusicLoops() {
         ctx.fillStyle = "black";
         ctx.clearRect(0, 0, 400, 400);
         ctx.strokeRect(0, 0, canvas.width, canvas.height);
-        let range_pos = 0;
+        let rangePos = 0;
         for (let i = 0; i < xCoordinate.length; i++) {
-          if (range_pos != 4) {
-            if (i == Number(rangeList[range_pos])) {
-              range_pos += 1;
+          if (rangePos !== 4) {
+            if (i === Number(rangeList[rangePos])) {
+              rangePos += 1;
             }
           }
-          if (range_pos == 0) {
+          if (rangePos === 0) {
             ctx.fillStyle = "gray";
-          } else if (range_pos == 1) {
+          } else if (rangePos === 1) {
             ctx.fillStyle = "blue";
-          } else if (range_pos == 2) {
+          } else if (rangePos === 2) {
             ctx.fillStyle = "green";
-          } else if (range_pos == 3) {
+          } else if (rangePos === 3) {
             ctx.fillStyle = "yellow";
           } else {
             ctx.fillStyle = "red";
@@ -134,7 +134,7 @@ export default function MusicLoops() {
             ctx.stroke();
             ctx.closePath();
             dispatch(setMusicLoopId(i));
-            if (currentMusicLoop != i) {
+            if (currentMusicLoop !== i) {
               dispatch(setMusicLoopId(i));
               const test = await onMusicLoop(partId, i);
               setAudio(test);

@@ -1,11 +1,11 @@
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./Project.css";
 
 function Project() {
   const [done, setDone] = useState(false);
-  const [sample, setSample] = useState(null);
+  const [sample, _setSample] = useState(null);
   let temp = 0;
   console.log("HOME");
 
@@ -16,11 +16,11 @@ function Project() {
       .then((response) => {
         const { projectid } = response.data;
         const div = document.getElementById("project");
-        const new_element = document.createElement("p");
-        const url = `App?projectid=${String(projectid)}`;
-        const tag = `<a href=${url}>${projectid}</a>`;
-        new_element.innerHTML = tag;
-        div.appendChild(new_element);
+        const newElement = document.createElement("p");
+        const newProjectUrl = `App?projectid=${String(projectid)}`;
+        const tag = `<a href=${newProjectUrl}>${projectid}</a>`;
+        newElement.innerHTML = tag;
+        div.appendChild(newElement);
       });
     console.log("OK");
   };
@@ -41,11 +41,11 @@ function Project() {
                 ];
               if (done === false) {
                 for (let i = 0; i <= temp; i++) {
-                  const new_element = document.createElement("p");
-                  const url = `App?projectid=${String(i)}`;
-                  const tag = `<a href=${url}>${i}</a>`;
-                  new_element.innerHTML = tag;
-                  div.appendChild(new_element);
+                  const newElement = document.createElement("p");
+                  const newProjectUrl = `App?projectid=${String(i)}`;
+                  const tag = `<a href=${newProjectUrl}>${i}</a>`;
+                  newElement.innerHTML = tag;
+                  div.appendChild(newElement);
                 }
                 const judge = true;
                 setDone(judge);

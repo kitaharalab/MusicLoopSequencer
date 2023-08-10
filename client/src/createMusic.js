@@ -1,28 +1,28 @@
-import { useEffect, useRef, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+// import { useEffect, useRef, useState } from "react";
+// import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
-import { setPos } from "./redux/soundsSlice";
-import { setCanvas } from "./redux/blockCanvasSlice";
+// import { setPos } from "./redux/soundsSlice";
+// import { setCanvas } from "./redux/blockCanvasSlice";
 
 export default function createMusic(projectid, linesY) {
-  const excitement_array = new Array(32);
+  const excitementArray = new Array(32);
   for (let i = 0; i < 32; i++) {
     // １ブロックの範囲を決定
-    const block_start = Math.floor(i * 36);
-    const block_finish = Math.floor(block_start + 36);
+    const blockStart = Math.floor(i * 36);
+    const blockFinish = Math.floor(blockStart + 36);
     // ブロックの合計から平均を計算
-    let block_total = 0;
-    for (let j = block_start; j < block_finish; j++) {
-      block_total += Math.abs(linesY[j] - 282);
+    let blockTotal = 0;
+    for (let j = blockStart; j < blockFinish; j++) {
+      blockTotal += Math.abs(linesY[j] - 282);
 
-      excitement_array[i] = Math.floor(block_total / 36 / 56);
+      excitementArray[i] = Math.floor(blockTotal / 36 / 56);
     }
   }
   console.log("button pushed");
   const url = `http://127.0.0.1:8080/projects/${String(projectid)}/songs`;
 
   const data = {
-    curves: excitement_array, // 盛り上がり度曲線のパラメーターを格納した配列をJSONデータにする
+    curves: excitementArray, // 盛り上がり度曲線のパラメーターを格納した配列をJSONデータにする
   };
 
   return axios

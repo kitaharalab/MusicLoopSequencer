@@ -18,27 +18,27 @@ function App() {
 
   const json = useSelector((state) => state.soundData.json);
   const musicLoopId = useSelector((state) => state.musicLoop.musicLoopId);
-  const measureId = useSelector((state) => state.canvas.measureId);
-  const parts = useSelector((state) => state.sounds.parts);
+  // const measureId = useSelector((state) => state.canvas.measureId);
+  // const parts = useSelector((state) => state.sounds.parts);
   const songid = useSelector((state) => state.songId.songId);
-  const partId = useSelector((state) => state.canvas.partId);
+  // const partId = useSelector((state) => state.canvas.partId);
   const projectid = searchParams.get("projectid");
   const linesY = useSelector((state) => state.lines1.lines);
-  const xCoordinate = useSelector((state) => state.musicData.xCoordinate);
-  const yCoordinate = useSelector((state) => state.musicData.yCoordinate);
-  const rangeList = useSelector((state) => state.musicData.rangeList);
+  // const xCoordinate = useSelector((state) => state.musicData.xCoordinate);
+  // const yCoordinate = useSelector((state) => state.musicData.yCoordinate);
+  // const rangeList = useSelector((state) => state.musicData.rangeList);
   const dispatch = useDispatch();
   dispatch(setProjectId(projectid));
-  const [context1, setContext1] = useState(null);
+  const [_context1, _setContext1] = useState(null);
   const [audio, setAudio] = useState(null);
-  const [context2, setContext2] = useState(null);
-  const [count, setCount] = useState(0);
+  const [_context2, _setContext2] = useState(null);
+  const [_count, setCount] = useState(0);
   const [done1, setDone] = useState(false);
 
-  const [asdf, setasdf] = useState([0]);
-  const [ctx2Width, setCtx2Width] = useState(0);
-  const [ctx2Height, setCtx2Height] = useState(0);
-  const [play, { stop, pause }] = useSound(Sound);
+  const [_asdf, setasdf] = useState([0]);
+  const [_ctx2Width, _setCtx2Width] = useState(0);
+  const [_ctx2Height, _setCtx2Height] = useState(0);
+  const [_play, { _stop, _pause }] = useSound(Sound);
 
   console.log(`projectID:${String(projectid)}`);
 
@@ -52,7 +52,7 @@ function App() {
         temp2 = response.data.songids[response.data.songids.length - 1];
         console.log(temp2);
         const select = document.getElementById("number");
-        if (done1 == false) {
+        if (done1 === false) {
           for (let i = 0; i <= temp2; i++) {
             select.add(new Option(String(i), String(i)));
           }
@@ -75,7 +75,7 @@ function App() {
         const FILE = window.URL.createObjectURL(
           new Blob([response.data], { type: "audio/wav" }),
         );
-        const newCount = count + 1;
+        // const newCount = count + 1;
         setCount(FILE);
         const test1 = new Audio(FILE);
         setAudio(test1);
@@ -120,35 +120,42 @@ function App() {
         soundid: <code id="count">{musicLoopId}</code>
       </p>
       <Link to="/">Back</Link>
-      <select id="number" onChange={handleChange} />
-      <button type="button" onClick={() => audio.play()}>
-        play
-      </button>
-      <button type="button" onClick={() => audio.pause()}>
-        pause
-      </button>
-      <button
-        type="button"
-        onClick={() => {
-          audio.pause();
-          audio.currentTime = 0;
-        }}
-      >
-        stop
-      </button>
-      <button
-        type="button"
-        onClick={async () => {
-          const music = await createMusic(projectid, linesY);
-          dispatch(setParts(music.parts));
-          dispatch(setId(music.songid));
-        }}
-      >
-        create
-      </button>
-      <button type="button" onClick={() => addSelect()}>
-        add
-      </button>
+      <form>
+        <select
+          id="number"
+          onChange={handleChange}
+          aria-label="select another"
+        />
+
+        <button type="button" onClick={() => audio.play()}>
+          play
+        </button>
+        <button type="button" onClick={() => audio.pause()}>
+          pause
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            audio.pause();
+            audio.currentTime = 0;
+          }}
+        >
+          stop
+        </button>
+        <button
+          type="button"
+          onClick={async () => {
+            const music = await createMusic(projectid, linesY);
+            dispatch(setParts(music.parts));
+            dispatch(setId(music.songid));
+          }}
+        >
+          create
+        </button>
+        <button type="button" onClick={() => addSelect()}>
+          add
+        </button>
+      </form>
       <div className="excitement-curve-container">
         <ExcitementCurve />
       </div>

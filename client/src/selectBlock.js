@@ -1,8 +1,4 @@
-import { useEffect, useRef, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
-import { setPos } from "./redux/soundsSlice";
-import { setCanvas } from "./redux/blockCanvasSlice";
 
 export default function selectBlock(partId) {
   const url = `http://127.0.0.1:8080/parts/${String(partId)}/sounds`;

@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+// import { useEffect, useRef, useState } from "react";
+// import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
-import { setPos } from "./redux/soundsSlice";
-import { setCanvas } from "./redux/blockCanvasSlice";
+// import { setPos } from "./redux/soundsSlice";
+// import { setCanvas } from "./redux/blockCanvasSlice";
 
 export default function insertSound(
   projectId,

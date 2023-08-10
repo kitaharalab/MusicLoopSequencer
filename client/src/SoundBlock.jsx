@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setPos } from "./redux/blockCanvasSlice";
 import { setMusicData } from "./redux/musicDataSlice";
@@ -26,7 +26,7 @@ export default function SoundBlock() {
     ctx.clearRect(0, 0, 1152, 200);
     ctx.strokeRect(0, 0, canvas.width, canvas.height);
 
-    if (parts.length != 0) {
+    if (parts.length !== 0) {
       const sequenceList = parts[0].sounds;
       const synthList = parts[1].sounds;
       const bassList = parts[2].sounds;
@@ -35,26 +35,25 @@ export default function SoundBlock() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.strokeRect(0, 0, canvas.width, canvas.height);
       for (let i = 0; i < 4; i++) {
-        const color = "";
-        if (i == 0) {
+        if (i === 0) {
           ctx.fillStyle = "red";
-        } else if (i == 1) {
+        } else if (i === 1) {
           ctx.fillStyle = "yellow";
-        } else if (i == 2) {
+        } else if (i === 2) {
           ctx.fillStyle = "green";
         } else {
           ctx.fillStyle = "blue";
         }
         for (let j = 0; j < 32; j++) {
-          if (i == 0) {
+          if (i === 0) {
             if (sequenceList[j] != null) {
               ctx.fillRect(j * 36, i * 50, 36, 50);
             }
-          } else if (i == 1) {
+          } else if (i === 1) {
             if (synthList[j] != null) {
               ctx.fillRect(j * 36, i * 50, 36, 50);
             }
-          } else if (i == 2) {
+          } else if (i === 2) {
             if (bassList[j] != null) {
               ctx.fillRect(j * 36, i * 50, 36, 50);
             }
@@ -120,26 +119,25 @@ export default function SoundBlock() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.strokeRect(0, 0, canvas.width, canvas.height);
     for (let i = 0; i < 4; i++) {
-      const color = "";
-      if (i == 0) {
+      if (i === 0) {
         ctx.fillStyle = "red";
-      } else if (i == 1) {
+      } else if (i === 1) {
         ctx.fillStyle = "yellow";
-      } else if (i == 2) {
+      } else if (i === 2) {
         ctx.fillStyle = "green";
       } else {
         ctx.fillStyle = "blue";
       }
       for (let j = 0; j < 32; j++) {
-        if (i == 0) {
+        if (i === 0) {
           if (sequenceList[j] != null) {
             ctx.fillRect(j * 36, i * 50, 36, 50);
           }
-        } else if (i == 1) {
+        } else if (i === 1) {
           if (synthList[j] != null) {
             ctx.fillRect(j * 36, i * 50, 36, 50);
           }
-        } else if (i == 2) {
+        } else if (i === 2) {
           if (bassList[j] != null) {
             ctx.fillRect(j * 36, i * 50, 36, 50);
           }
