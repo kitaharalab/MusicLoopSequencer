@@ -2,12 +2,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./Project.css";
+import SignUp from "./authentication/SignUp";
 
 function Project() {
   const [done, setDone] = useState(false);
   const [sample, _setSample] = useState(null);
   let temp = 0;
-  console.log("HOME");
 
   const createNewProject = () => {
     const url = "http://127.0.0.1:8080/projects";
@@ -64,6 +64,7 @@ function Project() {
 
   return (
     <div id="project">
+      <SignUp />
       <button type="button" onClick={() => createNewProject()}>
         createNewProject
       </button>
