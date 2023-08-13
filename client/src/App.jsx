@@ -40,17 +40,16 @@ function App() {
   const [_ctx2Height, _setCtx2Height] = useState(0);
   const [_play, { _stop, _pause }] = useSound(Sound);
 
-  console.log(`projectID:${String(projectid)}`);
-
   useEffect(() => {
-    const url2 = `http://127.0.0.1:8080/projects/${String(projectid)}/songs`;
+    const url2 = `${import.meta.env.VITE_SERVER_URL}/projects/${String(
+      projectid,
+    )}/songs`;
     let temp2 = 0;
     axios
       .get(url2) // サーバーから音素材の配列を受け取った後，then部分を実行する．
       .then((response) => {
         setasdf(1234);
         temp2 = response.data.songids[response.data.songids.length - 1];
-        console.log(temp2);
         const select = document.getElementById("number");
         if (done1 === false) {
           for (let i = 0; i <= temp2; i++) {
@@ -65,7 +64,7 @@ function App() {
     if (songid === 0) {
       return;
     }
-    const url1 = `http://127.0.0.1:8080/projects/${String(
+    const url1 = `${import.meta.env.VITE_SERVER_URL}/projects/${String(
       projectid,
     )}/songs/${String(songid)}/wav`;
 

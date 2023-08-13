@@ -15,7 +15,9 @@ export default function createMusic(projectid, linesY) {
     }
   }
   console.log("button pushed");
-  const url = `http://127.0.0.1:8080/projects/${String(projectid)}/songs`;
+  const url = `${import.meta.env.VITE_SERVER_URL}/projects/${String(
+    projectid,
+  )}/songs`;
 
   const data = {
     curves: excitementArray, // 盛り上がり度曲線のパラメーターを格納した配列をJSONデータにする

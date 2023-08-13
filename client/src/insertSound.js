@@ -7,13 +7,11 @@ export default function insertSound(
   musicLoopId,
   parts,
 ) {
-  console.log("asdfl;kjqwerpoiuasdf;ljqwerpoiu");
-  const url = `http://127.0.0.1:8080//projects/${String(
+  const url = `${import.meta.env.VITE_SERVER_URL}/projects/${String(
     projectId,
   )}/parts/${String(partId)}/measures/${String(measureId)}/musicloops/${String(
     musicLoopId,
   )}`;
-  console.log(parts);
   const sequenceList = parts[0].sounds;
   const synthList = parts[1].sounds;
   const bassList = parts[2].sounds;

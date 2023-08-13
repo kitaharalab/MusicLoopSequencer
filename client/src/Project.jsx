@@ -7,10 +7,9 @@ function Project() {
   const [done, setDone] = useState(false);
   const [sample, _setSample] = useState(null);
   let temp = 0;
-  console.log("HOME");
 
   const createNewProject = () => {
-    const url = "http://127.0.0.1:8080/projects";
+    const url = `${import.meta.env.VITE_SERVER_URL}/projects`;
     axios
       .post(url) // サーバーから音素材の配列を受け取った後，then部分を実行する．
       .then((response) => {
@@ -29,7 +28,7 @@ function Project() {
     let ignore = false;
     function makeLink() {
       (async () => {
-        const url = "http://127.0.0.1:8080/projects";
+        const url = `${import.meta.env.VITE_SERVER_URL}/projects`;
         if (done === false) {
           await axios
             .get(url) // サーバーから音素材の配列を受け取った後，then部分を実行する．
