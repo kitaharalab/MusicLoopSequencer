@@ -40,7 +40,7 @@ function App() {
   const [_ctx2Height, _setCtx2Height] = useState(0);
   const [_play, { _stop, _pause }] = useSound(Sound);
 
-  const [songIds, setSongIds] = useState([]);
+  const [songs, setSongs] = useState([]);
 
   useEffect(() => {
     const url = `${
@@ -51,8 +51,7 @@ function App() {
       .then((response) => {
         setasdf(1234);
         const resSongIds = response.data.songids;
-        console.log("responce song ids", resSongIds);
-        setSongIds(resSongIds);
+        setSongs(resSongIds.map((id) => ({ name: id, id })));
         setDone(true);
       });
   }, []);
@@ -76,13 +75,11 @@ function App() {
         const test1 = new Audio(FILE);
         setAudio(test1);
       });
-    const select = document.getElementById("number");
-    select.add(new Option(String(songId), String(songId)));
+    setSongs([...songs, { name: songId, id: songId }]);
   }, [songId]);
 
   const addSelect = () => {
-    const select = document.getElementById("number");
-    select.add(new Option("a", "1"));
+    setSongs([...songs, { name: "a", id: 1 }]);
   };
 
   const handleChange = (e) => {
@@ -118,8 +115,8 @@ function App() {
       <Link to="/">Back</Link>
       <form>
         <select id="number" onChange={handleChange} aria-label="select another">
-          {songIds.map((id) => (
-            <option key={id}>{id}</option>
+          {songs.map(({ name, id }) => (
+            <option key={`${name}${id}`}>{name}</option>
           ))}
         </select>
 
