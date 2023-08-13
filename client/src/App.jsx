@@ -20,15 +20,15 @@ function App() {
   const musicLoopId = useSelector((state) => state.musicLoop.musicLoopId);
   // const measureId = useSelector((state) => state.canvas.measureId);
   // const parts = useSelector((state) => state.sounds.parts);
-  const songid = useSelector((state) => state.songId.songId);
+  const songId = useSelector((state) => state.songId.songId);
   // const partId = useSelector((state) => state.canvas.partId);
-  const projectid = searchParams.get("projectid");
+  const projectId = searchParams.get("projectid");
   const linesY = useSelector((state) => state.lines1.lines);
   // const xCoordinate = useSelector((state) => state.musicData.xCoordinate);
   // const yCoordinate = useSelector((state) => state.musicData.yCoordinate);
   // const rangeList = useSelector((state) => state.musicData.rangeList);
   const dispatch = useDispatch();
-  dispatch(setProjectId(projectid));
+  dispatch(setProjectId(projectId));
   const [_context1, _setContext1] = useState(null);
   const [audio, setAudio] = useState(null);
   const [_context2, _setContext2] = useState(null);
@@ -40,36 +40,33 @@ function App() {
   const [_ctx2Height, _setCtx2Height] = useState(0);
   const [_play, { _stop, _pause }] = useSound(Sound);
 
+  const [songIds, setSongIds] = useState([]);
+
   useEffect(() => {
-    const url2 = `${import.meta.env.VITE_SERVER_URL}/projects/${String(
-      projectid,
-    )}/songs`;
-    let temp2 = 0;
+    const url = `${
+      import.meta.env.VITE_SERVER_URL
+    }/projects/${projectId}/songs`;
     axios
-      .get(url2) // サーバーから音素材の配列を受け取った後，then部分を実行する．
+      .get(url) // サーバーから音素材の配列を受け取った後，then部分を実行する．
       .then((response) => {
         setasdf(1234);
-        temp2 = response.data.songids[response.data.songids.length - 1];
-        const select = document.getElementById("number");
-        if (done1 === false) {
-          for (let i = 0; i <= temp2; i++) {
-            select.add(new Option(String(i), String(i)));
-          }
-        }
+        const resSongIds = response.data.songids;
+        console.log("responce song ids", resSongIds);
+        setSongIds(resSongIds);
         setDone(true);
       });
   }, []);
 
   useEffect(() => {
-    if (songid === 0) {
+    if (songId === 0) {
       return;
     }
-    const url1 = `${import.meta.env.VITE_SERVER_URL}/projects/${String(
-      projectid,
-    )}/songs/${String(songid)}/wav`;
+    const url = `${
+      import.meta.env.VITE_SERVER_URL
+    }/projects/${projectId}/songs/${songId}/wav`;
 
     axios
-      .get(url1, { responseType: "blob" }) // サーバーから音素材の配列を受け取った後，then部分を実行する．
+      .get(url, { responseType: "blob" }) // サーバーから音素材の配列を受け取った後，then部分を実行する．
       .then((response) => {
         const FILE = window.URL.createObjectURL(
           new Blob([response.data], { type: "audio/wav" }),
@@ -80,8 +77,8 @@ function App() {
         setAudio(test1);
       });
     const select = document.getElementById("number");
-    select.add(new Option(String(songid), String(songid)));
-  }, [songid]);
+    select.add(new Option(String(songId), String(songId)));
+  }, [songId]);
 
   const addSelect = () => {
     const select = document.getElementById("number");
@@ -120,11 +117,11 @@ function App() {
       </p>
       <Link to="/">Back</Link>
       <form>
-        <select
-          id="number"
-          onChange={handleChange}
-          aria-label="select another"
-        />
+        <select id="number" onChange={handleChange} aria-label="select another">
+          {songIds.map((id) => (
+            <option key={id}>{id}</option>
+          ))}
+        </select>
 
         <button type="button" onClick={() => audio.play()}>
           play
@@ -144,7 +141,7 @@ function App() {
         <button
           type="button"
           onClick={async () => {
-            const music = await createMusic(projectid, linesY);
+            const music = await createMusic(projectId, linesY);
             dispatch(setParts(music.parts));
             dispatch(setId(music.songid));
           }}
