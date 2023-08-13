@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export default function onMusicLoop(partId, musicLoopId) {
-  const url = `http://127.0.0.1:8080/parts/${String(
+  const url = `${import.meta.env.VITE_SERVER_URL}/parts/${String(
     partId,
   )}/musicloops/${String(musicLoopId)}/wav`;
 

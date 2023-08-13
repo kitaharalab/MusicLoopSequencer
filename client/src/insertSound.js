@@ -8,7 +8,7 @@ export default function insertSound(
   parts,
 ) {
   console.log("asdfl;kjqwerpoiuasdf;ljqwerpoiu");
-  const url = `http://127.0.0.1:8080//projects/${String(
+  const url = `${import.meta.env.VITE_SERVER_URL}/projects/${String(
     projectId,
   )}/parts/${String(partId)}/measures/${String(measureId)}/musicloops/${String(
     musicLoopId,
