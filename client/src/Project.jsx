@@ -7,12 +7,9 @@ function Project() {
   const [done, setDone] = useState(false);
   const [sample, _setSample] = useState(null);
   let temp = 0;
-  console.log("HOME");
-  console.log(import.meta.env.VITE_SERVER_URL);
 
   const createNewProject = () => {
     const url = `${import.meta.env.VITE_SERVER_URL}/projects`;
-    console.log(url);
     axios
       .post(url) // サーバーから音素材の配列を受け取った後，then部分を実行する．
       .then((response) => {
