@@ -3,7 +3,17 @@ import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import useSound from "use-sound";
-import { Link, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
+// eslint-disable-next-line import/no-extraneous-dependencies
+import {
+  FormControl,
+  Select,
+  Button,
+  ButtonGroup,
+  Box,
+} from "@chakra-ui/react";
+
+import ButtonLink from "../components/Link/ButtonLink";
 import Sound from "./song0.wav";
 import ExcitementCurve from "./ExcitementCurve";
 import SoundBlock from "./SoundBlock";
@@ -112,52 +122,60 @@ function App() {
       <p>
         soundid: <code id="count">{musicLoopId}</code>
       </p>
-      <Link to="/">Back</Link>
-      <form>
-        <select id="number" onChange={handleChange} aria-label="select another">
+      <ButtonLink to="/">Back to Project</ButtonLink>
+      <FormControl>
+        <Select
+          id="number"
+          onChange={handleChange}
+          aria-label="select another"
+          w="25%"
+        >
           {songs.map(({ name, id }) => (
             <option key={`${name}${id}`}>{name}</option>
           ))}
-        </select>
-
-        <button type="button" onClick={() => audio.play()}>
-          play
-        </button>
-        <button type="button" onClick={() => audio.pause()}>
-          pause
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            audio.pause();
-            audio.currentTime = 0;
-          }}
-        >
-          stop
-        </button>
-        <button
-          type="button"
-          onClick={async () => {
-            const music = await createMusic(projectId, linesY);
-            dispatch(setParts(music.parts));
-            dispatch(setId(music.songid));
-          }}
-        >
-          create
-        </button>
-        <button type="button" onClick={() => addSelect()}>
-          add
-        </button>
-      </form>
-      <div className="excitement-curve-container">
+        </Select>
+      </FormControl>
+      <FormControl>
+        <ButtonGroup>
+          <Button type="button" onClick={() => audio.play()}>
+            play
+          </Button>
+          <Button type="button" onClick={() => audio.pause()}>
+            pause
+          </Button>
+          <Button
+            type="button"
+            onClick={() => {
+              audio.pause();
+              audio.currentTime = 0;
+            }}
+          >
+            stop
+          </Button>
+          <Button
+            type="button"
+            onClick={async () => {
+              const music = await createMusic(projectId, linesY);
+              dispatch(setParts(music.parts));
+              dispatch(setId(music.songid));
+            }}
+          >
+            create
+          </Button>
+          <Button type="button" onClick={() => addSelect()}>
+            add
+          </Button>
+        </ButtonGroup>
+      </FormControl>
+      <Box className="excitement-curve-container">
         <ExcitementCurve />
-      </div>
-      <div className="sound-sequence-container">
+      </Box>
+      <Box className="sound-sequence-container">
         <SoundBlock />
-      </div>
-      <div className="music-loops-container">
+      </Box>
+      <Box className="music-loops-container">
         <MusicLoops />
-      </div>
+      </Box>
     </>
   );
 }
