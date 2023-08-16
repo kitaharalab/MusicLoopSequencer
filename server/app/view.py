@@ -1,12 +1,13 @@
 import concurrent.futures
 import os
-import sys
+
+# import sys
 import time
 import tkinter as tk
 import tkinter.messagebox as tkmsg
 from tkinter import filedialog, ttk
 
-import cv2
+# import cv2
 import vlc
 from model import Model
 
@@ -238,7 +239,7 @@ class View(tk.Frame):
         movie_file_font.set("File>>")
         movie_file_label = tk.Label(analysis_frame, textvariable=movie_file_font)
         movie_file_label.grid(row=1, column=0, columnspan=3)
-        display_movie_file_ = tk.StringVar()
+        # display_movie_file_ = tk.StringVar()
         display_movie_file_entry = tk.Entry(
             analysis_frame, textvariable=self.movie_file, width=40
         )
@@ -292,7 +293,7 @@ class View(tk.Frame):
     def createDesWidget(self, section_frame, part_frame):
         """ウィジェットの生成"""
         # 属性の定義
-        button_width = 5
+        # button_width = 5
         padx = (20, 20)
         pady = (10, 10)
 
@@ -621,7 +622,7 @@ class View(tk.Frame):
             tag="section",
         )
 
-    """control----------------------------------------------------------------------------"""
+    """control-----------------------------------------------------------------------"""
 
     def createControl(self):
         """コントロールオプション"""
@@ -758,7 +759,7 @@ class View(tk.Frame):
         if self.movie_file_path != "":
             self.vlc_movie_player.stop()
 
-    """button----------------------------------------------------------------------------"""
+    """button-----------------------------------------------------------------------"""
 
     def _increaseClicked(self):
         """小節数を増やすボタンが押された時"""
