@@ -196,6 +196,13 @@ def infoProject(projectid):
     return make_response(jsonify(response))
 
 
+def read_instrument_list_file(path: str) -> list | None:
+    content_list = None
+    with open(path) as f:
+        content_list = f.read().split("\n")
+    return content_list
+
+
 @app.route("/projects/<projectid>/songs", methods=["POST"])
 def createSong(projectid):
     data = request.get_json()  # WebページからのJSONデータを受け取る．
@@ -203,18 +210,22 @@ def createSong(projectid):
     root = tk.Tk()
     view = View(master=root)  # 他のpyファイルのクラスを読み込む．
     array, songid = view.createMusic(curves, projectid)
-    drums_list = []
-    bass_list = []
-    synth_list = []
-    sequence_list = []
-    with open("./text/drums_word_list.txt") as f:
-        drums_list = f.read().split("\n")
-    with open("./text/bass_word_list.txt") as f:
-        bass_list = f.read().split("\n")
-    with open("./text/synth_word_list.txt") as f:
-        synth_list = f.read().split("\n")
-    with open("./text/sequence_word_list.txt") as f:
-        sequence_list = f.read().split("\n")
+    drums_list = read_instrument_list_file("./text/drums_word_list.txt")
+    bass_list = read_instrument_list_file("./text/bass_word_list.txt")
+    synth_list = read_instrument_list_file("./text/synth_word_list.txt")
+    sequence_list = read_instrument_list_file("./text/sequence_word_list.txt")
+    # drums_list = []
+    # bass_list = []
+    # synth_list = []
+    # sequence_list = []
+    # with open("./text/drums_word_list.txt") as f:
+    #     drums_list = f.read().split("\n")
+    # with open("./text/bass_word_list.txt") as f:
+    #     bass_list = f.read().split("\n")
+    # with open("./text/synth_word_list.txt") as f:
+    #     synth_list = f.read().split("\n")
+    # with open("./text/sequence_word_list.txt") as f:
+    #     sequence_list = f.read().split("\n")
 
     instrument_lists = [drums_list, bass_list, synth_list, sequence_list]
 
@@ -225,16 +236,20 @@ def createSong(projectid):
                 if array[i][j] == instrument_list[k]:
                     array[i][j] = str(k)
 
+    flatten_song_array = sum(array, [])
+    flatten_song_array_str = list(map(str, flatten_song_array))
+    song_text = "\n".join(flatten_song_array_str)
     with open(
         "./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt",
         mode="w",
     ) as f:
-        for i in range(len(array)):
-            for j in range(len(array[0])):
-                if i == 0 and j == 0:
-                    f.write(str(array[i][j]))
-                else:
-                    f.write("\n" + str(array[i][j]))
+        f.write(song_text)
+        # for i in range(len(array)):
+        #     for j in range(len(array[0])):
+        #         if i == 0 and j == 0:
+        #             f.write(str(array[i][j]))
+        #         else:
+        #             f.write("\n" + str(array[i][j]))
 
     sequence_list = ["null" for i in range(32)]
     synth_list = ["null" for i in range(32)]
