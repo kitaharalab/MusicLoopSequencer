@@ -3,6 +3,8 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import { Provider } from "react-redux";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { ChakraProvider, Box } from "@chakra-ui/react";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { store } from "./redux/store";
@@ -26,7 +28,11 @@ const router = createBrowserRouter([
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <ChakraProvider>
+      <Box p={4}>
+        <RouterProvider router={router} />
+      </Box>
+    </ChakraProvider>
   </React.StrictMode>,
 );
 

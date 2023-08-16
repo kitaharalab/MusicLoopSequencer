@@ -1,7 +1,9 @@
-import { Link } from "react-router-dom";
+/* eslint-disable import/no-extraneous-dependencies */
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./Project.css";
+import { ListItem, UnorderedList, Button, Box } from "@chakra-ui/react";
+import Link from "../components/Link/Link";
 
 function Project() {
   const [done, setDone] = useState(false);
@@ -43,18 +45,18 @@ function Project() {
   }, [sample]);
 
   return (
-    <div id="project">
-      <button type="button" onClick={() => createNewProject()}>
+    <Box id="project">
+      <Button type="button" onClick={() => createNewProject()}>
         createNewProject
-      </button>
-      <ul>
+      </Button>
+      <UnorderedList>
         {projects.map((project, i) => (
-          <li key={project}>
+          <ListItem key={project}>
             <Link to={`App?projectid=${i}`}>{project}</Link>
-          </li>
+          </ListItem>
         ))}
-      </ul>
-    </div>
+      </UnorderedList>
+    </Box>
   );
 }
 
