@@ -1,17 +1,19 @@
-import numpy as np
-from hmmlearn import hmm
 import os
-import re
-from pydub import AudioSegment
-from pydub.playback import play
-# import pyaudio
-import wave
 import random
-import cv2
+import re
 import time
 
+# import pyaudio
+import wave
 
-class Model():
+import cv2
+import numpy as np
+from hmmlearn import hmm
+from pydub import AudioSegment
+from pydub.playback import play
+
+
+class Model:
     """
     Model（処理）
     受け取った線を盛り上がり度に変換する
@@ -58,7 +60,8 @@ class Model():
                 block_total += abs((pixcel_array[j] - self.line_height))
 
             self.excitement_array[i] = int(
-                block_total / self.block_width / (self.line_block_height))
+                block_total / self.block_width / (self.line_block_height)
+            )
 
         return self.excitement_array
 
@@ -87,28 +90,71 @@ class Model():
 
         """
         # 出力確率（共通）
-        emissprob = np.array([[0, 0, 0, 0, 0],
-                              [0.4, 0.2, 0.2, 0.1, 0.1],
-                              [0.39, 0.21, 0.2, 0.1, 0.1],
-                              [0.25, 0.3, 0.25, 0.1, 0.1],
-                              [0.39, 0.21, 0.2, 0.1, 0.1],
-                              [0.25, 0.3, 0.25, 0.1, 0.1],
-                              [0.25, 0.3, 0.25, 0.1, 0.1],
-                              [0.15, 0.2, 0.3, 0.2, 0.15],
-                              [0.35, 0.25, 0.2, 0.1, 0.1],
-                              [0.2, 0.2, 0.3, 0.1, 0.1],
-                              [0.2, 0.2, 0.35, 0.15, 0.1],
-                              [0.1, 0.1, 0.2, 0.25, 0.35],
-                              [0.2, 0.2, 0.35, 0.15, 0.1],
-                              [0.1, 0.1, 0.2, 0.25, 0.35],
-                              [0.1, 0.1, 0.2, 0.25, 0.35],
-                              [0.05, 0.05, 0.25, 0.25, 0.4]])
+        emissprob = np.array(
+            [
+                [0, 0, 0, 0, 0],
+                [0.4, 0.2, 0.2, 0.1, 0.1],
+                [0.39, 0.21, 0.2, 0.1, 0.1],
+                [0.25, 0.3, 0.25, 0.1, 0.1],
+                [0.39, 0.21, 0.2, 0.1, 0.1],
+                [0.25, 0.3, 0.25, 0.1, 0.1],
+                [0.25, 0.3, 0.25, 0.1, 0.1],
+                [0.15, 0.2, 0.3, 0.2, 0.15],
+                [0.35, 0.25, 0.2, 0.1, 0.1],
+                [0.2, 0.2, 0.3, 0.1, 0.1],
+                [0.2, 0.2, 0.35, 0.15, 0.1],
+                [0.1, 0.1, 0.2, 0.25, 0.35],
+                [0.2, 0.2, 0.35, 0.15, 0.1],
+                [0.1, 0.1, 0.2, 0.25, 0.35],
+                [0.1, 0.1, 0.2, 0.25, 0.35],
+                [0.05, 0.05, 0.25, 0.25, 0.4],
+            ]
+        )
 
         # no part
-        no_part_startprob = np.array([0, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666,
-                                      0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666])
+        no_part_startprob = np.array(
+            [
+                0,
+                0.06666666666,
+                0.06666666666,
+                0.06666666666,
+                0.06666666666,
+                0.06666666666,
+                0.06666666666,
+                0.06666666666,
+                0.06666666666,
+                0.06666666666,
+                0.06666666666,
+                0.06666666666,
+                0.06666666666,
+                0.06666666666,
+                0.06666666666,
+                0.06666666666,
+            ]
+        )
         no_part_transmat = np.array(
-            [[0, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666]] * 16)
+            [
+                [
+                    0,
+                    0.06666666666,
+                    0.06666666666,
+                    0.06666666666,
+                    0.06666666666,
+                    0.06666666666,
+                    0.06666666666,
+                    0.06666666666,
+                    0.06666666666,
+                    0.06666666666,
+                    0.06666666666,
+                    0.06666666666,
+                    0.06666666666,
+                    0.06666666666,
+                    0.06666666666,
+                    0.06666666666,
+                ]
+            ]
+            * 16
+        )
         self.no_part_hmm_model = hmm.MultinomialHMM(n_components=16)
         self.no_part_hmm_model.startprob_ = no_part_startprob
         self.no_part_hmm_model.transmat_ = no_part_transmat
@@ -117,28 +163,26 @@ class Model():
 
         # intro
         intro_startprob = np.array(
-            [0,
-             0.1,
-             0.8/13,
-             0.1,
-             0.8/13,
-             0.8/13,
-             0.8/13,
-             0.8/13,
-             0.8/13,
-             0.8/13,
-             0.8/13,
-             0.8/13,
-             0.8/13,
-             0.8/13,
-             0.8/13,
-             0.8/13
-             ]
-        )
-        intro_transmat = np.array(
             [
-                intro_startprob
-            ] * 16)
+                0,
+                0.1,
+                0.8 / 13,
+                0.1,
+                0.8 / 13,
+                0.8 / 13,
+                0.8 / 13,
+                0.8 / 13,
+                0.8 / 13,
+                0.8 / 13,
+                0.8 / 13,
+                0.8 / 13,
+                0.8 / 13,
+                0.8 / 13,
+                0.8 / 13,
+                0.8 / 13,
+            ]
+        )
+        intro_transmat = np.array([intro_startprob] * 16)
 
         self.intro_hmm_model = hmm.MultinomialHMM(n_components=16)
         self.intro_hmm_model.startprob_ = intro_startprob
@@ -148,29 +192,27 @@ class Model():
 
         # breakdown
         breakdown_startprob = np.array(
-            [0,
-             0.7/12,
-             0.7/12,
-             0.1,
-             0.7/12,
-             0.7/12,
-             0.15,
-             0.7/12,
-             0.7/12,
-             0.7/12,
-             0.7/12,
-             0.7/12,
-             0.7/12,
-             0.7/12,
-             0.05,
-             0.7/12
-             ]
+            [
+                0,
+                0.7 / 12,
+                0.7 / 12,
+                0.1,
+                0.7 / 12,
+                0.7 / 12,
+                0.15,
+                0.7 / 12,
+                0.7 / 12,
+                0.7 / 12,
+                0.7 / 12,
+                0.7 / 12,
+                0.7 / 12,
+                0.7 / 12,
+                0.05,
+                0.7 / 12,
+            ]
         )
 
-        breakdown_transmat = np.array(
-            [
-                breakdown_startprob
-            ] * 16)
+        breakdown_transmat = np.array([breakdown_startprob] * 16)
 
         self.breakdown_hmm_model = hmm.MultinomialHMM(n_components=16)
         self.breakdown_hmm_model.startprob_ = breakdown_startprob
@@ -180,28 +222,26 @@ class Model():
 
         # buildup
         buildup_startprob = np.array(
-            [0,
-             0.7/13,
-             0.7/13,
-             0.1,
-             0.7/13,
-             0.7/13,
-             0.7/13,
-             0.2,
-             0.7/13,
-             0.7/13,
-             0.7/13,
-             0.7/13,
-             0.7/13,
-             0.7/13,
-             0.7/13,
-             0.7/13
-             ]
-        )
-        buildup_transmat = np.array(
             [
-                buildup_startprob
-            ] * 16)
+                0,
+                0.7 / 13,
+                0.7 / 13,
+                0.1,
+                0.7 / 13,
+                0.7 / 13,
+                0.7 / 13,
+                0.2,
+                0.7 / 13,
+                0.7 / 13,
+                0.7 / 13,
+                0.7 / 13,
+                0.7 / 13,
+                0.7 / 13,
+                0.7 / 13,
+                0.7 / 13,
+            ]
+        )
+        buildup_transmat = np.array([buildup_startprob] * 16)
 
         self.buildup_hmm_model = hmm.MultinomialHMM(n_components=16)
         self.buildup_hmm_model.startprob_ = buildup_startprob
@@ -211,29 +251,26 @@ class Model():
 
         # drop
         drop_startprob = np.array(
-            [0,
-             0.4/12,
-             0.4/12,
-             0.4/12,
-             0.4/12,
-             0.4/12,
-             0.4/12,
-             0.4/12,
-             0.4/12,
-             0.4/12,
-             0.4/12,
-             0.1,
-             0.4/12,
-             0.4/12,
-             0.2,
-             0.3
-             ]
-        )
-        drop_transmat = np.array(
             [
-                drop_startprob
-
-            ] * 16)
+                0,
+                0.4 / 12,
+                0.4 / 12,
+                0.4 / 12,
+                0.4 / 12,
+                0.4 / 12,
+                0.4 / 12,
+                0.4 / 12,
+                0.4 / 12,
+                0.4 / 12,
+                0.4 / 12,
+                0.1,
+                0.4 / 12,
+                0.4 / 12,
+                0.2,
+                0.3,
+            ]
+        )
+        drop_transmat = np.array([drop_startprob] * 16)
 
         self.drop_hmm_model = hmm.MultinomialHMM(n_components=16)
         self.drop_hmm_model.startprob_ = drop_startprob
@@ -243,28 +280,26 @@ class Model():
 
         # outro
         outro_startprob = np.array(
-            [0,
-             0.6/12,
-             0.6/12,
-             0.6/12,
-             0.1,
-             0.6/12,
-             0.6/12,
-             0.6/12,
-             0.15,
-             0.6/12,
-             0.6/12,
-             0.6/12,
-             0.15,
-             0.6/12,
-             0.6/12,
-             0.6/12
-             ]
-        )
-        outro_transmat = np.array(
             [
-                outro_startprob
-            ] * 16)
+                0,
+                0.6 / 12,
+                0.6 / 12,
+                0.6 / 12,
+                0.1,
+                0.6 / 12,
+                0.6 / 12,
+                0.6 / 12,
+                0.15,
+                0.6 / 12,
+                0.6 / 12,
+                0.6 / 12,
+                0.15,
+                0.6 / 12,
+                0.6 / 12,
+                0.6 / 12,
+            ]
+        )
+        outro_transmat = np.array([outro_startprob] * 16)
 
         self.outro_hmm_model = hmm.MultinomialHMM(n_components=16)
         self.outro_hmm_model.startprob_ = outro_startprob
@@ -274,8 +309,7 @@ class Model():
 
     def useHMM(self, excitement_array):
         """HMMを使用する"""
-        observation_data = np.atleast_2d(
-            excitement_array).T
+        observation_data = np.atleast_2d(excitement_array).T
         hmm_array, hmm_array = self.no_part_hmm_model.decode(observation_data)
         return hmm_array
 
@@ -302,31 +336,35 @@ class Model():
                 outro_array.append(e)
 
         # intro
-        intro_data = np.atleast_2d(
-            intro_array).T
-        intro_hmm_array, intro_hmm_array = self.intro_hmm_model.decode(
-            intro_data)
+        intro_data = np.atleast_2d(intro_array).T
+        intro_hmm_array, intro_hmm_array = self.intro_hmm_model.decode(intro_data)
         # breakdown
-        breakdown_data = np.atleast_2d(
-            breakdown_array).T
-        breakdown_hmm_array, breakdown_hmm_array = self.breakdown_hmm_model.decode(
-            breakdown_data)
+        breakdown_data = np.atleast_2d(breakdown_array).T
+        (
+            breakdown_hmm_array,
+            breakdown_hmm_array,
+        ) = self.breakdown_hmm_model.decode(breakdown_data)
         # buildup
-        buildup_data = np.atleast_2d(
-            buildup_array).T
+        buildup_data = np.atleast_2d(buildup_array).T
         buildup_hmm_array, buildup_hmm_array = self.buildup_hmm_model.decode(
-            buildup_data)
+            buildup_data
+        )
         # drop
-        drop_data = np.atleast_2d(
-            drop_array).T
+        drop_data = np.atleast_2d(drop_array).T
         drop_hmm_array, drop_hmm_array = self.drop_hmm_model.decode(drop_data)
         # outro
-        outro_data = np.atleast_2d(
-            outro_array).T
-        outro_hmm_array, outro_hmm_array = self.outro_hmm_model.decode(
-            outro_data)
+        outro_data = np.atleast_2d(outro_array).T
+        outro_hmm_array, outro_hmm_array = self.outro_hmm_model.decode(outro_data)
 
-        return (np.concatenate([intro_hmm_array, breakdown_hmm_array, buildup_hmm_array, drop_hmm_array, outro_hmm_array]))
+        return np.concatenate(
+            [
+                intro_hmm_array,
+                breakdown_hmm_array,
+                buildup_hmm_array,
+                drop_hmm_array,
+                outro_hmm_array,
+            ]
+        )
 
     def dtw(self, excitement_array):
         """DTWの計算を行う"""
@@ -335,7 +373,7 @@ class Model():
         sum = 0
         for i, e in enumerate(excitement_array, 1):
             if i % 4 == 0 and i != 0:
-                short_excitement_array.append(round(sum/4))
+                short_excitement_array.append(round(sum / 4))
                 sum = 0
             sum += e
         excitement_array = short_excitement_array
@@ -346,15 +384,16 @@ class Model():
         excitement_len = len(excitement_array)
         section_len = len(section_excitement)
         # 初期化
-        dtw = [[float("inf") for i in range(section_len+1)]
-               for j in range(excitement_len + 1)]
+        dtw = [
+            [float("inf") for i in range(section_len + 1)]
+            for j in range(excitement_len + 1)
+        ]
         dtw[0][0] = 0
         # 累積を考える
-        for i in range(1, excitement_len+1):
-            for j in range(1, section_len+1):
-                cost = abs(excitement_array[i-1]-section_excitement[j-1])
-                dtw[i][j] = cost + min(dtw[i-1][j-1],
-                                       dtw[i-1][j])
+        for i in range(1, excitement_len + 1):
+            for j in range(1, section_len + 1):
+                cost = abs(excitement_array[i - 1] - section_excitement[j - 1])
+                dtw[i][j] = cost + min(dtw[i - 1][j - 1], dtw[i - 1][j])
         # セクションを決定する
         self.section_array = list()
         # 逆から考える
@@ -365,23 +404,23 @@ class Model():
         # 最小値を見ながらセクションを決定する
         for d in dtw[1:]:
             # 見る範囲
-            start = self.section_array[-1]-1
-            end = self.section_array[-1]+1
+            start = self.section_array[-1] - 1
+            end = self.section_array[-1] + 1
             section = d.index(min(d[start:end]))
             for i in range(4):
                 self.section_array.append(section)
         # もとに戻す
         self.section_array = self.section_array[::-1]
         self.section_array = self.section_array[4:]
-        self.section_array = [s-1 for s in self.section_array]
+        self.section_array = [s - 1 for s in self.section_array]
         for i in range(len(self.section_array)):
             if self.section_array[i] == 2 or self.section_array[i] == 3:
                 self.section_array[i] += 1
-        buildup_start = self.section_array.index(3)-2
+        buildup_start = self.section_array.index(3) - 2
         buildup_end = self.section_array.index(3)
         self.section_array[buildup_start:buildup_end] = [2, 2]
 
-        return (self.section_array)
+        return self.section_array
 
     def fixHmm(self, hmm_array, excitement_array):
         """小節毎に揃える"""
@@ -415,21 +454,25 @@ class Model():
         sequence_list = list()
 
         for i in range(5):
-            drums_file = os.listdir("./TechnoTrance/Drums/"+str(i))
-            drums_list.append("./TechnoTrance/Drums/" +
-                              str(i) + "/" + random.choice(drums_file))
+            drums_file = os.listdir("./TechnoTrance/Drums/" + str(i))
+            drums_list.append(
+                "./TechnoTrance/Drums/" + str(i) + "/" + random.choice(drums_file)
+            )
 
-            bass_file = os.listdir("./TechnoTrance/Bass/"+str(i))
-            bass_list.append("./TechnoTrance/Bass/" + str(i) +
-                             "/" + random.choice(bass_file))
+            bass_file = os.listdir("./TechnoTrance/Bass/" + str(i))
+            bass_list.append(
+                "./TechnoTrance/Bass/" + str(i) + "/" + random.choice(bass_file)
+            )
 
-            synth_file = os.listdir("./TechnoTrance/Synth/"+str(i))
-            synth_list.append("./TechnoTrance/Synth/" +
-                              str(i) + "/" + random.choice(synth_file))
+            synth_file = os.listdir("./TechnoTrance/Synth/" + str(i))
+            synth_list.append(
+                "./TechnoTrance/Synth/" + str(i) + "/" + random.choice(synth_file)
+            )
 
-            sequence_file = os.listdir("./TechnoTrance/Sequence/"+str(i))
-            sequence_list.append("./TechnoTrance/Sequence/" +
-                                 str(i) + "/" + random.choice(sequence_file))
+            sequence_file = os.listdir("./TechnoTrance/Sequence/" + str(i))
+            sequence_list.append(
+                "./TechnoTrance/Sequence/" + str(i) + "/" + random.choice(sequence_file)
+            )
 
         random_sound_list.append(drums_list)
         random_sound_list.append(bass_list)
@@ -442,7 +485,7 @@ class Model():
         """使用する音素材を選択する"""
         sound_list = list()
         for i in range(self.excitement_len):
-            binary = format(hmm_array[i], 'b').zfill(4)
+            binary = format(hmm_array[i], "b").zfill(4)
             binary = binary[::-1]
             excitement = excitement_array[i]
             if i % self.fix_len == 0:
@@ -462,8 +505,7 @@ class Model():
         chord = ["2", "5", "3", "6", "4", "6", "7", "1"]
         for i, sound in enumerate(sound_list, 0):
             for part in range(1, 4):
-                sound[part] = re.sub('[0-9].wav', chord[i %
-                                     8]+".wav", sound[part])
+                sound[part] = re.sub("[0-9].wav", chord[i % 8] + ".wav", sound[part])
 
         return sound_list
 
@@ -476,8 +518,7 @@ class Model():
             for s in sound:
                 if s != "null":
                     if block_sound_exist:
-                        block_sound = block_sound.overlay(
-                            AudioSegment.from_file(s))
+                        block_sound = block_sound.overlay(AudioSegment.from_file(s))
                     else:
                         block_sound = AudioSegment.from_file(s)
                         block_sound_exist = True
@@ -488,10 +529,21 @@ class Model():
         songid = 0
         created = False
         while created == False:
-            if os.path.exists("./project/" + projectid + "/songs/" + str(songid)) == False:
+            if (
+                os.path.exists("./project/" + projectid + "/songs/" + str(songid))
+                == False
+            ):
                 os.mkdir("./project/" + projectid + "/songs/" + str(songid))
-                self.output_sound.export("./project/" + projectid + "/songs/" + str(
-                    songid) + "/song" + str(songid) + ".wav", format="wav")
+                self.output_sound.export(
+                    "./project/"
+                    + projectid
+                    + "/songs/"
+                    + str(songid)
+                    + "/song"
+                    + str(songid)
+                    + ".wav",
+                    format="wav",
+                )
                 created = True
             else:
                 songid = songid + 1
@@ -533,7 +585,7 @@ class Model():
         frame_pre = frame_next.copy()
         # 動画の最後までをwhile文で回す
         entire_count = 0
-        while (end_flag):
+        while end_flag:
             if self.movie_analysising == False:
                 break
             # 次のフレームとの差分を計算する
@@ -541,21 +593,29 @@ class Model():
             # グレースケールに変換
             gray_diff = cv2.cvtColor(color_diff, cv2.COLOR_BGR2GRAY)
             # 2値化
-            retval, black_diff = cv2.threshold(
-                gray_diff, 30, 1, cv2.THRESH_BINARY)
+            retval, black_diff = cv2.threshold(gray_diff, 30, 1, cv2.THRESH_BINARY)
             # プロセッサの処理時間を取得する
             proc_time = time.clock()
             # モーション履歴画像を更新する
             cv2.motempl.updateMotionHistory(
-                black_diff, motion_history, proc_time, self.DURATION)
+                black_diff, motion_history, proc_time, self.DURATION
+            )
             # 古いモーションの表示を経過時間に応じて薄くする
-            hist_color = np.array(np.clip(
-                (motion_history - (proc_time - self.DURATION)) / self.DURATION, 0, 1) * 255, np.uint8)
+            hist_color = np.array(
+                np.clip(
+                    (motion_history - (proc_time - self.DURATION)) / self.DURATION,
+                    0,
+                    1,
+                )
+                * 255,
+                np.uint8,
+            )
             # グレースケール変換
             hist_gray = cv2.cvtColor(hist_color, cv2.COLOR_GRAY2BGR)
             # モーション履歴画像の変化方向の計算
             mask, orientation = cv2.motempl.calcMotionGradient(
-                motion_history, 0.25, 0.05, apertureSize=5)
+                motion_history, 0.25, 0.05, apertureSize=5
+            )
             # ブロックごとに方向を検出した数を計算する
             direction_cnt = 0
             width_i = self.GRID_WIDTH
@@ -570,7 +630,7 @@ class Model():
                 width_i += self.GRID_WIDTH
             self.direction_cnt_array.append(direction_cnt)
             entire_count += 1
-            self.movie_analysis_progress = (entire_count / count * 100)
+            self.movie_analysis_progress = entire_count / count * 100
             # 次のフレームの読み込み
             frame_pre = frame_next.copy()
             end_flag, frame_next = self.movie.read()
@@ -605,5 +665,5 @@ class Model():
             if self.block_max == 0:
                 e = 0
             else:
-                e = ((i / self.block_max))
+                e = i / self.block_max
             self.motion_excitement_array.append((e))
