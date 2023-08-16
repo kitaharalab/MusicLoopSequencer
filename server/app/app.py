@@ -95,14 +95,7 @@ def infoSound(partid, soundid):
     partid = int(partid)
     soundid = int(soundid)
 
-    if partid == 0:
-        partName = "sequence"
-    elif partid == 1:
-        partName = "synth"
-    elif partid == 2:
-        partName = "bass"
-    else:
-        partName = "drums"
+    partName = get_part_name(partid)
 
     x_coordinate = []
     y_coordinate = []
