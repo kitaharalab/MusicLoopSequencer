@@ -215,24 +215,16 @@ def createSong(projectid):
         synth_list = f.read().split("\n")
     with open("./text/sequence_word_list.txt") as f:
         sequence_list = f.read().split("\n")
+
+    instrument_lists = [drums_list, bass_list, synth_list, sequence_list]
+
     for i in range(len(array)):
         for j in range(len(array[0])):
-            if j == 0:
-                for k in range(len(drums_list)):
-                    if array[i][j] == drums_list[k]:
-                        array[i][j] = str(k)
-            elif j == 1:
-                for k in range(len(bass_list)):
-                    if array[i][j] == bass_list[k]:
-                        array[i][j] = str(k)
-            elif j == 2:
-                for k in range(len(synth_list)):
-                    if array[i][j] == synth_list[k]:
-                        array[i][j] = str(k)
-            else:
-                for k in range(len(sequence_list)):
-                    if array[i][j] == sequence_list[k]:
-                        array[i][j] = str(k)
+            instrument_list = instrument_lists[j]
+            for k in range(len(instrument_list)):
+                if array[i][j] == instrument_list[k]:
+                    array[i][j] = str(k)
+
     with open(
         "./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt",
         mode="w",
