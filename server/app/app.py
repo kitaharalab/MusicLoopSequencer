@@ -516,14 +516,8 @@ def insertSound(projectid, partid, measureid, musicloopid):
     #    sound_list = bass_list
     # else:
     #    sound_list = drums_list
-    if int(partid) == 0:
-        sound_array[int(measureid)][3 - int(partid)] = int(musicloopid)
-    elif int(partid) == 1:
-        sound_array[int(measureid)][3 - int(partid)] = int(musicloopid)
-    elif int(partid) == 2:
-        sound_array[int(measureid)][3 - int(partid)] = int(musicloopid)
-    else:
-        sound_array[int(measureid)][3 - int(partid)] = int(musicloopid)
+
+    sound_array[int(measureid)][3 - int(partid)] = int(musicloopid)
 
     # for i in range(len(sound_list)):
     #    if i == int(sound_id):
