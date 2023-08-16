@@ -2,14 +2,17 @@ import math
 import os
 import re
 import tkinter as tk
-import urllib.parse
 
-import numpy as np
-import pandas as pd
-from flask import Flask, jsonify, make_response, request, send_file, send_from_directory
+# import numpy as np
+# import pandas as pd
+from flask import Flask, jsonify, make_response, request, send_file
+# from flask import send_from_directory
 from flask_cors import CORS
-from model import Model
+# from model import Model
 from view import View
+
+# import urllib.parse
+
 
 topic_n = 4
 app = Flask(__name__)
@@ -154,14 +157,17 @@ def infoSound(partid, soundid):
 def createProject():
     projectId = 0
     created = False
-    while created == False:
-        if os.path.exists("./project/" + str(projectId)) == False:
-            os.mkdir("./project/" + str(projectId))
-            os.mkdir("./project/" + str(projectId) + "/songs")
-            os.mkdir("./project/" + str(projectId) + "/curve")
-            created = True
-        else:
+    while not created:
+        project_file_exist = os.path.exists("./project/" + str(projectId))
+        if project_file_exist:
             projectId = projectId + 1
+            continue
+
+        os.mkdir("./project/" + str(projectId))
+        os.mkdir("./project/" + str(projectId) + "/songs")
+        os.mkdir("./project/" + str(projectId) + "/curve")
+        created = True
+
     curves = ["271" for i in range(1152)]
     with open("./project/" + str(projectId) + "/curve/curve.txt", mode="w") as f:
         for i in range(len(curves)):
@@ -302,7 +308,7 @@ def infoSongs(projectid):
 def infoSong(projectid, songid):
     sounds_ids = [["null" for i in range(4)] for j in range(32)]
     id_list = []
-    path = "./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt"
+    # path = "./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt"
     with open(
         "./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt"
     ) as f:
@@ -355,7 +361,7 @@ def infoSong(projectid, songid):
 def infoSongPart(projectid, songid, partid):
     sounds_ids = [["null" for i in range(4)] for j in range(32)]
     id_list = []
-    path = "./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt"
+    # path = "./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt"
     with open(
         "./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt"
     ) as f:
@@ -393,7 +399,7 @@ def infoSongPart(projectid, songid, partid):
 def infoSongPartMeasure(projectid, songid, partid, measureid):
     sounds_ids = [["null" for i in range(4)] for j in range(32)]
     id_list = []
-    path = "./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt"
+    # path = "./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt"
     with open(
         "./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt"
     ) as f:
@@ -439,7 +445,7 @@ def insertSound(projectid, partid, measureid, musicloopid):
     bass_list = data["bassList"]
     drums_list = data["drumsList"]
 
-    sounds_ids = [["null" for i in range(4)] for j in range(32)]
+    # sounds_ids = [["null" for i in range(4)] for j in range(32)]
     sound_array = [["null" for i in range(4)] for j in range(32)]
 
     for i in range(len(sound_array)):
@@ -455,10 +461,12 @@ def insertSound(projectid, partid, measureid, musicloopid):
 
     # id_list = []
     # path = "./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt"
-    # with open("./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt") as f:
-    #    id_list = f.read().split("\n")
-    # if id_list[len(id_list)-1] == '':
-    #    id_list.pop()
+    # with open(
+    #     "./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt"
+    # ) as f:
+    #     id_list = f.read().split("\n")
+    # if id_list[len(id_list) - 1] == "":
+    #     id_list.pop()
     # count = 0
 
     # for i in range(len(id_list)):
@@ -507,25 +515,25 @@ def insertSound(projectid, partid, measureid, musicloopid):
                 for k in range(len(drums_list)):
                     if sound_array[i][j] == k:
                         sound_array[i][j] = drums_list[k]
-                    elif sound_array[i][j] == None:
+                    elif sound_array[i][j] is None:
                         sound_array[i][j] = "null"
             elif j == 1:
                 for k in range(len(bass_list)):
                     if sound_array[i][j] == k:
                         sound_array[i][j] = bass_list[k]
-                    elif sound_array[i][j] == None:
+                    elif sound_array[i][j] is None:
                         sound_array[i][j] = "null"
             elif j == 2:
                 for k in range(len(synth_list)):
                     if sound_array[i][j] == k:
                         sound_array[i][j] = synth_list[k]
-                    elif sound_array[i][j] == None:
+                    elif sound_array[i][j] is None:
                         sound_array[i][j] = "null"
             else:
                 for k in range(len(sequence_list)):
                     if sound_array[i][j] == k:
                         sound_array[i][j] = sequence_list[k]
-                    elif sound_array[i][j] == None:
+                    elif sound_array[i][j] is None:
                         sound_array[i][j] = "null"
 
     root = tk.Tk()
