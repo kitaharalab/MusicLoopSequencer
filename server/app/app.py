@@ -6,8 +6,11 @@ import tkinter as tk
 # import numpy as np
 # import pandas as pd
 from flask import Flask, jsonify, make_response, request, send_file
+
 # from flask import send_from_directory
 from flask_cors import CORS
+from part.get_part_name import get_part_name
+
 # from model import Model
 from view import View
 
@@ -31,16 +34,7 @@ def infoParts():
 
 @app.route("/parts/<partid>/sounds", methods=["GET"])
 def infoSounds(partid):
-    partid = int(partid)
-    partName = ""
-    if partid == 0:
-        partName = "sequence"
-    elif partid == 1:
-        partName = "synth"
-    elif partid == 2:
-        partName = "bass"
-    else:
-        partName = "drums"
+    partName = get_part_name(int(partid))
 
     path = "./text/" + partName + "_word_list.txt"
     sounds = []
