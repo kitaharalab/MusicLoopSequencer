@@ -240,35 +240,53 @@ def createSong(projectid):
     synth_list = ["null" for i in range(32)]
     bass_list = ["null" for i in range(32)]
     drums_list = ["null" for i in range(32)]
+    instrument_lists = [drums_list, bass_list, synth_list, sequence_list]
 
     for i in range(32):
-        if array[i][3] == "null":
-            sequence_list[i] = None
-        else:
-            sequence_list[i] = int(array[i][3])
-        if array[i][2] == "null":
-            synth_list[i] = None
-        else:
-            synth_list[i] = int(array[i][2])
-        if array[i][1] == "null":
-            bass_list[i] = None
-        else:
-            bass_list[i] = int(array[i][1])
-        if array[i][0] == "null":
-            drums_list[i] = None
-        else:
-            drums_list[i] = int(array[i][0])
-    print(sequence_list)
+        for j in range(len(instrument_lists)):
+            if array[i][j] == "null":
+                instrument_lists[j][i] = None
+            else:
+                instrument_lists[j][i] = int(array[i][j])
+
+        # if array[i][3] == "null":
+        #     sequence_list[i] = None
+        # else:
+        #     sequence_list[i] = int(array[i][3])
+        # if array[i][2] == "null":
+        #     synth_list[i] = None
+        # else:
+        #     synth_list[i] = int(array[i][2])
+        # if array[i][1] == "null":
+        #     bass_list[i] = None
+        # else:
+        #     bass_list[i] = int(array[i][1])
+        # if array[i][0] == "null":
+        #     drums_list[i] = None
+        # else:
+        #     drums_list[i] = int(array[i][0])
+
+    print(instrument_lists[-1])
+    # print(sequence_list)
 
     response = {
         "songid": int(songid),
         "parts": [
-            {"partid": 0, "sounds": sequence_list},
-            {"partid": 1, "sounds": synth_list},
-            {"partid": 2, "sounds": bass_list},
-            {"partid": 3, "sounds": drums_list},
+            {"partid": 0, "sounds": instrument_lists[3]},
+            {"partid": 1, "sounds": instrument_lists[2]},
+            {"partid": 2, "sounds": instrument_lists[1]},
+            {"partid": 3, "sounds": instrument_lists[0]},
         ],
     }
+    # response = {
+    #     "songid": int(songid),
+    #     "parts": [
+    #         {"partid": 0, "sounds": sequence_list},
+    #         {"partid": 1, "sounds": synth_list},
+    #         {"partid": 2, "sounds": bass_list},
+    #         {"partid": 3, "sounds": drums_list},
+    #     ],
+    # }
     return make_response(jsonify(response))
 
 
