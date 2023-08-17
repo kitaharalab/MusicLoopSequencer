@@ -1,0 +1,14 @@
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "[python]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.codeActionsOnSave": { "source.organizeImports": true }
+  },
+  "flake8.args": ["--max-line-length=88", "--max-complexity=10"],
+  "black-formatter.args": ["--line-length=88"]
+}

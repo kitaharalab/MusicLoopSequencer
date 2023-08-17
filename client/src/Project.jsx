@@ -1,26 +1,22 @@
-import { Link } from "react-router-dom";
+/* eslint-disable import/no-extraneous-dependencies */
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./Project.css";
+import { ListItem, UnorderedList, Button, Box } from "@chakra-ui/react";
+import Link from "../components/Link/Link";
 
 function Project() {
   const [done, setDone] = useState(false);
-  const [sample, setSample] = useState(null);
-  let temp = 0;
-  console.log("HOME");
+  const [sample, _setSample] = useState(null);
+  const [projects, setProjects] = useState([]);
 
   const createNewProject = () => {
-    const url = "http://127.0.0.1:8080/projects";
+    const url = `${import.meta.env.VITE_SERVER_URL}/projects`;
     axios
-      .post(url) //サーバーから音素材の配列を受け取った後，then部分を実行する．
-      .then(function (response) {
-        const projectid = response.data.projectid;
-        const div = document.getElementById("project");
-        let new_element = document.createElement("p");
-        const url = "App?projectid=" + String(projectid);
-        const tag = `<a href=${url}>${projectid}</a>`;
-        new_element.innerHTML = tag;
-        div.appendChild(new_element);
+      .post(url) // サーバーから音素材の配列を受け取った後，then部分を実行する．
+      .then((response) => {
+        const { projectid } = response.data;
+        setProjects([...projects, projectid]);
       });
     console.log("OK");
   };
@@ -28,31 +24,17 @@ function Project() {
   useEffect(() => {
     let ignore = false;
     function makeLink() {
-      (async () => {
-        const url = "http://127.0.0.1:8080/projects";
-        if (done === false) {
-          await axios
-            .get(url) //サーバーから音素材の配列を受け取った後，then部分を実行する．
-            .then(function (response) {
-              const div = document.getElementById("project");
-              temp =
-                response.data.projects_list[
-                  response.data.projects_list.length - 1
-                ];
-              if (done === false) {
-                for (let i = 0; i <= temp; i++) {
-                  let new_element = document.createElement("p");
-                  const url = "App?projectid=" + String(i);
-                  const tag = `<a href=${url}>${i}</a>`;
-                  new_element.innerHTML = tag;
-                  div.appendChild(new_element);
-                }
-                let judge = true;
-                setDone(judge);
-              }
-            });
-        }
-      })();
+      if (done) {
+        return;
+      }
+
+      axios
+        .get(`${import.meta.env.VITE_SERVER_URL}/projects`)
+        .then((response) => {
+          const resProjects = response.data.projects_list;
+          setProjects(resProjects);
+          setDone(true);
+        });
     }
     if (!ignore) {
       makeLink();
@@ -63,13 +45,18 @@ function Project() {
   }, [sample]);
 
   return (
-    <>
-      <div id="project">
-        <button type="button" onClick={() => createNewProject()}>
-          createNewProject
-        </button>
-      </div>
-    </>
+    <Box id="project">
+      <Button type="button" onClick={() => createNewProject()}>
+        createNewProject
+      </Button>
+      <UnorderedList>
+        {projects.map((project, i) => (
+          <ListItem key={project}>
+            <Link to={`App?projectid=${i}`}>{project}</Link>
+          </ListItem>
+        ))}
+      </UnorderedList>
+    </Box>
   );
 }
 
