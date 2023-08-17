@@ -3,14 +3,16 @@ import random
 import re
 import time
 
-# import pyaudio
-import wave
-
 import cv2
 import numpy as np
 from hmmlearn import hmm
 from pydub import AudioSegment
-from pydub.playback import play
+
+# import pyaudio
+# import wave
+
+
+# from pydub.playback import play
 
 
 class Model:
@@ -528,25 +530,25 @@ class Model:
         # 楽曲を更新する
         songid = 0
         created = False
-        while created == False:
-            if (
-                os.path.exists("./project/" + projectid + "/songs/" + str(songid))
-                == False
-            ):
-                os.mkdir("./project/" + projectid + "/songs/" + str(songid))
-                self.output_sound.export(
-                    "./project/"
-                    + projectid
-                    + "/songs/"
-                    + str(songid)
-                    + "/song"
-                    + str(songid)
-                    + ".wav",
-                    format="wav",
-                )
-                created = True
-            else:
-                songid = songid + 1
+        while not created:
+            song_file_exist = os.path.exists(
+                "./project/" + projectid + "/songs/" + str(songid)
+            )
+            if song_file_exist:
+                return str(songid + 1)
+
+            os.mkdir("./project/" + projectid + "/songs/" + str(songid))
+            self.output_sound.export(
+                "./project/"
+                + projectid
+                + "/songs/"
+                + str(songid)
+                + "/song"
+                + str(songid)
+                + ".wav",
+                format="wav",
+            )
+            created = True
 
         return str(songid)
 
@@ -586,7 +588,7 @@ class Model:
         # 動画の最後までをwhile文で回す
         entire_count = 0
         while end_flag:
-            if self.movie_analysising == False:
+            if not self.movie_analysising:
                 break
             # 次のフレームとの差分を計算する
             color_diff = cv2.absdiff(frame_next, frame_pre)
@@ -601,17 +603,17 @@ class Model:
                 black_diff, motion_history, proc_time, self.DURATION
             )
             # 古いモーションの表示を経過時間に応じて薄くする
-            hist_color = np.array(
-                np.clip(
-                    (motion_history - (proc_time - self.DURATION)) / self.DURATION,
-                    0,
-                    1,
-                )
-                * 255,
-                np.uint8,
-            )
+            # hist_color = np.array(
+            #     np.clip(
+            #         (motion_history - (proc_time - self.DURATION)) / self.DURATION,
+            #         0,
+            #         1,
+            #     )
+            #     * 255,
+            #     np.uint8,
+            # )
             # グレースケール変換
-            hist_gray = cv2.cvtColor(hist_color, cv2.COLOR_GRAY2BGR)
+            # hist_gray = cv2.cvtColor(hist_color, cv2.COLOR_GRAY2BGR)
             # モーション履歴画像の変化方向の計算
             mask, orientation = cv2.motempl.calcMotionGradient(
                 motion_history, 0.25, 0.05, apertureSize=5
