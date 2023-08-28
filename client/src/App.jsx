@@ -1,4 +1,3 @@
-import "./App.css";
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
@@ -43,7 +42,7 @@ function App() {
   const [audio, setAudio] = useState(null);
   const [_context2, _setContext2] = useState(null);
   const [_count, setCount] = useState(0);
-  const [done1, setDone] = useState(false);
+  const [_done1, setDone] = useState(false);
 
   const [_asdf, setasdf] = useState([0]);
   const [_ctx2Width, _setCtx2Width] = useState(0);

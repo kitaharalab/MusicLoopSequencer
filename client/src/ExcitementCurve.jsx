@@ -1,10 +1,9 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import React, { useEffect, useRef, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-// import * as d3 from "d3";
+// import { useSelector, useDispatch } from "react-redux";
 import { Box } from "@chakra-ui/react";
-import { setStart, setDraw } from "./redux/linesSlice";
-import { setPos } from "./redux/blockCanvasSlice";
+// import { setStart, setDraw } from "./redux/linesSlice";
+// import { setPos } from "./redux/blockCanvasSlice";
 
 function drawBackgroundGrid(
   canvas,
@@ -46,20 +45,13 @@ function drawLine(canvas, line) {
 }
 
 export default function ExcitementCurve() {
-  const linesY = useSelector((state) => state.lines1.lines);
-  const dispatch = useDispatch();
+  // const linesY = useSelector((state) => state.lines1.lines);
+  // const dispatch = useDispatch();
   const canvasRef = useRef();
   const wrapperRef = useRef();
   const [drawing, setDrawing] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [line, setLine] = useState([]);
-
-  function handleResize() {
-    const canvas = canvasRef.current;
-    const ctx = canvas?.getContext("2d");
-    ctx.canvas.height = wrapperRef.current?.clientHeight;
-    ctx.canvas.width = wrapperRef.current?.clientWidth;
-  }
 
   useEffect(() => {
     // resize
