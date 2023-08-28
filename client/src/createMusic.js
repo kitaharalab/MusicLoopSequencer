@@ -9,7 +9,7 @@ export default function createMusic(projectid, linesY) {
     // ブロックの合計から平均を計算
     let blockTotal = 0;
     for (let j = blockStart; j < blockFinish; j++) {
-      blockTotal += Math.abs(linesY[j] - 282);
+      blockTotal += Math.abs(linesY[j]);
 
       excitementArray[i] = Math.floor(blockTotal / 36 / 56);
     }
