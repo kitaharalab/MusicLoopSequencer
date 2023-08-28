@@ -33,9 +33,17 @@ export const linesSlice = createSlice({
         }
       }
     },
+    setLine: (state, action) => {
+      const { lines } = action.payload;
+
+      return {
+        ...state,
+        lines,
+      };
+    },
   },
 });
 
-export const { setStart, setDraw } = linesSlice.actions;
+export const { setStart, setDraw, setLine } = linesSlice.actions;
 
 export default linesSlice.reducer;
