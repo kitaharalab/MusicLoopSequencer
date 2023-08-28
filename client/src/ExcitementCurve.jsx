@@ -4,6 +4,14 @@ import React, { useEffect, useRef, useState } from "react";
 import { Box } from "@chakra-ui/react";
 // import { setStart, setDraw } from "./redux/linesSlice";
 // import { setPos } from "./redux/blockCanvasSlice";
+function drawBackgroundOutline(canvas) {
+  const ctx = canvas.getContext("2d");
+  ctx.fillStyle = "black";
+  ctx.strokeStyle = "black";
+  ctx.lineWidth = "3";
+  ctx.strokeRect(0, 0, canvas.width, canvas.height);
+  ctx.fill();
+}
 
 function drawBackgroundGrid(
   canvas,
@@ -13,13 +21,6 @@ function drawBackgroundGrid(
   gridHeightCount,
 ) {
   const ctx = canvas.getContext("2d");
-  ctx.clearRect(0, 0, width, height);
-  // outline
-  ctx.fillStyle = "black";
-  ctx.strokeStyle = "black";
-  ctx.lineWidth = "3";
-  ctx.strokeRect(0, 0, width, height);
-  // grid
   ctx.lineWidth = "1";
   ctx.strokeStyle = "gray";
   const gridWidth = width / gridWidthCount;
@@ -29,6 +30,22 @@ function drawBackgroundGrid(
       ctx.strokeRect(gridWidth * i, gridHeight * j, gridWidth, gridHeight);
     }
   }
+}
+
+function drawBackground(canvas) {
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+  ctx.fill();
+  const gridWidthCount = 32;
+  const gridHeightCount = 5;
+  drawBackgroundGrid(
+    canvas,
+    canvas.clientWidth,
+    canvas.clientHeight,
+    gridWidthCount,
+    gridHeightCount,
+  );
+  drawBackgroundOutline(canvas);
 }
 
 function drawLine(canvas, line) {
@@ -61,14 +78,14 @@ export default function ExcitementCurve() {
     ctx.canvas.width = wrapperRef.current?.clientWidth;
 
     // canvas init
-    drawBackgroundGrid(canvas, canvas.clientWidth, canvas.clientHeight, 32, 5);
+    drawBackground(canvas);
     const initLine = new Array(wrapperRef.current?.clientWidth);
     setLine(initLine.fill(0));
   }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    drawBackgroundGrid(canvas, canvas.clientWidth, canvas.clientHeight, 32, 5);
+    drawBackground(canvas);
     drawLine(canvas, line);
   }, [line]);
 
