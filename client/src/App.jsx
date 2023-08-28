@@ -169,7 +169,7 @@ function App() {
       <Box className="excitement-curve-container" height="25vh" marginY={4}>
         <ExcitementCurve />
       </Box>
-      <Box className="sound-sequence-container">
+      <Box className="sound-sequence-container" marginY={4}>
         <SoundBlock />
       </Box>
       <Box className="music-loops-container">
