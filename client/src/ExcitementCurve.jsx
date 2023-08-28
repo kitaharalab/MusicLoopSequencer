@@ -1,8 +1,8 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import React, { useEffect, useRef, useState } from "react";
-// import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Box } from "@chakra-ui/react";
-// import { setStart, setDraw } from "./redux/linesSlice";
+import { setLine } from "./redux/linesSlice";
 // import { setPos } from "./redux/blockCanvasSlice";
 function drawBackgroundOutline(canvas) {
   const ctx = canvas.getContext("2d");
@@ -62,13 +62,12 @@ function drawLine(canvas, line) {
 }
 
 export default function ExcitementCurve() {
-  // const linesY = useSelector((state) => state.lines1.lines);
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const canvasRef = useRef();
   const wrapperRef = useRef();
   const [drawing, setDrawing] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [line, setLine] = useState([]);
+  const [lines, setLines] = useState([]);
 
   useEffect(() => {
     // resize
@@ -80,14 +79,14 @@ export default function ExcitementCurve() {
     // canvas init
     drawBackground(canvas);
     const initLine = new Array(wrapperRef.current?.clientWidth);
-    setLine(initLine.fill(0));
+    setLines(initLine.fill(0));
   }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     drawBackground(canvas);
-    drawLine(canvas, line);
-  }, [line]);
+    drawLine(canvas, lines);
+  }, [lines]);
 
   const startDraw = ({ nativeEvent }) => {
     setDrawing(true);
@@ -101,8 +100,10 @@ export default function ExcitementCurve() {
     //   setStart({ posX: Math.floor(offsetX), posY: Math.floor(offsetY) }),
     // );
 
-    line[offsetX] = offsetY;
-    setLine([...line]);
+    const newline = lines.map((y, i) =>
+      i === offsetX ? canvasRef.current.clientHeight - Math.floor(offsetY) : y,
+    );
+    setLines(newline);
     setPosition({ x: offsetX, y: offsetY });
   };
 
@@ -113,7 +114,9 @@ export default function ExcitementCurve() {
 
     const { offsetX, offsetY } = nativeEvent;
 
-    line[offsetX] = canvasRef.current.clientHeight - Math.floor(offsetY);
+    const newline = lines.map((y, i) =>
+      i === offsetX ? canvasRef.current.clientHeight - Math.floor(offsetY) : y,
+    );
 
     const pos = { x: offsetX, y: offsetY };
 
@@ -122,18 +125,23 @@ export default function ExcitementCurve() {
     if (Math.abs(position.x - pos.x) !== 0) {
       const tan = parseFloat(position.y - pos.y) / (position.x - pos.x);
       const dis = Math.abs(position.x - pos.x);
-      for (let i = 0; i < dis; i++) {
-        line[prePos.x + i] =
+      for (let i = 0; i < dis && prePos.x + i < newline.length; i++) {
+        newline[prePos.x + i] =
           canvasRef.current.clientHeight - Math.floor(prePos.y + tan * i);
       }
     }
 
     setPosition(pos);
-    setLine([...line]);
+    setLines(newline);
   };
 
   const stopDraw = () => {
+    if (!drawing) {
+      return;
+    }
+
     setDrawing(false);
+    dispatch(setLine({ lines }));
   };
 
   return (
