@@ -62,7 +62,7 @@ function drawPart(canvas, parts) {
   ctx.fill();
 }
 
-export default function SoundBlock() {
+export default function SoundBlock({ measure }) {
   // const selectedMeasureId = useSelector((state) => state.block.posRectX);
   // const selectedPartId = useSelector((state) => state.block.posRectY)
   const parts = useSelector((state) => state.sounds.parts);

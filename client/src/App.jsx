@@ -166,15 +166,17 @@ function App() {
           </Button>
         </ButtonGroup>
       </FormControl>
-      <Box className="excitement-curve-container" height="25vh" marginY={4}>
-        <ExcitementCurve measure={32} />
+      <Box height="50vh">
+        <Box className="excitement-curve-container" height="50%" paddingY={4}>
+          <ExcitementCurve measure={32} />
+        </Box>
+        <Box className="sound-sequence-container" marginY={4}>
+          <SoundBlock measure={32} />
+        </Box>
       </Box>
-      <Box className="sound-sequence-container" marginY={4}>
-        <SoundBlock />
-      </Box>
-      <Box className="music-loops-container">
+      {/* <Box className="music-loops-container">
         <MusicLoops />
-      </Box>
+      </Box> */}
     </>
   );
 }
