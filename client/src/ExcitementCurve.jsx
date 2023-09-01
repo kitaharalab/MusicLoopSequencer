@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Box } from "@chakra-ui/react";
 import { setLine } from "./redux/linesSlice";
-// import { setPos } from "./redux/blockCanvasSlice";
+
 function drawBackgroundOutline(canvas) {
   const ctx = canvas.getContext("2d");
   ctx.fillStyle = "black";
@@ -13,38 +13,26 @@ function drawBackgroundOutline(canvas) {
   ctx.fill();
 }
 
-function drawBackgroundGrid(
-  canvas,
-  width,
-  height,
-  gridWidthCount,
-  gridHeightCount,
-) {
+function drawBackgroundGrid(canvas, width, measure) {
   const ctx = canvas.getContext("2d");
-  ctx.lineWidth = "1";
-  ctx.strokeStyle = "gray";
-  const gridWidth = width / gridWidthCount;
-  const gridHeight = height / gridHeightCount;
-  for (let i = 0; i < gridWidthCount; i++) {
-    for (let j = 0; j < gridHeightCount; j++) {
-      ctx.strokeRect(gridWidth * i, gridHeight * j, gridWidth, gridHeight);
-    }
+
+  const gridWidth = width / measure;
+
+  for (let i = 0; i < measure; i++) {
+    ctx.beginPath();
+    ctx.lineWidth = (((i + 1) % 2) + 1) * 0.5;
+    ctx.strokeStyle = "rgba(0,0,0,0.5)";
+    ctx.moveTo(gridWidth * i, 0);
+    ctx.lineTo(gridWidth * i, canvas.height);
+    ctx.stroke();
   }
 }
 
-function drawBackground(canvas) {
+function drawBackground(canvas, measure) {
   const ctx = canvas.getContext("2d");
   ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
   ctx.fill();
-  const gridWidthCount = 32;
-  const gridHeightCount = 5;
-  drawBackgroundGrid(
-    canvas,
-    canvas.clientWidth,
-    canvas.clientHeight,
-    gridWidthCount,
-    gridHeightCount,
-  );
+  drawBackgroundGrid(canvas, canvas.clientWidth, measure);
   drawBackgroundOutline(canvas);
 }
 
@@ -61,7 +49,7 @@ function drawLine(canvas, line) {
   ctx.stroke();
 }
 
-export default function ExcitementCurve() {
+export default function ExcitementCurve({ measure }) {
   const dispatch = useDispatch();
   const canvasRef = useRef();
   const wrapperRef = useRef();
@@ -73,37 +61,35 @@ export default function ExcitementCurve() {
     // resize
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
-    ctx.canvas.height = wrapperRef.current?.clientHeight;
-    ctx.canvas.width = wrapperRef.current?.clientWidth;
+    ctx.canvas.height = wrapperRef.current.offsetHeight;
+    const width = wrapperRef.current.clientWidth ?? measure * 36;
+    const canvasWidth = (width / measure) * measure;
+    ctx.canvas.width = canvasWidth;
 
     // canvas init
-    drawBackground(canvas);
-    const initLine = new Array(wrapperRef.current?.clientWidth);
+    drawBackground(canvas, measure);
+    const initLine = new Array(canvasWidth);
     setLines(initLine.fill(0));
-  }, []);
+  }, [wrapperRef.current?.clientWidth, wrapperRef.current?.clientHeight]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    drawBackground(canvas);
+    drawBackground(canvas, measure);
     drawLine(canvas, lines);
   }, [lines]);
 
   const startDraw = ({ nativeEvent }) => {
     setDrawing(true);
     const { offsetX, offsetY } = nativeEvent;
-    // const { screenX, screenY } = nativeEvent;
-    // setPosX(Math.floor(offsetX));
-    // setPosY(Math.floor(offsetY));
-    // dispatch(setStart({ posX, posY }));
+    const height = canvasRef.current.clientHeight;
+    const curve = {
+      x: Math.floor(offsetX),
+      y: Math.floor(offsetY),
+    };
 
-    // dispatch(
-    //   setStart({ posX: Math.floor(offsetX), posY: Math.floor(offsetY) }),
-    // );
-
-    const newline = lines.map((y, i) =>
-      i === offsetX ? canvasRef.current.clientHeight - Math.floor(offsetY) : y,
-    );
+    const newline = lines.map((y, i) => (i === offsetX ? height - curve.y : y));
     setLines(newline);
+
     setPosition({ x: offsetX, y: offsetY });
   };
 
@@ -113,12 +99,11 @@ export default function ExcitementCurve() {
     }
 
     const { offsetX, offsetY } = nativeEvent;
+    const pos = { x: offsetX, y: offsetY };
 
     const newline = lines.map((y, i) =>
       i === offsetX ? canvasRef.current.clientHeight - Math.floor(offsetY) : y,
     );
-
-    const pos = { x: offsetX, y: offsetY };
 
     // liner scale
     const prePos = position.x < pos.x ? position : pos;
