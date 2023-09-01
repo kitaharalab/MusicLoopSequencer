@@ -167,7 +167,7 @@ function App() {
         </ButtonGroup>
       </FormControl>
       <Box className="excitement-curve-container" height="25vh" marginY={4}>
-        <ExcitementCurve />
+        <ExcitementCurve measure={32} />
       </Box>
       <Box className="sound-sequence-container" marginY={4}>
         <SoundBlock />
