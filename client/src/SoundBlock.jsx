@@ -1,5 +1,15 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import {
+  Table,
+  TableContainer,
+  TableCaption,
+  Thead,
+  Tr,
+  Th,
+  Td,
+  Tbody,
+} from "@chakra-ui/react";
 import { setPos } from "./redux/blockCanvasSlice";
 import { setMusicData } from "./redux/musicDataSlice";
 import selectBlock from "./selectBlock";
@@ -66,45 +76,85 @@ export default function SoundBlock({ measure }) {
   // const selectedMeasureId = useSelector((state) => state.block.posRectX);
   // const selectedPartId = useSelector((state) => state.block.posRectY)
   const parts = useSelector((state) => state.sounds.parts);
-  const measureId = useSelector((state) => state.canvas.measureId);
-  const partId = useSelector((state) => state.canvas.partId);
-  const dispatch = useDispatch();
-  const canvasRef = useRef();
+  // const measureId = useSelector((state) => state.canvas.measureId);
+  // const partId = useSelector((state) => state.canvas.partId);
+  // const dispatch = useDispatch();
+  // const canvasRef = useRef();
+  const measureRange = [...Array(measure)].map((_, i) => i);
+  // TODO
+  const colorScale = ["red.100", "yellow.100", "green.100", "blue.100"];
 
-  useEffect(() => {
-    drawBackground(canvasRef.current);
-    drawSelectCell(canvasRef.current, measureId, partId);
-  }, [measureId, partId]);
+  // useEffect(() => {
+  //   drawBackground(canvasRef.current);
+  //   drawSelectCell(canvasRef.current, measureId, partId);
+  // }, [measureId, partId]);
 
-  useEffect(() => {
-    drawBackground(canvasRef.current);
-  }, []);
+  // useEffect(() => {
+  //   drawBackground(canvasRef.current);
+  // }, []);
 
   useEffect(() => {
     if (parts.length === 0) {
       return;
     }
 
-    const canvas = canvasRef.current;
-    drawBackground(canvas);
-    drawPart(canvas, parts);
+    console.log(parts);
+    // const canvas = canvasRef.current;
+    // drawBackground(canvas);
+    // drawPart(canvas, parts);
   }, [parts]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      width="1152"
-      height="200"
-      id="canvas2"
-      onMouseDown={async ({ nativeEvent }) => {
-        const { offsetX, offsetY } = nativeEvent;
-        dispatch(setPos({ offsetX, offsetY }));
-        const musicData = await selectBlock(Math.floor(offsetY / 50));
-        const xCoordinate = musicData.x_coordinate;
-        const yCoordinate = musicData.y_coordinate;
-        const rangeList = musicData.range_lists;
-        dispatch(setMusicData({ xCoordinate, yCoordinate, rangeList }));
-      }}
-    />
+    <>
+      {/* <canvas
+        ref={canvasRef}
+        width="1152"
+        height="200"
+        id="canvas2"
+        onMouseDown={async ({ nativeEvent }) => {
+          const { offsetX, offsetY } = nativeEvent;
+          dispatch(setPos({ offsetX, offsetY }));
+          const musicData = await selectBlock(Math.floor(offsetY / 50));
+          const xCoordinate = musicData.x_coordinate;
+          const yCoordinate = musicData.y_coordinate;
+          const rangeList = musicData.range_lists;
+          dispatch(setMusicData({ xCoordinate, yCoordinate, rangeList }));
+        }}
+      /> */}
+      <TableContainer>
+        <Table size="sm" layout="fixed">
+          <TableCaption>caption</TableCaption>
+          <Thead>
+            <Tr>
+              <Th>小節</Th>
+              {measureRange.map((i) => (
+                <th>{i}</th>
+              ))}
+            </Tr>
+          </Thead>
+          <Tbody>
+            <Tr>
+              <Td>楽器</Td>
+            </Tr>
+            {parts.map(({ partid, sounds }) => {
+              const existSound = measureRange.map((i) => sounds[i] != null);
+              return (
+                <Tr key={partid}>
+                  <Td>{partid}</Td>
+                  {existSound.map((exist, i) => (
+                    <Td
+                      key={`${partid}-${i}`}
+                      bgColor={exist ? colorScale[partid] : "white"}
+                      borderColor="white"
+                      borderWidth={3}
+                    />
+                  ))}
+                </Tr>
+              );
+            })}
+          </Tbody>
+        </Table>
+      </TableContainer>
+    </>
   );
 }
