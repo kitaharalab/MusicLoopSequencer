@@ -50,11 +50,10 @@ function App() {
   const [_play, { _stop, _pause }] = useSound(Sound);
 
   const [songs, setSongs] = useState([]);
+  const baseUrl = import.meta.env.VITE_SERVER_URL;
 
   useEffect(() => {
-    const url = `${
-      import.meta.env.VITE_SERVER_URL
-    }/projects/${projectId}/songs`;
+    const url = `${baseUrl}/projects/${projectId}/songs`;
     axios
       .get(url) // サーバーから音素材の配列を受け取った後，then部分を実行する．
       .then((response) => {
@@ -69,9 +68,7 @@ function App() {
     if (songId === 0) {
       return;
     }
-    const url = `${
-      import.meta.env.VITE_SERVER_URL
-    }/projects/${projectId}/songs/${songId}/wav`;
+    const url = `${baseUrl}/projects/${projectId}/songs/${songId}/wav`;
 
     axios
       .get(url, { responseType: "blob" }) // サーバーから音素材の配列を受け取った後，then部分を実行する．
