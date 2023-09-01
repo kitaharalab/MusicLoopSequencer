@@ -90,6 +90,15 @@ function App() {
 
   const handleChange = (e) => {
     setasdf(e.target.value);
+    const selectSongId = e.target.value;
+    const url = `${baseUrl}/projects/${projectId}/songs/${selectSongId}`;
+    axios
+      .get(url) // サーバーから音素材の配列を受け取った後，then部分を実行する．
+      .then((response) => {
+        const { data } = response;
+        // console.log(data);
+        dispatch(setParts(data.parts));
+      });
   };
 
   return (
