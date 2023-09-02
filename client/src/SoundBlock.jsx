@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from "react-redux";
 import {
   Table,
   TableContainer,
-  TableCaption,
   Thead,
   Tr,
   Th,
@@ -72,7 +71,6 @@ export default function SoundBlock({ measure }) {
         size="sm"
         style={{ borderCollapse: "separate", borderSpacing: "5px" }}
       >
-        <TableCaption>caption</TableCaption>
         <Thead>
           <Tr>
             <Th>小節</Th>
