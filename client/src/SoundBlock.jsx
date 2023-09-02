@@ -80,9 +80,17 @@ export default function SoundBlock({ measure }) {
   // const partId = useSelector((state) => state.canvas.partId);
   // const dispatch = useDispatch();
   // const canvasRef = useRef();
+  const initSelectMeasurePart = {
+    measure: null,
+    part: null,
+  };
+  const [selectMeasurePart, setSelectMeasurePart] = useState(
+    initSelectMeasurePart,
+  );
   const measureRange = [...Array(measure)].map((_, i) => i);
   // TODO
-  const colorScale = ["red.400", "yellow.400", "green.400", "blue.400"];
+  const colorScale = ["red.200", "yellow.200", "green.200", "blue.200"];
+  const colorFilter = (select) => (select ? null : "contrast(60%)");
 
   // useEffect(() => {
   //   drawBackground(canvasRef.current);
@@ -92,6 +100,30 @@ export default function SoundBlock({ measure }) {
   // useEffect(() => {
   //   drawBackground(canvasRef.current);
   // }, []);
+
+  function handleOnClickMeasurePart(event) {
+    const { dataset } = event.target;
+    const part = JSON.parse(dataset.part);
+    const measure = JSON.parse(dataset.measure);
+    const exist = JSON.parse(dataset.exist);
+
+    if (!exist) {
+      return;
+    }
+
+    const newSelectMeasurePart = {
+      measure,
+      part,
+    };
+
+    const selectSame =
+      JSON.stringify(selectMeasurePart) ===
+      JSON.stringify(newSelectMeasurePart);
+
+    setSelectMeasurePart(
+      selectSame ? initSelectMeasurePart : newSelectMeasurePart,
+    );
+  }
 
   useEffect(() => {
     if (parts.length === 0) {
@@ -144,14 +176,24 @@ export default function SoundBlock({ measure }) {
               return (
                 <Tr key={partid}>
                   <Td>{partid}</Td>
-                  {existSound.map((exist, i) => (
-                    <Td
-                      key={`${partid}-${i}`}
-                      bgColor={exist ? colorScale[partid] : "white"}
-                      borderRadius="8px"
-                      filter={exist ? "contrast(65%)" : null}
-                    />
-                  ))}
+                  {existSound.map((exist, i) => {
+                    const isSelect =
+                      selectMeasurePart.measure === i &&
+                      selectMeasurePart.part === partid;
+
+                    return (
+                      <Td
+                        key={`${partid}-${i}`}
+                        bgColor={exist ? colorScale[partid] : "white"}
+                        borderRadius="8px"
+                        filter={colorFilter(isSelect || !exist)}
+                        data-part={partid}
+                        data-measure={i}
+                        data-exist={exist}
+                        onClick={handleOnClickMeasurePart}
+                      />
+                    );
+                  })}
                 </Tr>
               );
             })}
