@@ -172,7 +172,7 @@ function App() {
           </Button>
         </ButtonGroup>
       </FormControl>
-      <Box height="50vh">
+      <Box height="50%">
         <Box className="excitement-curve-container" height="50%" paddingY={4}>
           <ExcitementCurve measure={32} />
         </Box>
@@ -180,9 +180,9 @@ function App() {
           <SoundBlock measure={32} />
         </Box>
       </Box>
-      {/* <Box className="music-loops-container">
+      <Box className="music-loops-container">
         <MusicLoops />
-      </Box> */}
+      </Box>
     </>
   );
 }
