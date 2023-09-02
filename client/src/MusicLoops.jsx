@@ -51,6 +51,9 @@ export default function MusicLoops() {
 
     ctx.clearRect(0, 0, 400, 400);
     ctx.strokeRect(0, 0, canvas.width, canvas.height);
+    if (!xCoordinate) {
+      return;
+    }
 
     let rangeos = 0;
     for (let i = 0; i < xCoordinate.length; i++) {
