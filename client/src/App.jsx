@@ -50,11 +50,10 @@ function App() {
   const [_play, { _stop, _pause }] = useSound(Sound);
 
   const [songs, setSongs] = useState([]);
+  const baseUrl = import.meta.env.VITE_SERVER_URL;
 
   useEffect(() => {
-    const url = `${
-      import.meta.env.VITE_SERVER_URL
-    }/projects/${projectId}/songs`;
+    const url = `${baseUrl}/projects/${projectId}/songs`;
     axios
       .get(url) // サーバーから音素材の配列を受け取った後，then部分を実行する．
       .then((response) => {
@@ -69,9 +68,7 @@ function App() {
     if (songId === 0) {
       return;
     }
-    const url = `${
-      import.meta.env.VITE_SERVER_URL
-    }/projects/${projectId}/songs/${songId}/wav`;
+    const url = `${baseUrl}/projects/${projectId}/songs/${songId}/wav`;
 
     axios
       .get(url, { responseType: "blob" }) // サーバーから音素材の配列を受け取った後，then部分を実行する．
@@ -93,6 +90,15 @@ function App() {
 
   const handleChange = (e) => {
     setasdf(e.target.value);
+    const selectSongId = e.target.value;
+    const url = `${baseUrl}/projects/${projectId}/songs/${selectSongId}`;
+    axios
+      .get(url) // サーバーから音素材の配列を受け取った後，then部分を実行する．
+      .then((response) => {
+        const { data } = response;
+        // console.log(data);
+        dispatch(setParts(data.parts));
+      });
   };
 
   return (
@@ -166,11 +172,13 @@ function App() {
           </Button>
         </ButtonGroup>
       </FormControl>
-      <Box className="excitement-curve-container" height="25vh" marginY={4}>
-        <ExcitementCurve />
-      </Box>
-      <Box className="sound-sequence-container" marginY={4}>
-        <SoundBlock />
+      <Box height="50%">
+        <Box className="excitement-curve-container" height="50%" paddingY={4}>
+          <ExcitementCurve measure={32} />
+        </Box>
+        <Box className="sound-sequence-container" marginY={4}>
+          <SoundBlock measure={32} />
+        </Box>
       </Box>
       <Box className="music-loops-container">
         <MusicLoops />

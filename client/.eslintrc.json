@@ -14,6 +14,13 @@
     "no-param-reassign": [
       "error",
       { "props": true, "ignorePropertyModificationsForRegex": ["^state"] }
+    ],
+    "react/jsx-no-bind": [
+      "error",
+      {
+        "allowArrowFunctions": true,
+        "allowFunctions": true
+      }
     ]
   }
 }
