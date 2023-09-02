@@ -73,6 +73,7 @@ export default function SoundBlock({ measure }) {
       >
         <Thead>
           <Tr>
+            <Th />
             <Th>小節</Th>
             {measureRange.map((i) => (
               <th>{i}</th>
@@ -87,7 +88,7 @@ export default function SoundBlock({ measure }) {
             const existSound = measureRange.map((i) => sounds[i] != null);
             return (
               <Tr key={partid}>
-                <Td>{partid}</Td>
+                <Td colSpan={2}>{partid}</Td>
                 {existSound.map((exist, i) => {
                   const isSelect =
                     selectMeasurePart.measure === i &&
