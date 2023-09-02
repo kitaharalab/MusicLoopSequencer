@@ -18,6 +18,7 @@
     "react/jsx-no-bind": [
       "error",
       {
+        "allowArrowFunctions": true,
         "allowFunctions": true
       }
     ]

@@ -78,7 +78,7 @@ export default function SoundBlock({ measure }) {
   const parts = useSelector((state) => state.sounds.parts);
   // const measureId = useSelector((state) => state.canvas.measureId);
   // const partId = useSelector((state) => state.canvas.partId);
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   // const canvasRef = useRef();
   const initSelectMeasurePart = {
     measure: null,
@@ -101,7 +101,7 @@ export default function SoundBlock({ measure }) {
   //   drawBackground(canvasRef.current);
   // }, []);
 
-  function handleOnClickMeasurePart(event) {
+  async function handleOnClickMeasurePart(event) {
     const { dataset } = event.target;
     const part = JSON.parse(dataset.part);
     const measure = JSON.parse(dataset.measure);
@@ -123,6 +123,14 @@ export default function SoundBlock({ measure }) {
     setSelectMeasurePart(
       selectSame ? initSelectMeasurePart : newSelectMeasurePart,
     );
+
+    // const { offsetX, offsetY } = nativeEvent;
+    // dispatch(setPos({ offsetX, offsetY }));
+    const musicData = await selectBlock(part);
+    const xCoordinate = musicData.x_coordinate;
+    const yCoordinate = musicData.y_coordinate;
+    const rangeList = musicData.range_lists;
+    dispatch(setMusicData({ xCoordinate, yCoordinate, rangeList }));
   }
 
   useEffect(() => {
@@ -156,7 +164,7 @@ export default function SoundBlock({ measure }) {
       <TableContainer>
         <Table
           size="sm"
-          style={{ "border-collapse": "separate", "border-spacing": "5px" }}
+          style={{ borderCollapse: "separate", borderSpacing: "5px" }}
         >
           <TableCaption>caption</TableCaption>
           <Thead>
