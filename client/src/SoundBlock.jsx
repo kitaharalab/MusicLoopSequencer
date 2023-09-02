@@ -82,7 +82,7 @@ export default function SoundBlock({ measure }) {
   // const canvasRef = useRef();
   const measureRange = [...Array(measure)].map((_, i) => i);
   // TODO
-  const colorScale = ["red.100", "yellow.100", "green.100", "blue.100"];
+  const colorScale = ["red.400", "yellow.400", "green.400", "blue.400"];
 
   // useEffect(() => {
   //   drawBackground(canvasRef.current);
@@ -122,7 +122,10 @@ export default function SoundBlock({ measure }) {
         }}
       /> */}
       <TableContainer>
-        <Table size="sm" layout="fixed">
+        <Table
+          size="sm"
+          style={{ "border-collapse": "separate", "border-spacing": "5px" }}
+        >
           <TableCaption>caption</TableCaption>
           <Thead>
             <Tr>
@@ -145,8 +148,8 @@ export default function SoundBlock({ measure }) {
                     <Td
                       key={`${partid}-${i}`}
                       bgColor={exist ? colorScale[partid] : "white"}
-                      borderColor="white"
-                      borderWidth={3}
+                      borderRadius="8px"
+                      filter={exist ? "contrast(65%)" : null}
                     />
                   ))}
                 </Tr>
