@@ -9,7 +9,7 @@ import {
   Td,
   Tbody,
 } from "@chakra-ui/react";
-import { setMusicData } from "./redux/musicDataSlice";
+import { setMusicData } from "../redux/musicDataSlice";
 import selectBlock from "./selectBlock";
 
 export default function SoundBlock({ measure }) {
