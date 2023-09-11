@@ -10,6 +10,7 @@ import {
   Button,
   ButtonGroup,
   Box,
+  Flex,
 } from "@chakra-ui/react";
 
 import ButtonLink from "../components/Link/ButtonLink";
@@ -21,6 +22,7 @@ import createMusic from "./createMusic";
 import { setParts } from "./redux/soundsSlice";
 import { setProjectId } from "./redux/projectIdSlice";
 import { setId } from "./redux/songIdSlice";
+import TopicView from "./musicEdit/TopicView";
 
 function App() {
   const [searchParams] = useSearchParams();
@@ -172,17 +174,23 @@ function App() {
           </Button>
         </ButtonGroup>
       </FormControl>
-      {/* <Box height="50%"> */}
-      <Box className="excitement-curve-container" height="50%" paddingY={4}>
+
+      <Box className="excitement-curve-container" paddingY={4}>
         <ExcitementCurve measure={32} />
       </Box>
-      <Box className="sound-sequence-container" marginY={4}>
-        <LoopTable measure={32} />
-      </Box>
-      {/* </Box> */}
-      <Box className="music-loops-container">
-        <LoopMaterialView />
-      </Box>
+
+      <Flex>
+        <Flex flexDirection="column">
+          <Box className="music-loops-container" width="400px" marginRight={4}>
+            <LoopMaterialView />
+          </Box>
+          <TopicView />
+        </Flex>
+
+        <Box className="sound-sequence-container" marginY={4} overflow="auto">
+          <LoopTable measure={32} />
+        </Box>
+      </Flex>
     </>
   );
 }
