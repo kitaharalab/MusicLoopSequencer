@@ -92,7 +92,7 @@ function App() {
 
   return (
     <>
-      <Header />
+      <Header projectName={projectId} />
       <Controls />
       <FormControl>
         <Select

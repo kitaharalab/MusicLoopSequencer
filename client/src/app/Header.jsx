@@ -1,14 +1,17 @@
 import React from "react";
-import { Box, Flex, Heading, Text, Spacer } from "@chakra-ui/react";
+import { Flex, Heading, Text, Spacer } from "@chakra-ui/react";
+import { ArrowBackIcon } from "@chakra-ui/icons";
 import ButtonLink from "../../components/Link/ButtonLink";
 
-export default function Header() {
+export default function Header({ projectName }) {
   return (
     <Heading as="h1" marginY={4}>
       <Flex>
-        <ButtonLink to="/">Back to Project</ButtonLink>
+        <ButtonLink to="/">
+          <ArrowBackIcon />
+        </ButtonLink>
         <Spacer />
-        <Text>project name</Text>
+        <Text>{projectName}</Text>
         <Spacer />
       </Flex>
     </Heading>
