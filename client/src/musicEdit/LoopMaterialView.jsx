@@ -142,7 +142,7 @@ export default function LoopMaterialView() {
               // eslint-disable-next-line no-await-in-loop
               const test = await onMusicLoop(partId, i);
               setAudio(test);
-              test.play();
+              // test.play();
               setCurrentMusicLoop(i);
             }
           }
