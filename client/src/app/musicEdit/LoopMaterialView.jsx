@@ -3,10 +3,10 @@ import { useSelector, useDispatch } from "react-redux";
 import insertSound from "./insertSound";
 import onMusicLoop from "./onMusicLoop";
 // import { setPos } from "./redux/blockCanvasSlice";
-import { setMusicLoopId } from "../redux/musicLoopSlice";
+import { setMusicLoopId } from "../../redux/musicLoopSlice";
 // import { setJson } from "./redux/soundDataSlice";
-import { setParts } from "../redux/soundsSlice";
-import { setId } from "../redux/songIdSlice";
+import { setParts } from "../../redux/soundsSlice";
+import { setId } from "../../redux/songIdSlice";
 
 export default function LoopMaterialView() {
   // const selectedMeasureId = useSelector((state) => state.block.posRectX);

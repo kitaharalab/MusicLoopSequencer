@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Box } from "@chakra-ui/react";
-import { setLine } from "../redux/linesSlice";
+import { setLine } from "../../redux/linesSlice";
 
 function drawBackgroundOutline(canvas) {
   const ctx = canvas.getContext("2d");

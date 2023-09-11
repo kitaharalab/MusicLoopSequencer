@@ -8,13 +8,13 @@ import { FormControl, Select, Box, Flex } from "@chakra-ui/react";
 
 import ButtonLink from "../components/Link/ButtonLink";
 import Sound from "./song0.wav";
-import ExcitementCurve from "./excitementCurve/ExcitementCurve";
-import LoopTable from "./musicEdit/LoopTable";
-import LoopMaterialView from "./musicEdit/LoopMaterialView";
+import ExcitementCurve from "./app/excitementCurve/ExcitementCurve";
+import LoopTable from "./app/musicEdit/LoopTable";
+import LoopMaterialView from "./app/musicEdit/LoopMaterialView";
 import { setParts } from "./redux/soundsSlice";
 import { setProjectId } from "./redux/projectIdSlice";
-import TopicView from "./musicEdit/TopicView";
-import Controls from "./Controls";
+import TopicView from "./app/musicEdit/TopicView";
+import Controls from "./app/Controls";
 
 function App() {
   const [searchParams] = useSearchParams();

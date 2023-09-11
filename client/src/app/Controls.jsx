@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { FormControl, Button, ButtonGroup } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
-import createMusic from "./createMusic";
-import { setParts } from "./redux/soundsSlice";
-import { setId } from "./redux/songIdSlice";
+import createMusic from "../createMusic";
+import { setParts } from "../redux/soundsSlice";
+import { setId } from "../redux/songIdSlice";
 
 export default function Controls({ projectId }) {
   const dispatch = useDispatch();
