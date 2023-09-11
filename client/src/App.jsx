@@ -105,30 +105,6 @@ function App() {
 
   return (
     <>
-      <p>
-        curve: <code id="count">{json.curve}</code>
-      </p>
-      <p>
-        partid: <code id="count">{json.sounds[0].partid}</code>
-      </p>
-      <p>
-        measure: <code id="count">{json.sounds[0].measure}</code>
-      </p>
-      <p>
-        soundid: <code id="count">{json.sounds[0].soundId}</code>
-      </p>
-      <p>
-        partid: <code id="count">{json.sounds[1].partid}</code>
-      </p>
-      <p>
-        measure: <code id="count">{json.sounds[1].measure}</code>
-      </p>
-      <p>
-        soundid: <code id="count">{json.sounds[1].soundId}</code>
-      </p>
-      <p>
-        soundid: <code id="count">{musicLoopId}</code>
-      </p>
       <ButtonLink to="/">Back to Project</ButtonLink>
       <FormControl>
         <Select
