@@ -14,9 +14,9 @@ import {
 
 import ButtonLink from "../components/Link/ButtonLink";
 import Sound from "./song0.wav";
-import ExcitementCurve from "./ExcitementCurve";
-import SoundBlock from "./SoundBlock";
-import MusicLoops from "./MusicLoops";
+import ExcitementCurve from "./excitementCurve/ExcitementCurve";
+import LoopTable from "./musicEdit/LoopTable";
+import LoopMaterialView from "./musicEdit/LoopMaterialView";
 import createMusic from "./createMusic";
 import { setParts } from "./redux/soundsSlice";
 import { setProjectId } from "./redux/projectIdSlice";
@@ -172,16 +172,16 @@ function App() {
           </Button>
         </ButtonGroup>
       </FormControl>
-      <Box height="50%">
-        <Box className="excitement-curve-container" height="50%" paddingY={4}>
-          <ExcitementCurve measure={32} />
-        </Box>
-        <Box className="sound-sequence-container" marginY={4}>
-          <SoundBlock measure={32} />
-        </Box>
+      {/* <Box height="50%"> */}
+      <Box className="excitement-curve-container" height="50%" paddingY={4}>
+        <ExcitementCurve measure={32} />
       </Box>
+      <Box className="sound-sequence-container" marginY={4}>
+        <LoopTable measure={32} />
+      </Box>
+      {/* </Box> */}
       <Box className="music-loops-container">
-        <MusicLoops />
+        <LoopMaterialView />
       </Box>
     </>
   );

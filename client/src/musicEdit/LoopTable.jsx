@@ -12,7 +12,7 @@ import {
 import { setMusicData } from "../redux/musicDataSlice";
 import selectBlock from "./selectBlock";
 
-export default function SoundBlock({ measure }) {
+export default function LoopTable({ measure }) {
   const parts = useSelector((state) => state.sounds.parts);
   const dispatch = useDispatch();
   const initSelectMeasurePart = {

@@ -8,7 +8,7 @@ import { setMusicLoopId } from "../redux/musicLoopSlice";
 import { setParts } from "../redux/soundsSlice";
 import { setId } from "../redux/songIdSlice";
 
-export default function MusicLoops() {
+export default function LoopMaterialView() {
   // const selectedMeasureId = useSelector((state) => state.block.posRectX);
   // const selectedPartId = useSelector((state) => state.block.posRectY)
   const musicLoopId = useSelector((state) => state.musicLoop.musicLoopId);
