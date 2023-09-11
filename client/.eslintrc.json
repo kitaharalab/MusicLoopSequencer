@@ -22,6 +22,6 @@
         "allowFunctions": true
       }
     ],
-    "react/prop-types": ["error", { "ignore": true }]
+    "react/prop-types": ["error", { "skipUndeclared": true }]
   }
 }
