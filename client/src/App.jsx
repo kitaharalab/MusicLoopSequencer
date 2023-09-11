@@ -6,7 +6,6 @@ import { useSearchParams } from "react-router-dom";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { FormControl, Select, Box, Flex } from "@chakra-ui/react";
 
-import ButtonLink from "../components/Link/ButtonLink";
 import Sound from "./song0.wav";
 import ExcitementCurve from "./app/excitementCurve/ExcitementCurve";
 import LoopTable from "./app/musicEdit/LoopTable";
@@ -15,6 +14,7 @@ import { setParts } from "./redux/soundsSlice";
 import { setProjectId } from "./redux/projectIdSlice";
 import TopicView from "./app/musicEdit/TopicView";
 import Controls from "./app/Controls";
+import Header from "./app/Header";
 
 function App() {
   const [searchParams] = useSearchParams();
@@ -92,8 +92,8 @@ function App() {
 
   return (
     <>
+      <Header />
       <Controls />
-      <ButtonLink to="/">Back to Project</ButtonLink>
       <FormControl>
         <Select
           id="number"
