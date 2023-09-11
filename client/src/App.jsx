@@ -4,25 +4,17 @@ import axios from "axios";
 import useSound from "use-sound";
 import { useSearchParams } from "react-router-dom";
 // eslint-disable-next-line import/no-extraneous-dependencies
-import {
-  FormControl,
-  Select,
-  Button,
-  ButtonGroup,
-  Box,
-  Flex,
-} from "@chakra-ui/react";
+import { FormControl, Select, Box, Flex } from "@chakra-ui/react";
 
 import ButtonLink from "../components/Link/ButtonLink";
 import Sound from "./song0.wav";
 import ExcitementCurve from "./excitementCurve/ExcitementCurve";
 import LoopTable from "./musicEdit/LoopTable";
 import LoopMaterialView from "./musicEdit/LoopMaterialView";
-import createMusic from "./createMusic";
 import { setParts } from "./redux/soundsSlice";
 import { setProjectId } from "./redux/projectIdSlice";
-import { setId } from "./redux/songIdSlice";
 import TopicView from "./musicEdit/TopicView";
+import Controls from "./Controls";
 
 function App() {
   const [searchParams] = useSearchParams();
@@ -34,14 +26,13 @@ function App() {
   const songId = useSelector((state) => state.songId.songId);
   // const partId = useSelector((state) => state.canvas.partId);
   const projectId = searchParams.get("projectid");
-  const linesY = useSelector((state) => state.lines1.lines);
   // const xCoordinate = useSelector((state) => state.musicData.xCoordinate);
   // const yCoordinate = useSelector((state) => state.musicData.yCoordinate);
   // const rangeList = useSelector((state) => state.musicData.rangeList);
   const dispatch = useDispatch();
   dispatch(setProjectId(projectId));
   const [_context1, _setContext1] = useState(null);
-  const [audio, setAudio] = useState(null);
+  const [_audio, setAudio] = useState(null);
   const [_context2, _setContext2] = useState(null);
   const [_count, setCount] = useState(0);
   const [_done1, setDone] = useState(false);
@@ -86,10 +77,6 @@ function App() {
     setSongs([...songs, { name: songId, id: songId }]);
   }, [songId]);
 
-  const addSelect = () => {
-    setSongs([...songs, { name: "a", id: 1 }]);
-  };
-
   const handleChange = (e) => {
     setasdf(e.target.value);
     const selectSongId = e.target.value;
@@ -105,6 +92,7 @@ function App() {
 
   return (
     <>
+      <Controls />
       <ButtonLink to="/">Back to Project</ButtonLink>
       <FormControl>
         <Select
@@ -117,38 +105,6 @@ function App() {
             <option key={`${name}${id}`}>{name}</option>
           ))}
         </Select>
-      </FormControl>
-      <FormControl>
-        <ButtonGroup>
-          <Button type="button" onClick={() => audio.play()}>
-            play
-          </Button>
-          <Button type="button" onClick={() => audio.pause()}>
-            pause
-          </Button>
-          <Button
-            type="button"
-            onClick={() => {
-              audio.pause();
-              audio.currentTime = 0;
-            }}
-          >
-            stop
-          </Button>
-          <Button
-            type="button"
-            onClick={async () => {
-              const music = await createMusic(projectId, linesY);
-              dispatch(setParts(music.parts));
-              dispatch(setId(music.songid));
-            }}
-          >
-            create
-          </Button>
-          <Button type="button" onClick={() => addSelect()}>
-            add
-          </Button>
-        </ButtonGroup>
       </FormControl>
 
       <Box className="excitement-curve-container" paddingY={4}>
