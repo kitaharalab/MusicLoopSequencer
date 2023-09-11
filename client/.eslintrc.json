@@ -21,6 +21,7 @@
         "allowArrowFunctions": true,
         "allowFunctions": true
       }
-    ]
+    ],
+    "react/prop-types": ["error", { "ignore": true }]
   }
 }
