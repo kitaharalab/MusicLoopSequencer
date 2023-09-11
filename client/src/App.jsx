@@ -42,7 +42,7 @@ function App() {
   const [_ctx2Height, _setCtx2Height] = useState(0);
   const [_play, { _stop, _pause }] = useSound(Sound);
 
-  const [songs, setSongs] = useState([]);
+  const [songHistory, setSongHistory] = useState([]);
   const baseUrl = import.meta.env.VITE_SERVER_URL;
 
   useEffect(() => {
@@ -51,8 +51,8 @@ function App() {
       .get(url) // サーバーから音素材の配列を受け取った後，then部分を実行する．
       .then((response) => {
         setasdf(1234);
-        const resSongIds = response.data.songids;
-        setSongs(resSongIds.map((id) => ({ name: id, id })));
+        const savedSongIds = response.data.songids;
+        setSongHistory(savedSongIds.map((id) => ({ name: id, id })));
         setDone(true);
       });
   }, []);
@@ -74,7 +74,7 @@ function App() {
         const test1 = new Audio(FILE);
         setAudio(test1);
       });
-    setSongs([...songs, { name: songId, id: songId }]);
+    setSongHistory([...songHistory, { name: songId, id: songId }]);
   }, [songId]);
 
   const handleChange = (e) => {
@@ -101,7 +101,7 @@ function App() {
           aria-label="select another"
           w="25%"
         >
-          {songs.map(({ name, id }) => (
+          {songHistory.map(({ name, id }) => (
             <option key={`${name}${id}`}>{name}</option>
           ))}
         </Select>
