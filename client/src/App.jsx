@@ -13,7 +13,7 @@ import LoopMaterialView from "./app/musicEdit/LoopMaterialView";
 import { setParts } from "./redux/soundsSlice";
 import { setProjectId } from "./redux/projectIdSlice";
 import TopicView from "./app/musicEdit/TopicView";
-import Controls from "./app/Controls";
+import Controls from "./app/controls/Controls";
 import Header from "./app/Header";
 
 function App() {
