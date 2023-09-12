@@ -119,7 +119,7 @@ function App() {
         </Select>
       </FormControl>
 
-      <Box className="excitement-curve-container" paddingY={4}>
+      <Box className="excitement-curve-container" paddingY={4} height="40vh">
         <ExcitementCurve measure={32} />
       </Box>
 
