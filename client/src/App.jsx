@@ -114,15 +114,11 @@ function App() {
       </Box>
 
       <Flex>
-        <Flex flexDirection="column">
-          <Box
-            className="music-loops-container"
-            width={musicEditAreaWidth}
-            marginRight={4}
-          >
+        <Flex flexDirection="column" width={musicEditAreaWidth}>
+          <Box className="music-loops-container">
             <LoopMaterialView />
           </Box>
-          <TopicView width={musicEditAreaWidth} />
+          <TopicView />
         </Flex>
 
         <Box className="sound-sequence-container" marginY={4} overflow="auto">
