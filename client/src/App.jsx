@@ -9,7 +9,7 @@ import { FormControl, Select, Box, Flex } from "@chakra-ui/react";
 import Sound from "./song0.wav";
 import ExcitementCurve from "./app/excitementCurve/ExcitementCurve";
 import LoopTable from "./app/musicEdit/LoopTable";
-import LoopMaterialView from "./app/musicEdit/LoopMaterialView";
+import LoopMaterialView from "./app/musicEdit/loopMaterisl/LoopMaterialView";
 import { setParts } from "./redux/soundsSlice";
 import { setProjectId } from "./redux/projectIdSlice";
 import TopicView from "./app/musicEdit/topic/TopicView";
