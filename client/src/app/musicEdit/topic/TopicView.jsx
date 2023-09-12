@@ -1,7 +1,9 @@
+/* eslint-disable import/no-unresolved */
 import { Box } from "@chakra-ui/react";
 import React from "react";
 
 import LoopTopicView from "./LoopTopicView";
+import TopicLegend from "./TopicLegend";
 import TopicPreferenceView from "./TopicPreferenceView";
 
 const sampleTopicPreference = [
@@ -20,24 +22,46 @@ const sampleLoopTopic = [
 
 export default function TopicView() {
   const width = 400;
-  const height = 400;
+  const contentHeight = 200;
+  const legendHeight = 100;
+  const margin = 25;
+  const barPadding = 0.2;
 
   return (
     <Box>
-      <Box marginY={4}>
-        <LoopTopicView
-          data={sampleLoopTopic}
-          width={width}
-          height={height / 2}
-        />
-      </Box>
-      <Box marginY={4}>
-        <TopicPreferenceView
-          data={sampleTopicPreference}
-          width={width}
-          height={height / 2}
-        />
-      </Box>
+      <svg width={width} height={contentHeight * 2 + legendHeight + margin * 4}>
+        <g className="content" transform={`translate(0 ${margin})`}>
+          <g className="wrapper">
+            <LoopTopicView
+              data={sampleLoopTopic}
+              width={width}
+              height={contentHeight}
+              padding={barPadding}
+            />
+          </g>
+          <g
+            className="wrapper"
+            transform={`translate(0 ${margin + contentHeight})`}
+          >
+            <TopicPreferenceView
+              data={sampleTopicPreference}
+              width={width}
+              height={contentHeight}
+              padding={barPadding}
+            />
+          </g>
+        </g>
+        <g
+          className="legend-wrapper"
+          transform={`translate(0 ${margin * 3 + contentHeight * 2})`}
+        >
+          <TopicLegend
+            names={sampleLoopTopic.map(({ name }) => name)}
+            width={width}
+            padding={barPadding}
+          />
+        </g>
+      </svg>
     </Box>
   );
 }
