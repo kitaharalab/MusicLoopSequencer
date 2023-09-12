@@ -1,5 +1,5 @@
 /* eslint-disable import/no-unresolved */
-import { Box, Card, CardBody } from "@chakra-ui/react";
+import { Box, Card, CardBody, Text } from "@chakra-ui/react";
 import React, { useRef } from "react";
 
 import LoopTopicView from "./LoopTopicView";
@@ -29,8 +29,9 @@ export default function TopicView() {
   const barPadding = 0.2;
 
   return (
-    <Card>
+    <Card marginY={4}>
       <CardBody>
+        <Text>Topic Rate</Text>
         <Box ref={wrapperRef}>
           <svg
             width={width}

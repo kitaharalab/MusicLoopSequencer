@@ -55,7 +55,7 @@ function Content({ children, width, height }) {
 
   return (
     <>
-      <Flex alignContent="center">
+      <Flex alignContent="center" marginBottom={4}>
         <Center>
           <Text>Preview</Text>
         </Center>

@@ -4,7 +4,17 @@ import axios from "axios";
 import useSound from "use-sound";
 import { useSearchParams } from "react-router-dom";
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { FormControl, Select, Box, Flex } from "@chakra-ui/react";
+import {
+  FormControl,
+  Select,
+  Box,
+  Flex,
+  Card,
+  CardBody,
+  CardHeader,
+  Divider,
+  Spacer,
+} from "@chakra-ui/react";
 
 import Sound from "./song0.wav";
 import ExcitementCurve from "./app/excitementCurve/ExcitementCurve";
@@ -113,18 +123,34 @@ function App() {
         <ExcitementCurve measure={32} />
       </Box>
 
-      <Flex>
-        <Flex flexDirection="column" width={musicEditAreaWidth}>
-          <Box className="music-loops-container">
-            <LoopMaterialView />
+      <Box>
+        <Flex width="100%" height="100%">
+          <Box marginRight={4}>
+            <Card>
+              <CardHeader>Topics</CardHeader>
+              <Divider />
+              <CardBody>
+                <Flex flexDirection="column" width={musicEditAreaWidth}>
+                  <Box className="music-loops-container">
+                    <LoopMaterialView />
+                  </Box>
+                  <TopicView />
+                </Flex>
+              </CardBody>
+            </Card>
           </Box>
-          <TopicView />
+          <Spacer />
+          <Box overflowX="auto">
+            <Card>
+              <CardHeader>music</CardHeader>
+              <Divider />
+              <CardBody>
+                <LoopTable measure={32} />
+              </CardBody>
+            </Card>
+          </Box>
         </Flex>
-
-        <Box className="sound-sequence-container" marginY={4} overflow="auto">
-          <LoopTable measure={32} />
-        </Box>
-      </Flex>
+      </Box>
     </>
   );
 }
