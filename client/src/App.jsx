@@ -45,6 +45,8 @@ function App() {
   const [songHistory, setSongHistory] = useState([]);
   const baseUrl = import.meta.env.VITE_SERVER_URL;
 
+  const musicEditAreaWidth = 400;
+
   useEffect(() => {
     const url = `${baseUrl}/projects/${projectId}/songs`;
     axios
@@ -113,10 +115,14 @@ function App() {
 
       <Flex>
         <Flex flexDirection="column">
-          <Box className="music-loops-container" width="400px" marginRight={4}>
+          <Box
+            className="music-loops-container"
+            width={musicEditAreaWidth}
+            marginRight={4}
+          >
             <LoopMaterialView />
           </Box>
-          <TopicView />
+          <TopicView width={musicEditAreaWidth} />
         </Flex>
 
         <Box className="sound-sequence-container" marginY={4} overflow="auto">

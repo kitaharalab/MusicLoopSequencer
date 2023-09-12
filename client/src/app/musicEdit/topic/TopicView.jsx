@@ -20,8 +20,7 @@ const sampleLoopTopic = [
   { name: "highest", value: 4 },
 ];
 
-export default function TopicView() {
-  const width = 400;
+export default function TopicView({ width }) {
   const contentHeight = 200;
   const legendHeight = 100;
   const margin = 25;
