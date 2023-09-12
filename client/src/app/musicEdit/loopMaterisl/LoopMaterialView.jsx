@@ -54,40 +54,38 @@ function Content({ children, width, height }) {
   const zoomState = { zoomTransform, setZoomTransform };
 
   return (
-    <Card>
-      <CardBody>
-        <Flex alignContent="center">
-          <Center>
-            <Text>Preview</Text>
-          </Center>
-          <Spacer />
-          <ButtonGroup>
-            <IconButton
-              icon={<Icon as={isMute ? BiSolidVolumeMute : BiVolumeFull} />}
-              onClick={() => {
-                setIsMute(!isMute);
-              }}
-            />
-            <IconButton
-              icon={<Icon as={BiRefresh} />}
-              onClick={() => {
-                setZoomTransform(initZoomTransform);
-              }}
-            />
-          </ButtonGroup>
-        </Flex>
-        <Divider />
-        <Box>
-          <ZoomableChart width={width} height={height} zoomState={zoomState}>
-            {children}
-          </ZoomableChart>
-        </Box>
-      </CardBody>
-    </Card>
+    <>
+      <Flex alignContent="center">
+        <Center>
+          <Text>Preview</Text>
+        </Center>
+        <Spacer />
+        <ButtonGroup>
+          <IconButton
+            icon={<Icon as={isMute ? BiSolidVolumeMute : BiVolumeFull} />}
+            onClick={() => {
+              setIsMute(!isMute);
+            }}
+          />
+          <IconButton
+            icon={<Icon as={BiRefresh} />}
+            onClick={() => {
+              setZoomTransform(initZoomTransform);
+            }}
+          />
+        </ButtonGroup>
+      </Flex>
+      <Divider />
+      <Box>
+        <ZoomableChart width={width} height={height} zoomState={zoomState}>
+          {children}
+        </ZoomableChart>
+      </Box>
+    </>
   );
 }
 
-export default function LoopMaterialView({ width }) {
+export default function LoopMaterialView() {
   // const selectedMeasureId = useSelector((state) => state.block.posRectX);
   // const selectedPartId = useSelector((state) => state.block.posRectY)
   // const musicLoopId = useSelector((state) => state.musicLoop.musicLoopId);
@@ -98,6 +96,8 @@ export default function LoopMaterialView({ width }) {
   // const partId = useSelector((state) => state.canvas.partId);
   // const projectId = useSelector((state) => state.projectId.projectId);
   // const dispatch = useDispatch();
+  const wrapperRef = useRef();
+  const width = wrapperRef?.current?.clientWidth;
 
   // const clickRect = ({ nativeEvent }) => {
   //    const { offsetX, offsetY } = nativeEvent;
@@ -148,9 +148,16 @@ export default function LoopMaterialView({ width }) {
           }
         }}
       /> */}
-      <Content width={width} height={width}>
-        <ScatterPlot width={width} height={width} />
-      </Content>
+
+      <Card>
+        <CardBody>
+          <Box ref={wrapperRef}>
+            <Content width={width} height={width}>
+              <ScatterPlot width={width} height={width} />
+            </Content>
+          </Box>
+        </CardBody>
+      </Card>
     </>
   );
 }
