@@ -95,7 +95,7 @@ export default function LoopMaterialView({ width }) {
         }}
       /> */}
       <ZoomableChart width={width} height={width}>
-        <ScatterPlot width={width} />
+        <ScatterPlot width={width} height={width} />
       </ZoomableChart>
       {/* <svg width={width} height={width} ref={svgRef}>
         <g
