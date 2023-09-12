@@ -12,7 +12,7 @@ import LoopTable from "./app/musicEdit/LoopTable";
 import LoopMaterialView from "./app/musicEdit/LoopMaterialView";
 import { setParts } from "./redux/soundsSlice";
 import { setProjectId } from "./redux/projectIdSlice";
-import TopicView from "./app/musicEdit/TopicView";
+import TopicView from "./app/musicEdit/topic/TopicView";
 import Controls from "./app/controls/Controls";
 import Header from "./app/Header";
 
