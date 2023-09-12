@@ -76,7 +76,7 @@ export default function LoopTable({ measure }) {
             <Th />
             <Th>小節</Th>
             {measureRange.map((i) => (
-              <th>{i}</th>
+              <Th key={i}>{i}</Th>
             ))}
           </Tr>
         </Thead>
