@@ -8,48 +8,82 @@ import * as d3 from "d3";
 // import { setJson } from "./redux/soundDataSlice";
 // import { setParts } from "../../redux/soundsSlice";
 // import { setId } from "../../redux/songIdSlice";
-import { Box, ButtonGroup, IconButton, Icon } from "@chakra-ui/react";
+import {
+  Box,
+  ButtonGroup,
+  IconButton,
+  Icon,
+  Flex,
+  Text,
+  Center,
+  Spacer,
+  Card,
+  CardBody,
+  Divider,
+} from "@chakra-ui/react";
 import { BiVolumeFull, BiSolidVolumeMute, BiRefresh } from "react-icons/bi";
 import ScatterPlot from "./ScatterPlot";
 
-function ZoomableChart({ children, width, height }) {
-  const initZoomTransform = { x: 0, y: 0, k: 1 };
-  const [zoomTransform, setZoomTransform] = useState(initZoomTransform);
-  const [isMute, setIsMute] = useState(false);
+function ZoomableChart({ children, width, height, zoomState }) {
+  const { zoomTransform, setZoomTransform } = zoomState;
+
   const svgRef = useRef();
 
   useEffect(() => {
     const zoom = d3.zoom().on("zoom", (event) => {
-      // console.log(event);
       setZoomTransform(event.transform);
     });
     d3.select(svgRef.current).call(zoom);
   }, []);
 
   return (
-    <Box>
-      <ButtonGroup>
-        <IconButton
-          icon={<Icon as={BiRefresh} />}
-          onClick={() => {
-            setZoomTransform(initZoomTransform);
-          }}
-        />
-        <IconButton
-          icon={<Icon as={isMute ? BiSolidVolumeMute : BiVolumeFull} />}
-          onClick={() => {
-            setIsMute(!isMute);
-          }}
-        />
-      </ButtonGroup>
-      <svg width={width} height={height} ref={svgRef}>
-        <g
-          transform={`translate(${zoomTransform?.x},${zoomTransform?.y}) scale(${zoomTransform?.k})`}
-        >
-          {children}
-        </g>
-      </svg>
-    </Box>
+    <svg width={width} height={height} ref={svgRef}>
+      <g
+        transform={`translate(${zoomTransform?.x},${zoomTransform?.y}) scale(${zoomTransform?.k})`}
+      >
+        {children}
+      </g>
+    </svg>
+  );
+}
+
+function Content({ children, width, height }) {
+  const [isMute, setIsMute] = useState(false);
+  const initZoomTransform = { x: 0, y: 0, k: 1 };
+  const [zoomTransform, setZoomTransform] = useState(initZoomTransform);
+  const zoomState = { zoomTransform, setZoomTransform };
+
+  return (
+    <Card>
+      <CardBody>
+        <Flex alignContent="center">
+          <Center>
+            <Text>Preview</Text>
+          </Center>
+          <Spacer />
+          <ButtonGroup>
+            <IconButton
+              icon={<Icon as={isMute ? BiSolidVolumeMute : BiVolumeFull} />}
+              onClick={() => {
+                setIsMute(!isMute);
+              }}
+            />
+            <IconButton
+              icon={<Icon as={BiRefresh} />}
+              onClick={() => {
+                setZoomTransform(initZoomTransform);
+              }}
+            />
+          </ButtonGroup>
+        </Flex>
+        <Divider />
+        <Box>
+          <ZoomableChart width={width} height={height} zoomState={zoomState}>
+            {children}
+          </ZoomableChart>
+        </Box>
+      </CardBody>
+    </Card>
   );
 }
 
@@ -114,14 +148,9 @@ export default function LoopMaterialView({ width }) {
           }
         }}
       /> */}
-      <ZoomableChart width={width} height={width}>
+      <Content width={width} height={width}>
         <ScatterPlot width={width} height={width} />
-      </ZoomableChart>
-      {/* <svg width={width} height={width} ref={svgRef}>
-        <g
-          transform={`translate(${zoomTransform?.x},${zoomTransform?.y}) scale(${zoomTransform?.k})`}
-        />
-      </svg> */}
+      </Content>
     </>
   );
 }
