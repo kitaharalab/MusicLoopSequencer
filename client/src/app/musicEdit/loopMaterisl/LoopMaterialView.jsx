@@ -8,13 +8,14 @@ import * as d3 from "d3";
 // import { setJson } from "./redux/soundDataSlice";
 // import { setParts } from "../../redux/soundsSlice";
 // import { setId } from "../../redux/songIdSlice";
-import { Box, ButtonGroup, IconButton } from "@chakra-ui/react";
-import { RepeatIcon } from "@chakra-ui/icons";
+import { Box, ButtonGroup, IconButton, Icon } from "@chakra-ui/react";
+import { BiVolumeFull, BiSolidVolumeMute, BiRefresh } from "react-icons/bi";
 import ScatterPlot from "./ScatterPlot";
 
 function ZoomableChart({ children, width, height }) {
   const initZoomTransform = { x: 0, y: 0, k: 1 };
   const [zoomTransform, setZoomTransform] = useState(initZoomTransform);
+  const [isMute, setIsMute] = useState(false);
   const svgRef = useRef();
 
   useEffect(() => {
@@ -29,9 +30,15 @@ function ZoomableChart({ children, width, height }) {
     <Box>
       <ButtonGroup>
         <IconButton
-          icon={<RepeatIcon />}
+          icon={<Icon as={BiRefresh} />}
           onClick={() => {
             setZoomTransform(initZoomTransform);
+          }}
+        />
+        <IconButton
+          icon={<Icon as={isMute ? BiSolidVolumeMute : BiVolumeFull} />}
+          onClick={() => {
+            setIsMute(!isMute);
           }}
         />
       </ButtonGroup>
