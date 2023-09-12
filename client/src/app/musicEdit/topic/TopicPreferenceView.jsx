@@ -1,7 +1,17 @@
 /* eslint-disable import/no-unresolved */
 import React from "react";
-import BarChart from "@components/chart/BarChart";
+import BarChartContent from "@components/chart/BarChartContent";
 
-export default function TopicPreferenceView({ data, width, height }) {
-  return <BarChart data={data} width={width} height={height} />;
+export default function TopicPreferenceView({ data, width, height, padding }) {
+  return (
+    <g>
+      <BarChartContent
+        data={data}
+        width={width}
+        height={height}
+        padding={padding}
+      />
+      <line x1={0} y1={height} x2={width} y2={height} stroke="black" />
+    </g>
+  );
 }
