@@ -120,7 +120,7 @@ function App() {
             width={musicEditAreaWidth}
             marginRight={4}
           >
-            <LoopMaterialView />
+            <LoopMaterialView width={musicEditAreaWidth} />
           </Box>
           <TopicView width={musicEditAreaWidth} />
         </Flex>
