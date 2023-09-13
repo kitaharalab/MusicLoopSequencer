@@ -6,8 +6,8 @@ import * as d3 from "d3";
 export default function ZoomedExcitementCurve() {
   const excitementCurve = useSelector((store) => store.lines1.lines);
   const wrapperRef = useRef();
-  const width = wrapperRef?.current?.clientWidth;
-  const height = wrapperRef?.current?.clientHeight;
+  const width = wrapperRef?.current?.clientWidth ?? 200;
+  const height = wrapperRef?.current?.clientHeight ?? 200;
   const xScale = d3
     .scaleLinear()
     .domain([0, excitementCurve.length])

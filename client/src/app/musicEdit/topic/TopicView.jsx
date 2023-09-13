@@ -22,7 +22,7 @@ const sampleLoopTopic = [
 
 export default function TopicView() {
   const wrapperRef = useRef();
-  const width = wrapperRef?.current?.clientWidth;
+  const width = wrapperRef?.current?.clientWidth ?? 100;
   const contentHeight = 200;
   const legendHeight = 100;
   const margin = 25;
