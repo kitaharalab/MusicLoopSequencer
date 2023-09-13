@@ -1,5 +1,13 @@
 import React from "react";
-import { Table, TableContainer, Tbody, Th, Thead, Tr } from "@chakra-ui/react";
+import {
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+} from "@chakra-ui/react";
 import { useSelector } from "react-redux";
 
 export default function MusicInstrumentTable() {
@@ -17,10 +25,10 @@ export default function MusicInstrumentTable() {
             <Th>楽器名</Th>
           </Tr>
         </Thead>
-        <Tbody textAlign="center">
+        <Tbody>
           {partName.map((name) => (
             <Tr key={name} height="30px">
-              {name}
+              <Td textAlign="center">{name}</Td>
             </Tr>
           ))}
         </Tbody>
