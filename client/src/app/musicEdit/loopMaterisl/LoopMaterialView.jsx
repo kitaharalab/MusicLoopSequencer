@@ -26,13 +26,21 @@ import ScatterPlot from "./ScatterPlot";
 
 function ZoomableChart({ children, width, height, zoomState }) {
   const { zoomTransform, setZoomTransform } = zoomState;
-
   const svgRef = useRef();
+  const reset =
+    JSON.stringify(d3.zoomIdentity) === JSON.stringify(zoomTransform);
+  if (reset) {
+    d3.select(svgRef.current).call(d3.zoom().transform, d3.zoomIdentity);
+  }
 
   useEffect(() => {
-    const zoom = d3.zoom().on("zoom", (event) => {
-      setZoomTransform(event.transform);
-    });
+    const zoom = d3
+      .zoom()
+      .scaleExtent([1, 20])
+      .on("zoom", (event) => {
+        setZoomTransform(event.transform);
+      });
+
     d3.select(svgRef.current).call(zoom);
   }, []);
 
@@ -49,8 +57,7 @@ function ZoomableChart({ children, width, height, zoomState }) {
 
 function Content({ children, width, height }) {
   const [isMute, setIsMute] = useState(false);
-  const initZoomTransform = { x: 0, y: 0, k: 1 };
-  const [zoomTransform, setZoomTransform] = useState(initZoomTransform);
+  const [zoomTransform, setZoomTransform] = useState(d3.zoomIdentity);
   const zoomState = { zoomTransform, setZoomTransform };
 
   return (
@@ -70,7 +77,7 @@ function Content({ children, width, height }) {
           <IconButton
             icon={<Icon as={BiRefresh} />}
             onClick={() => {
-              setZoomTransform(initZoomTransform);
+              setZoomTransform(d3.zoomIdentity);
             }}
           />
         </ButtonGroup>
