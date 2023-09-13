@@ -57,14 +57,6 @@ export default function LoopTable({ measure }) {
     dispatch(setMusicData({ xCoordinate, yCoordinate, rangeList }));
   }
 
-  useEffect(() => {
-    if (parts.length === 0) {
-      return;
-    }
-
-    console.log(parts);
-  }, [parts]);
-
   return (
     <TableContainer>
       <Table

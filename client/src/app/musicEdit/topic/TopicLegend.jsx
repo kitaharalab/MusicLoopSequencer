@@ -3,7 +3,6 @@ import React from "react";
 import * as d3 from "d3";
 
 export default function TopicLegend({ names, width, padding }) {
-  console.log(names);
   const xScale = d3
     .scaleBand()
     .domain(names)
