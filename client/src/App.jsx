@@ -14,6 +14,8 @@ import {
   CardHeader,
   Divider,
   Spacer,
+  Grid,
+  GridItem,
 } from "@chakra-ui/react";
 
 import Sound from "./song0.wav";
@@ -26,6 +28,7 @@ import TopicView from "./app/musicEdit/topic/TopicView";
 import Controls from "./app/controls/Controls";
 import Header from "./app/Header";
 import ZoomedExcitementCurve from "./app/musicEdit/ZoomedExcitementCurve";
+import MusicInstrumentTable from "./app/musicEdit/MusicInstrumentTable";
 
 function App() {
   const [searchParams] = useSearchParams();
@@ -146,8 +149,21 @@ function App() {
               <CardHeader>music</CardHeader>
               <Divider />
               <CardBody>
-                <ZoomedExcitementCurve />
-                <LoopTable measure={32} />
+                <Grid
+                  templateRows="repeat(2, 1fr)"
+                  templateColumns="repeat(10, 1fr)"
+                >
+                  <GridItem />
+                  <GridItem colSpan={9}>
+                    <ZoomedExcitementCurve />
+                  </GridItem>
+                  <GridItem>
+                    <MusicInstrumentTable />
+                  </GridItem>
+                  <GridItem colSpan={9}>
+                    <LoopTable measure={32} />
+                  </GridItem>
+                </Grid>
               </CardBody>
             </Card>
           </Box>
