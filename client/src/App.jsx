@@ -25,6 +25,7 @@ import { setProjectId } from "./redux/projectIdSlice";
 import TopicView from "./app/musicEdit/topic/TopicView";
 import Controls from "./app/controls/Controls";
 import Header from "./app/Header";
+import ZoomedExcitementCurve from "./app/musicEdit/ZoomedExcitementCurve";
 
 function App() {
   const [searchParams] = useSearchParams();
@@ -145,6 +146,7 @@ function App() {
               <CardHeader>music</CardHeader>
               <Divider />
               <CardBody>
+                <ZoomedExcitementCurve />
                 <LoopTable measure={32} />
               </CardBody>
             </Card>
