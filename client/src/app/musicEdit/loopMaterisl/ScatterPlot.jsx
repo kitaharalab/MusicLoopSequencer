@@ -30,7 +30,7 @@ export default function ScatterPlot({ width, height }) {
         <circle
           key={id}
           transform={`translate(${xScale(x)} ${yScale(y)})`}
-          r={4}
+          r={3}
           fill={colorScale(rangeList.findLastIndex((range) => i > range))}
         />
       ))}

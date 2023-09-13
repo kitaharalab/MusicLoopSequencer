@@ -56,7 +56,7 @@ function App() {
   const [songHistory, setSongHistory] = useState([]);
   const baseUrl = import.meta.env.VITE_SERVER_URL;
 
-  const musicEditAreaWidth = 400;
+  const musicEditAreaWidth = 300;
 
   useEffect(() => {
     const url = `${baseUrl}/projects/${projectId}/songs`;
