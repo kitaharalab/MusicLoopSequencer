@@ -61,26 +61,27 @@ export default function LoopTable({ measure }) {
     <TableContainer>
       <Table
         size="sm"
-        style={{ borderCollapse: "separate", borderSpacing: "5px" }}
+        style={{
+          borderCollapse: "separate",
+          borderSpacing: "5px",
+          width: `${measure * 32}px`,
+        }}
+        layout="fixed"
       >
         <Thead>
           <Tr>
-            <Th />
-            <Th>小節</Th>
             {measureRange.map((i) => (
-              <Th key={i}>{i}</Th>
+              <Th key={i} textAlign="center">
+                {i + 1}
+              </Th>
             ))}
           </Tr>
         </Thead>
         <Tbody>
-          <Tr>
-            <Td>楽器</Td>
-          </Tr>
           {parts.map(({ partid, sounds }) => {
             const existSound = measureRange.map((i) => sounds[i] != null);
             return (
               <Tr key={partid}>
-                <Td colSpan={2}>{partid}</Td>
                 {existSound.map((exist, i) => {
                   const isSelect =
                     selectMeasurePart.measure === i &&
@@ -96,6 +97,7 @@ export default function LoopTable({ measure }) {
                       data-measure={i}
                       data-exist={exist}
                       onClick={handleOnClickMeasurePart}
+                      height="30px"
                     />
                   );
                 })}
