@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   Table,
@@ -9,12 +9,14 @@ import {
   Td,
   Tbody,
 } from "@chakra-ui/react";
+import axios from "axios";
 import { setMusicData } from "../../redux/musicDataSlice";
 import selectBlock from "./selectBlock";
 
 export default function LoopTable({ measure }) {
-  const parts = useSelector((state) => state.sounds.parts);
-  console.log("loop table parts", parts);
+  const projectId = useSelector((state) => state.projectId.projectId);
+  const songId = useSelector((state) => state.songId.songId);
+  const [parts, setParts] = useState();
   const dispatch = useDispatch();
   const initSelectMeasurePart = {
     measure: null,
@@ -58,6 +60,27 @@ export default function LoopTable({ measure }) {
     dispatch(setMusicData({ xCoordinate, yCoordinate, rangeList }));
   }
 
+  useEffect(() => {
+    const url = `${
+      import.meta.env.VITE_SERVER_URL
+    }/projects/${projectId}/songs/${songId}`;
+    axios
+      .get(url) // サーバーから音素材の配列を受け取った後，then部分を実行する．
+      .then((response) => {
+        const { data } = response;
+        setParts(data.parts);
+      });
+    console.log(songId);
+  }, [songId]);
+
+  if (parts === undefined) {
+    return <div>loading</div>;
+  }
+
+  if (parts === null) {
+    return <div>nothing</div>;
+  }
+
   return (
     <TableContainer>
       <Table
@@ -79,7 +102,7 @@ export default function LoopTable({ measure }) {
           </Tr>
         </Thead>
         <Tbody>
-          {parts.map(({ partid, sounds }) => {
+          {parts?.map(({ partid, sounds }) => {
             const existSound = measureRange.map((i) => sounds[i] != null);
             return (
               <Tr key={partid}>
