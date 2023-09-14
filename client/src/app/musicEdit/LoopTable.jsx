@@ -14,6 +14,7 @@ import selectBlock from "./selectBlock";
 
 export default function LoopTable({ measure }) {
   const parts = useSelector((state) => state.sounds.parts);
+  console.log("loop table parts", parts);
   const dispatch = useDispatch();
   const initSelectMeasurePart = {
     measure: null,
