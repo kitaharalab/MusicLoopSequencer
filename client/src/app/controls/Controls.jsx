@@ -6,6 +6,7 @@ import {
   Flex,
   Spacer,
   Select,
+  useToast,
 } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
@@ -21,6 +22,7 @@ export default function Controls({ projectId }) {
   const [songHistory, setSongHistory] = useState([]);
   const [_asdf, setasdf] = useState([0]);
   const baseUrl = `${import.meta.env.VITE_SERVER_URL}/projects/${projectId}`;
+  const songCreatedToast = useToast();
 
   const handleSelectedSongChange = (e) => {
     setasdf(e.target.value);
@@ -52,6 +54,12 @@ export default function Controls({ projectId }) {
                   ...songHistory,
                   { name: music.songid, id: music.songid },
                 ]);
+                songCreatedToast({
+                  title: "created song",
+                  status: "success",
+                  position: "bottom-left",
+                  isClosable: true,
+                });
               }}
             >
               create
