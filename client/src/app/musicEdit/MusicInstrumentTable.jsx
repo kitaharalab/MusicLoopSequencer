@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from "react";
 import {
   Table,
   TableContainer,
@@ -9,6 +8,7 @@ import {
   Tr,
 } from "@chakra-ui/react";
 import axios from "axios";
+import React, { useEffect, useState } from "react";
 
 export default function MusicInstrumentTable() {
   const [partName, setPartName] = useState([]);

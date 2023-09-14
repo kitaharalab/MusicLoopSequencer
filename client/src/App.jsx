@@ -1,8 +1,3 @@
-import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import axios from "axios";
-// import useSound from "use-sound";
-import { useSearchParams } from "react-router-dom";
 import {
   Box,
   Flex,
@@ -14,15 +9,20 @@ import {
   Grid,
   GridItem,
 } from "@chakra-ui/react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+// import useSound from "use-sound";
+import { useSearchParams } from "react-router-dom";
 
+import Header from "./app/Header";
+import Controls from "./app/controls/Controls";
 import ExcitementCurve from "./app/excitementCurve/ExcitementCurve";
 import LoopTable from "./app/musicEdit/LoopTable";
+import MusicInstrumentTable from "./app/musicEdit/MusicInstrumentTable";
+import ZoomedExcitementCurve from "./app/musicEdit/ZoomedExcitementCurve";
 import LoopMaterialView from "./app/musicEdit/loopMaterisl/LoopMaterialView";
 import TopicView from "./app/musicEdit/topic/TopicView";
-import Controls from "./app/controls/Controls";
-import Header from "./app/Header";
-import ZoomedExcitementCurve from "./app/musicEdit/ZoomedExcitementCurve";
-import MusicInstrumentTable from "./app/musicEdit/MusicInstrumentTable";
 import { setSongId } from "./redux/songIdSlice";
 
 function App() {

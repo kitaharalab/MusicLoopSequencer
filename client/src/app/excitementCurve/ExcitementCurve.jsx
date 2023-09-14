@@ -1,6 +1,7 @@
+import { Box } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
-import { Box } from "@chakra-ui/react";
+
 import { setLine, setMax } from "../../redux/linesSlice";
 
 function drawBackgroundOutline(canvas) {

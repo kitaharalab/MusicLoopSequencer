@@ -1,5 +1,3 @@
-import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import {
   Table,
   TableContainer,
@@ -10,7 +8,11 @@ import {
   Tbody,
 } from "@chakra-ui/react";
 import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+
 import { setMusicData } from "../../redux/musicDataSlice";
+
 import selectBlock from "./selectBlock";
 
 export default function LoopTable({ projectId, measure }) {

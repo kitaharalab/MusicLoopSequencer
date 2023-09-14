@@ -1,6 +1,6 @@
+import * as d3 from "d3";
 import React from "react";
 import { useSelector } from "react-redux";
-import * as d3 from "d3";
 
 export default function ScatterPlot({ width, height }) {
   const xCoordinate = useSelector((state) => state.musicData.xCoordinate);

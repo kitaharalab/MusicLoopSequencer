@@ -1,7 +1,7 @@
 import { Box } from "@chakra-ui/react";
+import * as d3 from "d3";
 import React, { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
-import * as d3 from "d3";
 
 export default function ZoomedExcitementCurve() {
   const excitementCurve = useSelector((store) => store.lines1.lines);

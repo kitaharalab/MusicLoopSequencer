@@ -1,5 +1,5 @@
-import React, { useState } from "react";
 import { Button, ButtonGroup } from "@chakra-ui/react";
+import React, { useState } from "react";
 
 export default function AudioControls() {
   const [audio, _setAudio] = useState(null);

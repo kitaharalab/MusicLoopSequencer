@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from "react";
 import {
   FormControl,
   Button,
@@ -8,10 +7,13 @@ import {
   Select,
   useToast,
 } from "@chakra-ui/react";
-import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+
 import createMusic from "../../createMusic";
 import { setSongId } from "../../redux/songIdSlice";
+
 import AudioControls from "./AudioControls";
 import Evaluation from "./Evaluation";
 

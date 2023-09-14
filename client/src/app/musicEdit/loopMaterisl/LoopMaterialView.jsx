@@ -1,8 +1,3 @@
-import React, { useEffect, useRef, useState } from "react";
-// import { useSelector, useDispatch } from "react-redux";
-import * as d3 from "d3";
-// import insertSound from "./insertSound";
-// import onMusicLoop from "./onMusicLoop";
 import {
   Box,
   ButtonGroup,
@@ -16,7 +11,13 @@ import {
   CardBody,
   Divider,
 } from "@chakra-ui/react";
+import * as d3 from "d3";
+import React, { useEffect, useRef, useState } from "react";
+// import { useSelector, useDispatch } from "react-redux";
+// import insertSound from "./insertSound";
+// import onMusicLoop from "./onMusicLoop";
 import { BiVolumeFull, BiSolidVolumeMute, BiRefresh } from "react-icons/bi";
+
 import ScatterPlot from "./ScatterPlot";
 
 function ZoomableChart({ children, width, height, zoomState }) {
