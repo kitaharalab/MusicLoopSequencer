@@ -9,8 +9,7 @@ import Evaluation from "./Evaluation";
 
 export default function Controls({ projectId }) {
   const dispatch = useDispatch();
-  const linesY = useSelector((state) => state.lines1.lines);
-
+  const { lines, max } = useSelector((state) => state.lines1);
   return (
     <FormControl>
       <Flex>
@@ -18,9 +17,11 @@ export default function Controls({ projectId }) {
           <Button
             type="button"
             onClick={async () => {
-              const music = await createMusic(projectId, linesY);
-              dispatch(setParts(music.parts));
-              dispatch(setId(music.songid));
+              console.log(max, lines);
+              const music = await createMusic(projectId, lines, max);
+              console.log(music);
+              // dispatch(setParts(music.parts));
+              // dispatch(setId(music.songid));
             }}
           >
             create
