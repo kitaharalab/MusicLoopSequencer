@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableContainer,
@@ -8,11 +8,18 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
-import { useSelector } from "react-redux";
+import axios from "axios";
 
 export default function MusicInstrumentTable() {
-  const parts = useSelector((state) => state.sounds.parts);
-  const partName = parts.map(({ partid }) => partid);
+  const [partName, setPartName] = useState([]);
+
+  useEffect(() => {
+    const url = `${import.meta.env.VITE_SERVER_URL}/parts`;
+    axios.get(url).then((response) => {
+      const { data } = response;
+      setPartName(data["part-ids"]);
+    });
+  }, []);
 
   return (
     <TableContainer>
