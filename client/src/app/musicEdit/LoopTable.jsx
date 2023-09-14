@@ -69,7 +69,6 @@ export default function LoopTable({ projectId, measure }) {
         const { data } = response;
         setParts(data.parts);
       });
-    console.log(songId);
   }, [songId]);
 
   if (parts === undefined) {

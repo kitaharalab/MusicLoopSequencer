@@ -4,7 +4,6 @@ export default function createMusic(projectid, linesY, max) {
   const excitementArray = new Array(32);
   const range = Math.floor(linesY.length / excitementArray.length);
   const excitementStep = 5;
-  console.log(range);
   for (let i = 0; i < excitementArray.length; i++) {
     const sliceExcitementValues = linesY.slice(i * range, (i + 1) * range);
     const total = sliceExcitementValues.reduce((sum, value) => sum + value);
