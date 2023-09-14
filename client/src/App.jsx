@@ -52,12 +52,10 @@ function App() {
   const [_count, setCount] = useState(0);
   // const [done1, setDone] = useState(false);
 
-  const [_asdf, setasdf] = useState([0]);
   const [_ctx2Width, _setCtx2Width] = useState(0);
   const [_ctx2Height, _setCtx2Height] = useState(0);
   const [_play, { _stop, _pause }] = useSound(Sound);
 
-  const [songHistory, setSongHistory] = useState([]);
   const baseUrl = `${import.meta.env.VITE_SERVER_URL}/projects/${projectId}`;
 
   const musicEditAreaWidth = 300;
@@ -69,11 +67,8 @@ function App() {
     axios
       .get(songHistoryURL) // サーバーから音素材の配列を受け取った後，then部分を実行する．
       .then((response) => {
-        // setasdf(1234);
         // setDone(true);
         const savedSongIds = response.data.songids;
-        setSongHistory(savedSongIds.map((id) => ({ name: id, id })));
-
         const lastSongId = savedSongIds[savedSongIds.length - 1];
         dispatch(setSongId(lastSongId));
       });
@@ -96,38 +91,13 @@ function App() {
         const test1 = new Audio(FILE);
         setAudio(test1);
       });
-    setSongHistory([...songHistory, { name: songId, id: songId }]);
+    // setSongHistory([...songHistory, { name: songId, id: songId }]);
   }, [songId]);
-
-  const handleChange = (e) => {
-    setasdf(e.target.value);
-    const selectSongId = e.target.value;
-    const url = `${baseUrl}/songs/${selectSongId}`;
-    axios
-      .get(url) // サーバーから音素材の配列を受け取った後，then部分を実行する．
-      .then((response) => {
-        const { data } = response;
-        // console.log(data);
-        dispatch(setParts(data.parts));
-      });
-  };
 
   return (
     <>
       <Header projectName={projectId} />
       <Controls projectId={projectId} />
-      <FormControl>
-        <Select
-          id="number"
-          onChange={handleChange}
-          aria-label="select another"
-          w="25%"
-        >
-          {songHistory.map(({ name, id }) => (
-            <option key={`${name}${id}`}>{name}</option>
-          ))}
-        </Select>
-      </FormControl>
 
       <Box className="excitement-curve-container" paddingY={4} height="40vh">
         <ExcitementCurve measure={32} />
