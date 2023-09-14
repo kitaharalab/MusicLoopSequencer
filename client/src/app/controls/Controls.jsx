@@ -3,7 +3,7 @@ import { FormControl, Button, Box, Flex, Spacer } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
 import createMusic from "../../createMusic";
 import { setParts } from "../../redux/soundsSlice";
-import { setId } from "../../redux/songIdSlice";
+import { setSongId } from "../../redux/songIdSlice";
 import AudioControls from "./AudioControls";
 import Evaluation from "./Evaluation";
 
@@ -20,7 +20,7 @@ export default function Controls({ projectId }) {
               const music = await createMusic(projectId, lines, max);
               console.log("get music", music);
               dispatch(setParts(music.parts));
-              dispatch(setId(music.songid));
+              dispatch(setSongId(music.songid));
             }}
           >
             create
