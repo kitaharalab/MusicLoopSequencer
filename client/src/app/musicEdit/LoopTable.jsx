@@ -9,10 +9,10 @@ import {
   Td,
   Tbody,
 } from "@chakra-ui/react";
-import { setMusicData } from "./redux/musicDataSlice";
+import { setMusicData } from "../../redux/musicDataSlice";
 import selectBlock from "./selectBlock";
 
-export default function SoundBlock({ measure }) {
+export default function LoopTable({ measure }) {
   const parts = useSelector((state) => state.sounds.parts);
   const dispatch = useDispatch();
   const initSelectMeasurePart = {
@@ -57,38 +57,31 @@ export default function SoundBlock({ measure }) {
     dispatch(setMusicData({ xCoordinate, yCoordinate, rangeList }));
   }
 
-  useEffect(() => {
-    if (parts.length === 0) {
-      return;
-    }
-
-    console.log(parts);
-  }, [parts]);
-
   return (
     <TableContainer>
       <Table
         size="sm"
-        style={{ borderCollapse: "separate", borderSpacing: "5px" }}
+        style={{
+          borderCollapse: "separate",
+          borderSpacing: "5px",
+          width: `${measure * 32}px`,
+        }}
+        layout="fixed"
       >
         <Thead>
           <Tr>
-            <Th />
-            <Th>小節</Th>
             {measureRange.map((i) => (
-              <th>{i}</th>
+              <Th key={i} textAlign="center">
+                {i + 1}
+              </Th>
             ))}
           </Tr>
         </Thead>
         <Tbody>
-          <Tr>
-            <Td>楽器</Td>
-          </Tr>
           {parts.map(({ partid, sounds }) => {
             const existSound = measureRange.map((i) => sounds[i] != null);
             return (
               <Tr key={partid}>
-                <Td colSpan={2}>{partid}</Td>
                 {existSound.map((exist, i) => {
                   const isSelect =
                     selectMeasurePart.measure === i &&
@@ -104,6 +97,7 @@ export default function SoundBlock({ measure }) {
                       data-measure={i}
                       data-exist={exist}
                       onClick={handleOnClickMeasurePart}
+                      height="30px"
                     />
                   );
                 })}

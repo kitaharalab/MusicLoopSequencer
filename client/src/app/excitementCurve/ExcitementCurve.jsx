@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Box } from "@chakra-ui/react";
-import { setLine } from "./redux/linesSlice";
+import { setLine, setMax } from "../../redux/linesSlice";
 
 function drawBackgroundOutline(canvas) {
   const ctx = canvas.getContext("2d");
@@ -70,6 +70,7 @@ export default function ExcitementCurve({ measure }) {
     drawBackground(canvas, measure);
     const initLine = new Array(canvasWidth);
     setLines(initLine.fill(0));
+    dispatch(setMax({ max: wrapperRef.current?.clientHeight ?? 100 }));
   }, [wrapperRef.current?.clientWidth, wrapperRef.current?.clientHeight]);
 
   useEffect(() => {

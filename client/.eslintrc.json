@@ -21,6 +21,8 @@
         "allowArrowFunctions": true,
         "allowFunctions": true
       }
-    ]
+    ],
+    "react/prop-types": ["error", { "skipUndeclared": true }],
+    "import/no-extraneous-dependencies": ["off"]
   }
 }

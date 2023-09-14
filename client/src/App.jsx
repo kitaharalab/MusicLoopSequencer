@@ -7,20 +7,28 @@ import { useSearchParams } from "react-router-dom";
 import {
   FormControl,
   Select,
-  Button,
-  ButtonGroup,
   Box,
+  Flex,
+  Card,
+  CardBody,
+  CardHeader,
+  Divider,
+  Spacer,
+  Grid,
+  GridItem,
 } from "@chakra-ui/react";
 
-import ButtonLink from "../components/Link/ButtonLink";
 import Sound from "./song0.wav";
-import ExcitementCurve from "./ExcitementCurve";
-import SoundBlock from "./SoundBlock";
-import MusicLoops from "./MusicLoops";
-import createMusic from "./createMusic";
+import ExcitementCurve from "./app/excitementCurve/ExcitementCurve";
+import LoopTable from "./app/musicEdit/LoopTable";
+import LoopMaterialView from "./app/musicEdit/loopMaterisl/LoopMaterialView";
 import { setParts } from "./redux/soundsSlice";
 import { setProjectId } from "./redux/projectIdSlice";
-import { setId } from "./redux/songIdSlice";
+import TopicView from "./app/musicEdit/topic/TopicView";
+import Controls from "./app/controls/Controls";
+import Header from "./app/Header";
+import ZoomedExcitementCurve from "./app/musicEdit/ZoomedExcitementCurve";
+import MusicInstrumentTable from "./app/musicEdit/MusicInstrumentTable";
 
 function App() {
   const [searchParams] = useSearchParams();
@@ -32,14 +40,13 @@ function App() {
   const songId = useSelector((state) => state.songId.songId);
   // const partId = useSelector((state) => state.canvas.partId);
   const projectId = searchParams.get("projectid");
-  const linesY = useSelector((state) => state.lines1.lines);
   // const xCoordinate = useSelector((state) => state.musicData.xCoordinate);
   // const yCoordinate = useSelector((state) => state.musicData.yCoordinate);
   // const rangeList = useSelector((state) => state.musicData.rangeList);
   const dispatch = useDispatch();
   dispatch(setProjectId(projectId));
   const [_context1, _setContext1] = useState(null);
-  const [audio, setAudio] = useState(null);
+  const [_audio, setAudio] = useState(null);
   const [_context2, _setContext2] = useState(null);
   const [_count, setCount] = useState(0);
   const [_done1, setDone] = useState(false);
@@ -49,8 +56,10 @@ function App() {
   const [_ctx2Height, _setCtx2Height] = useState(0);
   const [_play, { _stop, _pause }] = useSound(Sound);
 
-  const [songs, setSongs] = useState([]);
+  const [songHistory, setSongHistory] = useState([]);
   const baseUrl = import.meta.env.VITE_SERVER_URL;
+
+  const musicEditAreaWidth = 300;
 
   useEffect(() => {
     const url = `${baseUrl}/projects/${projectId}/songs`;
@@ -58,8 +67,8 @@ function App() {
       .get(url) // サーバーから音素材の配列を受け取った後，then部分を実行する．
       .then((response) => {
         setasdf(1234);
-        const resSongIds = response.data.songids;
-        setSongs(resSongIds.map((id) => ({ name: id, id })));
+        const savedSongIds = response.data.songids;
+        setSongHistory(savedSongIds.map((id) => ({ name: id, id })));
         setDone(true);
       });
   }, []);
@@ -81,12 +90,8 @@ function App() {
         const test1 = new Audio(FILE);
         setAudio(test1);
       });
-    setSongs([...songs, { name: songId, id: songId }]);
+    setSongHistory([...songHistory, { name: songId, id: songId }]);
   }, [songId]);
-
-  const addSelect = () => {
-    setSongs([...songs, { name: "a", id: 1 }]);
-  };
 
   const handleChange = (e) => {
     setasdf(e.target.value);
@@ -103,31 +108,8 @@ function App() {
 
   return (
     <>
-      <p>
-        curve: <code id="count">{json.curve}</code>
-      </p>
-      <p>
-        partid: <code id="count">{json.sounds[0].partid}</code>
-      </p>
-      <p>
-        measure: <code id="count">{json.sounds[0].measure}</code>
-      </p>
-      <p>
-        soundid: <code id="count">{json.sounds[0].soundId}</code>
-      </p>
-      <p>
-        partid: <code id="count">{json.sounds[1].partid}</code>
-      </p>
-      <p>
-        measure: <code id="count">{json.sounds[1].measure}</code>
-      </p>
-      <p>
-        soundid: <code id="count">{json.sounds[1].soundId}</code>
-      </p>
-      <p>
-        soundid: <code id="count">{musicLoopId}</code>
-      </p>
-      <ButtonLink to="/">Back to Project</ButtonLink>
+      <Header projectName={projectId} />
+      <Controls projectId={projectId} />
       <FormControl>
         <Select
           id="number"
@@ -135,53 +117,57 @@ function App() {
           aria-label="select another"
           w="25%"
         >
-          {songs.map(({ name, id }) => (
+          {songHistory.map(({ name, id }) => (
             <option key={`${name}${id}`}>{name}</option>
           ))}
         </Select>
       </FormControl>
-      <FormControl>
-        <ButtonGroup>
-          <Button type="button" onClick={() => audio.play()}>
-            play
-          </Button>
-          <Button type="button" onClick={() => audio.pause()}>
-            pause
-          </Button>
-          <Button
-            type="button"
-            onClick={() => {
-              audio.pause();
-              audio.currentTime = 0;
-            }}
-          >
-            stop
-          </Button>
-          <Button
-            type="button"
-            onClick={async () => {
-              const music = await createMusic(projectId, linesY);
-              dispatch(setParts(music.parts));
-              dispatch(setId(music.songid));
-            }}
-          >
-            create
-          </Button>
-          <Button type="button" onClick={() => addSelect()}>
-            add
-          </Button>
-        </ButtonGroup>
-      </FormControl>
-      <Box height="50%">
-        <Box className="excitement-curve-container" height="50%" paddingY={4}>
-          <ExcitementCurve measure={32} />
-        </Box>
-        <Box className="sound-sequence-container" marginY={4}>
-          <SoundBlock measure={32} />
-        </Box>
+
+      <Box className="excitement-curve-container" paddingY={4} height="40vh">
+        <ExcitementCurve measure={32} />
       </Box>
-      <Box className="music-loops-container">
-        <MusicLoops />
+
+      <Box>
+        <Flex width="100%" height="100%">
+          <Box marginRight={4}>
+            <Card>
+              <CardHeader>Topics</CardHeader>
+              <Divider />
+              <CardBody>
+                <Flex flexDirection="column" width={musicEditAreaWidth}>
+                  <Box className="music-loops-container">
+                    <LoopMaterialView />
+                  </Box>
+                  <TopicView />
+                </Flex>
+              </CardBody>
+            </Card>
+          </Box>
+          <Spacer />
+          <Box overflowX="auto">
+            <Card>
+              <CardHeader>music</CardHeader>
+              <Divider />
+              <CardBody>
+                <Grid
+                  templateRows="repeat(2, 1fr)"
+                  templateColumns="repeat(10, 1fr)"
+                >
+                  <GridItem />
+                  <GridItem colSpan={9}>
+                    <ZoomedExcitementCurve />
+                  </GridItem>
+                  <GridItem>
+                    <MusicInstrumentTable />
+                  </GridItem>
+                  <GridItem colSpan={9}>
+                    <LoopTable measure={32} />
+                  </GridItem>
+                </Grid>
+              </CardBody>
+            </Card>
+          </Box>
+        </Flex>
       </Box>
     </>
   );
