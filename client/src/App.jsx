@@ -23,7 +23,6 @@ import ExcitementCurve from "./app/excitementCurve/ExcitementCurve";
 import LoopTable from "./app/musicEdit/LoopTable";
 import LoopMaterialView from "./app/musicEdit/loopMaterisl/LoopMaterialView";
 import { setParts } from "./redux/soundsSlice";
-import { setProjectId } from "./redux/projectIdSlice";
 import TopicView from "./app/musicEdit/topic/TopicView";
 import Controls from "./app/controls/Controls";
 import Header from "./app/Header";
