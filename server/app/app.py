@@ -1,19 +1,20 @@
-from flask import Flask, send_file, send_from_directory
-from flask import request, make_response, jsonify
-from flask_cors import CORS
-from view import View
-from model import Model
-from hmmlearn import hmm 
-from pydub import AudioSegment  
-from pydub.playback import play  
-import tkinter as tk
+import math
 import os
 import random
 import re
-import math
+import tkinter as tk
+import urllib.parse
+
 import numpy as np
 import pandas as pd
-import urllib.parse
+from flask import Flask, jsonify, make_response, request, send_file, send_from_directory
+from flask_cors import CORS
+from hmmlearn import hmm
+from model import Model
+from pydub import AudioSegment
+from pydub.playback import play
+from view import View
+
 fix_len = 4
 topic_n = 4
 excitement_len = 32
@@ -21,15 +22,19 @@ selected_constitution_determine = 0
 selected_fix_determine = 0
 app = Flask(__name__)
 CORS(app)
-@app.route("/parts", methods=['GET'])
+
+
+@app.route("/parts", methods=["GET"])
 def get_infomation_of_parts():
     partids = []
     with open("./text/partid.txt") as f:
         partids = f.read().split()
-        
-    response = {'part-ids': partids}
+
+    response = {"part-ids": partids}
     return make_response(jsonify(response))
-@app.route("/parts/<partid>/sounds", methods=['GET'])
+
+
+@app.route("/parts/<partid>/sounds", methods=["GET"])
 def get_infomation_of_sounds(partid):
     partid = int(partid)
     partName = ""
@@ -41,26 +46,29 @@ def get_infomation_of_sounds(partid):
         partName = "bass"
     else:
         partName = "drums"
-        
+
     path = "./text/" + partName + "_word_list.txt"
     sounds = []
     with open(path) as f:
         sounds = f.read().split("\n")
 
-    print(sounds[len(sounds)-1])
-    if sounds[len(sounds)-1] == '':
+    print(sounds[len(sounds) - 1])
+    if sounds[len(sounds) - 1] == "":
         sounds.pop()
-    soundIds= []
+    soundIds = []
     for i in range(len(sounds)):
         soundIds.append(i)
-        
+
     x_coordinate, y_coordinate, range_lists = get_coordinate(partName)
 
-    response = {'sound-ids': soundIds,
-    		'x_coordinate': x_coordinate,
-    		'y_coordinate': y_coordinate,
-    		'range_lists': range_lists}
+    response = {
+        "sound-ids": soundIds,
+        "x_coordinate": x_coordinate,
+        "y_coordinate": y_coordinate,
+        "range_lists": range_lists,
+    }
     return make_response(jsonify(response))
+
 
 def get_coordinate(partName):
     pass_movedpointx = "./text/" + partName + "_movedpointx_list" + ".txt"
@@ -70,34 +78,34 @@ def get_coordinate(partName):
     x_coordinate = []
     y_coordinate = []
     range_lists = []
-    
+
     with open(pass_movedpointx) as f:
         x_coordinate = f.read().split("\n")
     with open(pass_movedpointy) as f:
         y_coordinate = f.read().split("\n")
     with open(pass_range) as f:
         range_lists = f.read().split("\n")
-    
-    if x_coordinate[len(x_coordinate)-1] == '':
+
+    if x_coordinate[len(x_coordinate) - 1] == "":
         x_coordinate.pop()
-        
-    if y_coordinate[len(y_coordinate)-1] == '':
+
+    if y_coordinate[len(y_coordinate) - 1] == "":
         y_coordinate.pop()
-    
-    if range_lists[len(range_lists)-1] == '':
+
+    if range_lists[len(range_lists) - 1] == "":
         range_lists.pop()
-        
+
     for i in range(len(x_coordinate)):
-    	x_coordinate[i] = math.floor(float(x_coordinate[i]))
-    	y_coordinate[i] = math.floor(float(y_coordinate[i]))
-    	
+        x_coordinate[i] = math.floor(float(x_coordinate[i]))
+        y_coordinate[i] = math.floor(float(y_coordinate[i]))
+
     for i in range(len(range_lists)):
-    	range_lists[i] = int(range_lists[i])
+        range_lists[i] = int(range_lists[i])
     return x_coordinate, y_coordinate, range_lists
 
 
-@app.route("/parts/<partid>/sounds/<soundid>", methods=['GET'])
-def get_infomation_sound(partid,soundid):
+@app.route("/parts/<partid>/sounds/<soundid>", methods=["GET"])
+def get_infomation_sound(partid, soundid):
     partid = int(partid)
     soundid = int(soundid)
 
@@ -109,7 +117,7 @@ def get_infomation_sound(partid,soundid):
         partName = "bass"
     else:
         partName = "drums"
-    x_coordinate,y_coordinate, range_lists = get_coordinate(partName)
+    x_coordinate, y_coordinate, range_lists = get_coordinate(partName)
     degree_of_excitement = 0
 
     for i in range(len(x_coordinate)):
@@ -127,11 +135,15 @@ def get_infomation_sound(partid,soundid):
         degree_of_excitement = 4
 
     sound_feature = [x_coordinate[soundid], y_coordinate[soundid]]
-    
-    response = {"sound-feature": sound_feature,
-                "degree-of-excitement": degree_of_excitement}
+
+    response = {
+        "sound-feature": sound_feature,
+        "degree-of-excitement": degree_of_excitement,
+    }
     return make_response(jsonify(response))
-@app.route("/projects", methods=['POST'])
+
+
+@app.route("/projects", methods=["POST"])
 def create_project():
     projectId = 0
     created = False
@@ -144,7 +156,7 @@ def create_project():
         else:
             projectId = projectId + 1
     curves = ["271" for i in range(1152)]
-    with open("./project/" + str(projectId) + "/curve/curve.txt", mode= 'w') as f:
+    with open("./project/" + str(projectId) + "/curve/curve.txt", mode="w") as f:
         for i in range(len(curves)):
             if i == 0:
                 f.write(str(curves[i]))
@@ -153,15 +165,19 @@ def create_project():
     print("project" + str(projectId) + " is created")
     response = {"projectid": projectId}
     return make_response(jsonify(response))
-@app.route("/projects", methods=['GET'])
+
+
+@app.route("/projects", methods=["GET"])
 def get_infomation_of_projects():
     dir_list = os.listdir("./project")
     for i in range(len(dir_list)):
-    	dir_list[i] = int(dir_list[i])
+        dir_list[i] = int(dir_list[i])
     dir_list = sorted(dir_list)
     response = {"projects_list": dir_list}
     return make_response(jsonify(response))
-@app.route("/projects/<projectid>", methods=['GET'])
+
+
+@app.route("/projects/<projectid>", methods=["GET"])
 def get_infomation_of_project(projectid):
     dir_list = os.listdir("./project/" + projectid + "/songs")
     number_of_sound = 0
@@ -172,46 +188,40 @@ def get_infomation_of_project(projectid):
     curves = []
     with open("./project/" + projectid + "/curve/curve.txt") as f:
         curves = f.read().split("\n")
-    if curves[len(curves)-1] == '':
+    if curves[len(curves) - 1] == "":
         curves.pop()
     for i in range(len(curves)):
         curves[i] = int(curves[i])
-    response = {"number-of-sound": number_of_sound,
-                "curves": curves}
+    response = {"number-of-sound": number_of_sound, "curves": curves}
     return make_response(jsonify(response))
-@app.route("/projects/<projectid>/songs", methods=['POST'])
+
+
+@app.route("/projects/<projectid>/songs", methods=["POST"])
 def create_song(projectid):
-    data = request.get_json()      #WebページからのJSONデータを受け取る．
-    curves = data['curves']
-    #root = tk.Tk()                 
-    #view = View(master=root)       #他のpyファイルのクラスを読み込む．
-    #array, songid = view.createMusic(curves, projectid)
+    data = request.get_json()  # WebページからのJSONデータを受け取る．
+    curves = data["curves"]
+    # root = tk.Tk()
+    # view = View(master=root)       #他のpyファイルのクラスを読み込む．
+    # array, songid = view.createMusic(curves, projectid)
     array, songid = createMusic(curves, projectid)
-    drums_list, bass_list, synth_list, sequence_list, array = name_to_id(projectid,songid,array)
+    drums_list, bass_list, synth_list, sequence_list, array = name_to_id(
+        projectid, songid, array
+    )
 
     drums_list, bass_list, synth_list, sequence_list = format_list(array)
-    
-    response = {'songid': int(songid),
-                'parts':[{
-                          'partid':0,
-                          'sounds':sequence_list
-                         },
-                         {
-                          'partid':1,
-                          'sounds':synth_list
-                         },
-                         {
-                          'partid':2,
-                          'sounds':bass_list
-                         },
-                         {
-                          'partid':3,
-                          'sounds':drums_list
-                         }
-                         ]
-                         }
+
+    response = {
+        "songid": int(songid),
+        "parts": [
+            {"partid": 0, "sounds": sequence_list},
+            {"partid": 1, "sounds": synth_list},
+            {"partid": 2, "sounds": bass_list},
+            {"partid": 3, "sounds": drums_list},
+        ],
+    }
 
     return make_response(jsonify(response))
+
 
 def name_to_id(projectid, songid, array):
     with open("./text/drums_word_list.txt") as f:
@@ -240,7 +250,10 @@ def name_to_id(projectid, songid, array):
                 for k in range(len(sequence_list)):
                     if array[i][j] == sequence_list[k]:
                         array[i][j] = str(k)
-    with open("./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt", mode='w') as f:
+    with open(
+        "./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt",
+        mode="w",
+    ) as f:
         for i in range(len(array)):
             for j in range(len(array[0])):
                 if i == 0 and j == 0:
@@ -249,8 +262,14 @@ def name_to_id(projectid, songid, array):
                     f.write("\n" + str(array[i][j]))
     return drums_list, bass_list, synth_list, sequence_list, array
 
+
 def format_list(array):
-    drums_list, bass_list, synth_list, sequence_list = ["null" for i in range(32)], ["null" for i in range(32)], ["null" for i in range(32)], ["null" for i in range(32)]
+    drums_list, bass_list, synth_list, sequence_list = (
+        ["null" for i in range(32)],
+        ["null" for i in range(32)],
+        ["null" for i in range(32)],
+        ["null" for i in range(32)],
+    )
 
     for i in range(32):
         if array[i][0] == "null":
@@ -269,11 +288,11 @@ def format_list(array):
             sequence_list[i] = None
         else:
             sequence_list[i] = int(array[i][3])
-    
-    return drums_list, bass_list, synth_list, sequence_list
-        
 
-@app.route("/projects/<projectid>/songs", methods=['GET'])
+    return drums_list, bass_list, synth_list, sequence_list
+
+
+@app.route("/projects/<projectid>/songs", methods=["GET"])
 def get_infomation_songs(projectid):
     songids = os.listdir("./project/" + projectid + "/songs")
     for i in range(len(songids)):
@@ -282,149 +301,163 @@ def get_infomation_songs(projectid):
     print(songids)
     response = {"songids": songids}
     return make_response(jsonify(response))
-@app.route("/projects/<projectid>/songs/<songid>", methods=['GET'])
-def get_infomation_song(projectid,songid):
+
+
+@app.route("/projects/<projectid>/songs/<songid>", methods=["GET"])
+def get_infomation_song(projectid, songid):
     sounds_ids = [["null" for i in range(4)] for j in range(32)]
     id_list = []
     path = "./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt"
-    with open("./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt") as f:
+    with open(
+        "./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt"
+    ) as f:
         id_list = f.read().split("\n")
-    if id_list[len(id_list)-1] == '':
+    if id_list[len(id_list) - 1] == "":
         id_list.pop()
     count = 0
-    
+
     for i in range(len(id_list)):
-        sounds_ids[count][i%4] = id_list[i]
-        if i%4 == 3:
+        sounds_ids[count][i % 4] = id_list[i]
+        if i % 4 == 3:
             count = count + 1
 
     drums_list, bass_list, synth_list, sequence_list = format_list(sound_ids)
-    #response = {"sounds_ids": sounds_ids}
-    response = {'parts':[{
-                          'partid':0,
-                          'sounds':sequence_list
-                         },
-                         {
-                          'partid':1,
-                          'sounds':synth_list
-                         },
-                         {
-                          'partid':2,
-                          'sounds':bass_list
-                         },
-                         {
-                          'partid':3,
-                          'sounds':drums_list
-                         }
-                         ]
-                         }                     
+    # response = {"sounds_ids": sounds_ids}
+    response = {
+        "parts": [
+            {"partid": 0, "sounds": sequence_list},
+            {"partid": 1, "sounds": synth_list},
+            {"partid": 2, "sounds": bass_list},
+            {"partid": 3, "sounds": drums_list},
+        ]
+    }
     return make_response(jsonify(response))
-@app.route("/projects/<projectid>/songs/<songid>/parts/<partid>", methods=['GET'])
-def get_infomation_of_inserted_sounds_in_selected_part(projectid,songid,partid):
+
+
+@app.route("/projects/<projectid>/songs/<songid>/parts/<partid>", methods=["GET"])
+def get_infomation_of_inserted_sounds_in_selected_part(projectid, songid, partid):
     sounds_ids = [["null" for i in range(4)] for j in range(32)]
     id_list = []
     path = "./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt"
-    with open("./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt") as f:
+    with open(
+        "./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt"
+    ) as f:
         id_list = f.read().split("\n")
-    if id_list[len(id_list)-1] == '':
+    if id_list[len(id_list) - 1] == "":
         id_list.pop()
     count = 0
-    
+
     for i in range(len(id_list)):
-        sounds_ids[count][i%4] = id_list[i]
-        if i%4 == 3:
+        sounds_ids[count][i % 4] = id_list[i]
+        if i % 4 == 3:
             count = count + 1
     partid_list = ["null" for i in range(32)]
 
     for i in range(32):
-        if partid == '0':
+        if partid == "0":
             partid_list[i] = sounds_ids[i][3]
-        elif partid == '1':
+        elif partid == "1":
             partid_list[i] = sounds_ids[i][2]
-        elif partid == '2':
+        elif partid == "2":
             partid_list[i] = sounds_ids[i][1]
         else:
             partid_list[i] = sounds_ids[i][0]
-    
-    #response = {"sounds_ids": sounds_ids}
-    response = {'partid':partid,'sounds':partid_list}
-                         
+
+    # response = {"sounds_ids": sounds_ids}
+    response = {"partid": partid, "sounds": partid_list}
+
     return make_response(jsonify(response))
-@app.route("/projects/<projectid>/songs/<songid>/parts/<partid>/measures/<measureid>", methods=['GET'])
-def get_infomation_of_inserted_sound(projectid,songid,partid, measureid):
+
+
+@app.route(
+    "/projects/<projectid>/songs/<songid>/parts/<partid>/measures/<measureid>",
+    methods=["GET"],
+)
+def get_infomation_of_inserted_sound(projectid, songid, partid, measureid):
     sounds_ids = [["null" for i in range(4)] for j in range(32)]
     id_list = []
     path = "./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt"
-    with open("./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt") as f:
+    with open(
+        "./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt"
+    ) as f:
         id_list = f.read().split("\n")
-    if id_list[len(id_list)-1] == '':
+    if id_list[len(id_list) - 1] == "":
         id_list.pop()
     count = 0
-    
+
     for i in range(len(id_list)):
-        sounds_ids[count][i%4] = id_list[i]
-        if i%4 == 3:
+        sounds_ids[count][i % 4] = id_list[i]
+        if i % 4 == 3:
             count = count + 1
-    partid_measureid_sound = ''
+    partid_measureid_sound = ""
 
     for i in range(32):
-        if partid == '0':
+        if partid == "0":
             partid_measureid_sound = sounds_ids[int(measureid)][3]
-        elif partid == '1':
+        elif partid == "1":
             partid_measureid_sound = sounds_ids[int(measureid)][2]
-        elif partid == '2':
+        elif partid == "2":
             partid_measureid_sound = sounds_ids[int(measureid)][1]
         else:
             partid_measureid_sound = sounds_ids[int(measureid)][0]
-    
-    #response = {"sounds_ids": sounds_ids}
-    response = {'partid':partid,
-                'measureid':measureid,
-                'sound':partid_measureid_sound}
-                         
+
+    # response = {"sounds_ids": sounds_ids}
+    response = {
+        "partid": partid,
+        "measureid": measureid,
+        "sound": partid_measureid_sound,
+    }
+
     return make_response(jsonify(response))
-@app.route("/projects/<projectid>/parts/<partid>/measures/<measureid>/musicloops/<musicloopid>", methods=['POST'])
-def insert_sound(projectid,partid, measureid, musicloopid):
-    data = request.get_json()      #WebページからのJSONデータを受け取る．
+
+
+@app.route(
+    "/projects/<projectid>/parts/<partid>/measures/<measureid>/musicloops/<musicloopid>",
+    methods=["POST"],
+)
+def insert_sound(projectid, partid, measureid, musicloopid):
+    data = request.get_json()  # WebページからのJSONデータを受け取る．
     sound_array = get_music_data(data)
-    
+
     drums_list, bass_list, synth_list, sequence_list = get_sound_data()
-    
-    sound_array = rewrite_music_data(measureid, partid, musicloopid, sound_array, drums_list, bass_list, synth_list, sequence_list)
-    #root = tk.Tk()                 
-    #view = View(master=root)
+
+    sound_array = rewrite_music_data(
+        measureid,
+        partid,
+        musicloopid,
+        sound_array,
+        drums_list,
+        bass_list,
+        synth_list,
+        sequence_list,
+    )
+    # root = tk.Tk()
+    # view = View(master=root)
     songid = connect_sound(sound_array, projectid)
 
-    save_music_data(projectid, songid, sound_array, drums_list, bass_list, synth_list, sequence_list)
-    
+    save_music_data(
+        projectid, songid, sound_array, drums_list, bass_list, synth_list, sequence_list
+    )
+
     drums_list, bass_list, synth_list, sequence_list = format_list(sound_array)
-        
-    response = {'songid': int(songid),
-                'parts':[{
-                          'partid':0,
-                          'sounds':sequence_list
-                         },
-                         {
-                          'partid':1,
-                          'sounds':synth_list
-                         },
-                         {
-                          'partid':2,
-                          'sounds':bass_list
-                         },
-                         {
-                          'partid':3,
-                          'sounds':drums_list
-                         }
-                         ]
-                         }
+
+    response = {
+        "songid": int(songid),
+        "parts": [
+            {"partid": 0, "sounds": sequence_list},
+            {"partid": 1, "sounds": synth_list},
+            {"partid": 2, "sounds": bass_list},
+            {"partid": 3, "sounds": drums_list},
+        ],
+    }
     return make_response(jsonify(response))
 
+
 def get_music_data(data):
-    sequence_list = data['sequenceList']
-    synth_list = data['synthList']
-    bass_list = data['bassList']
-    drums_list =  data['drumsList']
+    sequence_list = data["sequenceList"]
+    synth_list = data["synthList"]
+    bass_list = data["bassList"]
+    drums_list = data["drumsList"]
 
     sounds_ids = [["null" for i in range(4)] for j in range(32)]
     sound_array = [["null" for i in range(4)] for j in range(32)]
@@ -441,6 +474,7 @@ def get_music_data(data):
                 sound_array[i][j] = sequence_list[i]
     return sound_array
 
+
 def get_sound_data():
     drums_list = []
     bass_list = []
@@ -456,16 +490,26 @@ def get_sound_data():
         sequence_list = f.read().split("\n")
     return drums_list, bass_list, synth_list, sequence_list
 
-def rewrite_music_data(measureid, partid, musicloopid, sound_array, drums_list, bass_list, synth_list, sequence_list):
+
+def rewrite_music_data(
+    measureid,
+    partid,
+    musicloopid,
+    sound_array,
+    drums_list,
+    bass_list,
+    synth_list,
+    sequence_list,
+):
     if int(partid) == 0:
-        sound_array[int(measureid)][3-int(partid)] = int(musicloopid)
+        sound_array[int(measureid)][3 - int(partid)] = int(musicloopid)
     elif int(partid) == 1:
-        sound_array[int(measureid)][3-int(partid)] = int(musicloopid)
+        sound_array[int(measureid)][3 - int(partid)] = int(musicloopid)
     elif int(partid) == 2:
-        sound_array[int(measureid)][3-int(partid)] = int(musicloopid)
+        sound_array[int(measureid)][3 - int(partid)] = int(musicloopid)
     else:
-        sound_array[int(measureid)][3-int(partid)] = int(musicloopid)
-        
+        sound_array[int(measureid)][3 - int(partid)] = int(musicloopid)
+
     for i in range(len(sound_array)):
         for j in range(len(sound_array[0])):
             if j == 0:
@@ -473,28 +517,31 @@ def rewrite_music_data(measureid, partid, musicloopid, sound_array, drums_list, 
                     if sound_array[i][j] == k:
                         sound_array[i][j] = drums_list[k]
                     elif sound_array[i][j] == None:
-                        sound_array[i][j] = 'null'
+                        sound_array[i][j] = "null"
             elif j == 1:
                 for k in range(len(bass_list)):
                     if sound_array[i][j] == k:
                         sound_array[i][j] = bass_list[k]
                     elif sound_array[i][j] == None:
-                        sound_array[i][j] = 'null'
+                        sound_array[i][j] = "null"
             elif j == 2:
                 for k in range(len(synth_list)):
                     if sound_array[i][j] == k:
                         sound_array[i][j] = synth_list[k]
                     elif sound_array[i][j] == None:
-                        sound_array[i][j] = 'null'
+                        sound_array[i][j] = "null"
             else:
                 for k in range(len(sequence_list)):
                     if sound_array[i][j] == k:
                         sound_array[i][j] = sequence_list[k]
                     elif sound_array[i][j] == None:
-                        sound_array[i][j] = 'null'
+                        sound_array[i][j] = "null"
     return sound_array
 
-def save_music_data(projectid, songid, sound_array, drums_list, bass_list, synth_list, sequence_list):
+
+def save_music_data(
+    projectid, songid, sound_array, drums_list, bass_list, synth_list, sequence_list
+):
     for i in range(len(sound_array)):
         for j in range(len(sound_array[0])):
             if j == 0:
@@ -513,13 +560,18 @@ def save_music_data(projectid, songid, sound_array, drums_list, bass_list, synth
                 for k in range(len(sequence_list)):
                     if sound_array[i][j] == sequence_list[k]:
                         sound_array[i][j] = str(k)
-    with open("./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt", mode='w') as f:
+    with open(
+        "./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt",
+        mode="w",
+    ) as f:
         for i in range(len(sound_array)):
             for j in range(len(sound_array[0])):
                 if i == 0 and j == 0:
                     f.write(str(sound_array[i][j]))
                 else:
                     f.write("\n" + str(sound_array[i][j]))
+
+
 """@app.route("/projects/<projectid>/songs/<songid>/<filename>", methods=['GET'])
 def downloadSong(projectid,songid,filename):
     filepath = "./project/" + projectid + "/songs/" + songid + "/" + filename
@@ -527,11 +579,18 @@ def downloadSong(projectid,songid,filename):
     response.headers['Content-Type'] = 'audio/wav'
     response.headers['Content-Disposition'] = 'attachment; filename=' + filename
     return response"""
-@app.route("/projects/<projectid>/songs/<songid>/wav", methods=['GET'])
-def download_song(projectid,songid):
-    return send_file("./project/" + projectid + "/songs/" + songid + "/song" +songid + ".wav", as_attachment=True)
-@app.route("/parts/<partid>/musicloops/<musicloopid>/wav", methods=['GET'])
-def download_musicloop(partid,musicloopid):
+
+
+@app.route("/projects/<projectid>/songs/<songid>/wav", methods=["GET"])
+def download_song(projectid, songid):
+    return send_file(
+        "./project/" + projectid + "/songs/" + songid + "/song" + songid + ".wav",
+        as_attachment=True,
+    )
+
+
+@app.route("/parts/<partid>/musicloops/<musicloopid>/wav", methods=["GET"])
+def download_musicloop(partid, musicloopid):
     part = "null"
     if partid == "0":
         part = "sequence"
@@ -541,165 +600,216 @@ def download_musicloop(partid,musicloopid):
         part = "bass"
     else:
         part = "drums"
-    	
+
     musicLoop_list = []
     """bass_word_list.txt"""
-    with open("./text/" + part +"_word_list.txt") as f:
+    with open("./text/" + part + "_word_list.txt") as f:
         musicLoop_list = f.read().split("\n")
-    if musicLoop_list[len(musicLoop_list)-1] == '':
+    if musicLoop_list[len(musicLoop_list) - 1] == "":
         musicLoop_list.pop()
     musicLoopName = "null"
     for i in range(len(musicLoop_list)):
         if i == int(musicloopid):
             musicLoopName = musicLoop_list[i]
-    split_name = re.split('/|\.', musicLoopName)
+    split_name = re.split("/|\.", musicLoopName)
     print(split_name)
     print(split_name[3], split_name[4], split_name[5])
-    
-    return send_file("./TechnoTrance/" + split_name[3] + "/" + split_name[4] + "/" + split_name[5] + ".wav", as_attachment=True)
-    
-    
-    
+
+    return send_file(
+        "./TechnoTrance/"
+        + split_name[3]
+        + "/"
+        + split_name[4]
+        + "/"
+        + split_name[5]
+        + ".wav",
+        as_attachment=True,
+    )
+
+
 def createMusic(array, projectid):
     """楽曲の生成"""
-    #盛り上がり度を求める
-    #self.excitement_array = self.model.chengeExcitement(array)
-    #状態を求める
-    no_part_hmm_model, intro_hmm_model, breakdown_hmm_model, buildup_hmm_model, drop_hmm_model, outro_hmm_model = initialize_Hmm()
+    # 盛り上がり度を求める
+    # self.excitement_array = self.model.chengeExcitement(array)
+    # 状態を求める
+    (
+        no_part_hmm_model,
+        intro_hmm_model,
+        breakdown_hmm_model,
+        buildup_hmm_model,
+        drop_hmm_model,
+        outro_hmm_model,
+    ) = initialize_Hmm()
     hmm_array = ""
     if selected_constitution_determine == 0:
         hmm_array = use_HMM(array, no_part_hmm_model)
     else:
-        hmm_array = use_Auto_HMM(array, intro_hmm_model, breakdown_hmm_model, buildup_hmm_model, drop_hmm_model, outro_hmm_model)
+        hmm_array = use_Auto_HMM(
+            array,
+            intro_hmm_model,
+            breakdown_hmm_model,
+            buildup_hmm_model,
+            drop_hmm_model,
+            outro_hmm_model,
+        )
     if selected_fix_determine == 1:
         if selected_constitution_determine == 0:
-            hmm_array,array = fix_Hmm(hmm_array,array)
+            hmm_array, array = fix_Hmm(hmm_array, array)
         else:
             section_array = dtw(array)
-            hmm_array,array = fix_Auto_Hmm(hmm_array,array,section_array)
-    #音素材を繋げる
+            hmm_array, array = fix_Auto_Hmm(hmm_array, array, section_array)
+    # 音素材を繋げる
     sound_list = choose_sound(array, hmm_array)
-    #コードを付与する
+    # コードを付与する
     sound_list = give_chord(sound_list)
-    #音素材を繋げる
+    # 音素材を繋げる
     songid = connect_sound(sound_list, projectid)
-    #描画を行う
-    #self.drawSound(self.hmm_array)
-    #if self.selected_constitution_determine == 1:
+    # 描画を行う
+    # self.drawSound(self.hmm_array)
+    # if self.selected_constitution_determine == 1:
     #    self.drawSection(self.model.section_array)
-    #else:
+    # else:
     #    self.draw_canvas.delete("section")
-    #再生の準備を行う
-    #self.vlc_sound_player = vlc.MediaListPlayer()
+    # 再生の準備を行う
+    # self.vlc_sound_player = vlc.MediaListPlayer()
 
-    return sound_list, songid   
-        
+    return sound_list, songid
+
+
 def use_HMM(excitement_array, no_part_hmm_model):
     """HMMを使用する"""
     observation_data = np.atleast_2d(excitement_array).T
-    hmm_array,hmm_array = no_part_hmm_model.decode(observation_data)
-    return hmm_array 
-        
-def use_Auto_HMM(excitement_array, intro_hmm_model, breakdown_hmm_model, buildup_hmm_model, drop_hmm_model, outro_hmm_model):
+    hmm_array, hmm_array = no_part_hmm_model.decode(observation_data)
+    return hmm_array
+
+
+def use_Auto_HMM(
+    excitement_array,
+    intro_hmm_model,
+    breakdown_hmm_model,
+    buildup_hmm_model,
+    drop_hmm_model,
+    outro_hmm_model,
+):
     """構成を考慮したHMMを使用する"""
     section_array = dtw(excitement_array)
-    #パート毎にリストを用意する
-    intro_array, breakdown_array, buildup_array, drop_array, outro_array = list(), list(), list(), list(), list()
-    
-    for i,e in enumerate(excitement_array):
+    # パート毎にリストを用意する
+    intro_array, breakdown_array, buildup_array, drop_array, outro_array = (
+        list(),
+        list(),
+        list(),
+        list(),
+        list(),
+    )
+
+    for i, e in enumerate(excitement_array):
         if section_array[i] == 0:
             intro_array.append(e)
-        elif section_array[i]==1:
+        elif section_array[i] == 1:
             breakdown_array.append(e)
-        elif section_array[i]==2:
+        elif section_array[i] == 2:
             buildup_array.append(e)
-        elif section_array[i]==3:
+        elif section_array[i] == 3:
             drop_array.append(e)
-        elif section_array[i]==4:
+        elif section_array[i] == 4:
             outro_array.append(e)
-        
-    #intro
+
+    # intro
     intro_data = np.atleast_2d(intro_array).T
-    intro_hmm_array,intro_hmm_array = intro_hmm_model.decode(intro_data)
-    #breakdown
+    intro_hmm_array, intro_hmm_array = intro_hmm_model.decode(intro_data)
+    # breakdown
     breakdown_data = np.atleast_2d(breakdown_array).T
-    breakdown_hmm_array,breakdown_hmm_array = breakdown_hmm_model.decode(breakdown_data)
+    breakdown_hmm_array, breakdown_hmm_array = breakdown_hmm_model.decode(
+        breakdown_data
+    )
     # buildup
     buildup_data = np.atleast_2d(buildup_array).T
-    buildup_hmm_array,buildup_hmm_array = buildup_hmm_model.decode(buildup_data)
+    buildup_hmm_array, buildup_hmm_array = buildup_hmm_model.decode(buildup_data)
     # drop
     drop_data = np.atleast_2d(drop_array).T
-    drop_hmm_array,drop_hmm_array = drop_hmm_model.decode(drop_data)
+    drop_hmm_array, drop_hmm_array = drop_hmm_model.decode(drop_data)
     # outro
     outro_data = np.atleast_2d(outro_array).T
-    outro_hmm_array,outro_hmm_array = outro_hmm_model.decode(outro_data)
+    outro_hmm_array, outro_hmm_array = outro_hmm_model.decode(outro_data)
 
-    return (np.concatenate([intro_hmm_array,breakdown_hmm_array, buildup_hmm_array, drop_hmm_array ,outro_hmm_array]))
-        
-        
-        
+    return np.concatenate(
+        [
+            intro_hmm_array,
+            breakdown_hmm_array,
+            buildup_hmm_array,
+            drop_hmm_array,
+            outro_hmm_array,
+        ]
+    )
+
+
 def dtw(excitement_array):
     """DTWの計算を行う"""
-    #セクションは4小節ごとに考慮する
+    # セクションは4小節ごとに考慮する
     short_excitement_array = list()
     sum = 0
-    for i,e in enumerate(excitement_array,1):
+    for i, e in enumerate(excitement_array, 1):
         if i % 4 == 0 and i != 0:
-            short_excitement_array.append(round(sum/4))
-            sum=0
+            short_excitement_array.append(round(sum / 4))
+            sum = 0
         sum += e
-    excitement_array = short_excitement_array                
-    #セクションが取るであろう盛り上がり度
-    #intro, breakdown + buildup, drop, outro
+    excitement_array = short_excitement_array
+    # セクションが取るであろう盛り上がり度
+    # intro, breakdown + buildup, drop, outro
     section_excitement = [0, 1, 3.3, 0]
-    #2つの時系列の長さ
+    # 2つの時系列の長さ
     excitement_len = len(excitement_array)
     section_len = len(section_excitement)
-    #初期化
-    dtw = calc_dtw(excitement_len, section_len,excitement_array,section_excitement)
-    #セクションを決定する
+    # 初期化
+    dtw = calc_dtw(excitement_len, section_len, excitement_array, section_excitement)
+    # セクションを決定する
     section_array = list()
-    #逆から考える
+    # 逆から考える
     dtw = dtw[::-1]
-    #outroで終わるように調整
+    # outroで終わるように調整
     for i in range(4):
         section_array.append(4)
-    #最小値を見ながらセクションを決定する
+    # 最小値を見ながらセクションを決定する
     for d in dtw[1:]:
-        #見る範囲
-        start = section_array[-1]-1
-        end = section_array[-1]+1       
+        # 見る範囲
+        start = section_array[-1] - 1
+        end = section_array[-1] + 1
         section = d.index(min(d[start:end]))
         for i in range(4):
             section_array.append(section)
-    #もとに戻す
+    # もとに戻す
     section_array = restore_section_array(section_array)
-    return (section_array)
+    return section_array
 
-def calc_dtw(excitement_len, section_len,excitement_array,section_excitement):
-    dtw = [[float("inf") for i in range(section_len+1)] for j in range(excitement_len + 1)]
+
+def calc_dtw(excitement_len, section_len, excitement_array, section_excitement):
+    dtw = [
+        [float("inf") for i in range(section_len + 1)]
+        for j in range(excitement_len + 1)
+    ]
     dtw[0][0] = 0
-    #累積を考える
-    for i in range(1,excitement_len+1):
-        for j in range(1,section_len+1):
-            cost = abs(excitement_array[i-1]-section_excitement[j-1])
-            dtw[i][j] = cost + min(dtw[i-1][j-1],
-            dtw[i-1][j])       
+    # 累積を考える
+    for i in range(1, excitement_len + 1):
+        for j in range(1, section_len + 1):
+            cost = abs(excitement_array[i - 1] - section_excitement[j - 1])
+            dtw[i][j] = cost + min(dtw[i - 1][j - 1], dtw[i - 1][j])
     return dtw
+
 
 def restore_section_array(section_array):
     section_array = section_array[::-1]
     section_array = section_array[4:]
-    section_array = [s-1 for s in section_array]
+    section_array = [s - 1 for s in section_array]
     for i in range(len(section_array)):
-        if section_array[i] == 2 or section_array[i]==3:
-            section_array[i]+=1
-    buildup_start = section_array.index(3)-2
+        if section_array[i] == 2 or section_array[i] == 3:
+            section_array[i] += 1
+    buildup_start = section_array.index(3) - 2
     buildup_end = section_array.index(3)
-    section_array[buildup_start:buildup_end] = [2,2]
-    return (section_array)
-        
-def fix_Hmm(hmm_array,excitement_array):
+    section_array[buildup_start:buildup_end] = [2, 2]
+    return section_array
+
+
+def fix_Hmm(hmm_array, excitement_array):
     """小節毎に揃える"""
     for i in range(len(hmm_array)):
         if i % fix_len == 0:
@@ -707,30 +817,32 @@ def fix_Hmm(hmm_array,excitement_array):
             e = excitement_array[i]
         hmm_array[i] = h
         excitement_array[i] = e
-    return hmm_array,excitement_array
-        
-def fix_Auto_Hmm(hmm_array,excitement_array,section_array):
+    return hmm_array, excitement_array
+
+
+def fix_Auto_Hmm(hmm_array, excitement_array, section_array):
     """セクションに合わせて揃える"""
     pre_section = -1
     for i in range(len(hmm_array)):
         if pre_section != section_array[i] or i % fix_len == 0:
             h = hmm_array[i]
             e = excitement_array[i]
-        hmm_array[i]=h
+        hmm_array[i] = h
         excitement_array[i] = e
         pre_section = section_array[i]
 
-    return hmm_array,excitement_array
-        
-def choose_sound(excitement_array,hmm_array):
+    return hmm_array, excitement_array
+
+
+def choose_sound(excitement_array, hmm_array):
     """使用する音素材を選択する"""
     sound_list = list()
     for i in range(excitement_len):
-        binary = format(hmm_array[i], 'b').zfill(4)
+        binary = format(hmm_array[i], "b").zfill(4)
         binary = binary[::-1]
         excitement = excitement_array[i]
-        if i % fix_len == 0 : 
-            random_sound_list = choose_sound_randomly()           
+        if i % fix_len == 0:
+            random_sound_list = choose_sound_randomly()
         block_sound = list()
         for part in range(4):
             if binary[part] == "1":
@@ -738,9 +850,10 @@ def choose_sound(excitement_array,hmm_array):
             else:
                 block_sound.append("null")
         sound_list.append(block_sound)
-        
+
     return sound_list
-        
+
+
 def choose_sound_randomly():
     """音素材をランダムに選択する"""
     random_sound_list = list()
@@ -750,17 +863,25 @@ def choose_sound_randomly():
     sequence_list = list()
 
     for i in range(5):
-        drums_file = os.listdir("./TechnoTrance/Drums/"+str(i))
-        drums_list.append("./TechnoTrance/Drums/"+ str(i) + "/" +  random.choice(drums_file))
+        drums_file = os.listdir("./TechnoTrance/Drums/" + str(i))
+        drums_list.append(
+            "./TechnoTrance/Drums/" + str(i) + "/" + random.choice(drums_file)
+        )
 
-        bass_file = os.listdir("./TechnoTrance/Bass/"+str(i))
-        bass_list.append("./TechnoTrance/Bass/"+ str(i) + "/" +  random.choice(bass_file))
+        bass_file = os.listdir("./TechnoTrance/Bass/" + str(i))
+        bass_list.append(
+            "./TechnoTrance/Bass/" + str(i) + "/" + random.choice(bass_file)
+        )
 
-        synth_file = os.listdir("./TechnoTrance/Synth/"+str(i))
-        synth_list.append("./TechnoTrance/Synth/"+ str(i) + "/" +  random.choice(synth_file))
+        synth_file = os.listdir("./TechnoTrance/Synth/" + str(i))
+        synth_list.append(
+            "./TechnoTrance/Synth/" + str(i) + "/" + random.choice(synth_file)
+        )
 
-        sequence_file = os.listdir("./TechnoTrance/Sequence/"+str(i))
-        sequence_list.append("./TechnoTrance/Sequence/"+ str(i) + "/" +  random.choice(sequence_file))
+        sequence_file = os.listdir("./TechnoTrance/Sequence/" + str(i))
+        sequence_list.append(
+            "./TechnoTrance/Sequence/" + str(i) + "/" + random.choice(sequence_file)
+        )
 
     random_sound_list.append(drums_list)
     random_sound_list.append(bass_list)
@@ -768,43 +889,54 @@ def choose_sound_randomly():
     random_sound_list.append(sequence_list)
 
     return random_sound_list
-        
+
+
 def give_chord(sound_list):
     """コードを付与"""
     chord = ["2", "5", "3", "6", "4", "6", "7", "1"]
-    for i,sound in enumerate(sound_list,0):
-        for part in range(1,4):
-            sound[part] = re.sub('[0-9].wav',chord[i%8]+".wav",sound[part])
-              
+    for i, sound in enumerate(sound_list, 0):
+        for part in range(1, 4):
+            sound[part] = re.sub("[0-9].wav", chord[i % 8] + ".wav", sound[part])
+
     return sound_list
-        
+
+
 def connect_sound(sound_list, projectid):
     """音素材を繋げる"""
     output_sound = AudioSegment.silent()
     output_sound = output_sound[0:0]
-    for sound in sound_list: 
+    for sound in sound_list:
         block_sound_exist = False
         for s in sound:
             if s != "null":
                 if block_sound_exist:
                     block_sound = block_sound.overlay(AudioSegment.from_file(s))
                 else:
-                    block_sound = AudioSegment.from_file(s) 
+                    block_sound = AudioSegment.from_file(s)
                     block_sound_exist = True
-            
+
         output_sound = output_sound + block_sound
-           
+
     # 楽曲を更新する
     songid = 0
     created = False
     while created == False:
-        if os.path.exists("./project/" + projectid + "/songs/"+ str(songid)) == False:
-            os.mkdir("./project/" + projectid + "/songs/"+ str(songid))
-            output_sound.export("./project/" + projectid + "/songs/" + str(songid) + "/song" + str(songid) + ".wav", format="wav")
+        if os.path.exists("./project/" + projectid + "/songs/" + str(songid)) == False:
+            os.mkdir("./project/" + projectid + "/songs/" + str(songid))
+            output_sound.export(
+                "./project/"
+                + projectid
+                + "/songs/"
+                + str(songid)
+                + "/song"
+                + str(songid)
+                + ".wav",
+                format="wav",
+            )
             created = True
         else:
             songid = songid + 1
-        
+
     return str(songid)
 
 
@@ -818,14 +950,26 @@ def initialize_Hmm():
      1100 12  1101 13  1110 14  1111 15
     """
     # 出力確率（共通）
-    emissprob = np.array([[0, 0, 0, 0, 0], [0.4, 0.2, 0.2, 0.1, 0.1],
-                          [0.39, 0.21, 0.2, 0.1, 0.1], [0.25, 0.3, 0.25, 0.1, 0.1],
-                          [0.39, 0.21, 0.2, 0.1, 0.1], [0.25, 0.3, 0.25, 0.1, 0.1],
-                          [0.25, 0.3, 0.25, 0.1, 0.1], [0.15, 0.2, 0.3, 0.2, 0.15],
-                          [0.35, 0.25, 0.2, 0.1, 0.1], [0.2, 0.2, 0.3, 0.1, 0.1],
-                          [0.2, 0.2, 0.35, 0.15, 0.1], [0.1, 0.1, 0.2, 0.25, 0.35],
-                          [0.2, 0.2, 0.35, 0.15, 0.1], [0.1, 0.1, 0.2, 0.25, 0.35],
-                          [0.1, 0.1, 0.2, 0.25, 0.35], [0.05, 0.05, 0.25, 0.25, 0.4]])
+    emissprob = np.array(
+        [
+            [0, 0, 0, 0, 0],
+            [0.4, 0.2, 0.2, 0.1, 0.1],
+            [0.39, 0.21, 0.2, 0.1, 0.1],
+            [0.25, 0.3, 0.25, 0.1, 0.1],
+            [0.39, 0.21, 0.2, 0.1, 0.1],
+            [0.25, 0.3, 0.25, 0.1, 0.1],
+            [0.25, 0.3, 0.25, 0.1, 0.1],
+            [0.15, 0.2, 0.3, 0.2, 0.15],
+            [0.35, 0.25, 0.2, 0.1, 0.1],
+            [0.2, 0.2, 0.3, 0.1, 0.1],
+            [0.2, 0.2, 0.35, 0.15, 0.1],
+            [0.1, 0.1, 0.2, 0.25, 0.35],
+            [0.2, 0.2, 0.35, 0.15, 0.1],
+            [0.1, 0.1, 0.2, 0.25, 0.35],
+            [0.1, 0.1, 0.2, 0.25, 0.35],
+            [0.05, 0.05, 0.25, 0.25, 0.4],
+        ]
+    )
     # no part
     no_part_hmm_model = get_no_part_hmm_model(emissprob)
 
@@ -837,19 +981,66 @@ def initialize_Hmm():
 
     # buildup
     buildup_hmm_model = get_buildup_hmm_model(emissprob)
-    
+
     # drop
     drop_hmm_model = get_drop_hmm_model(emissprob)
-    
+
     # outro
-    outro_hmm_model = get_outro_hmm_model(emissprob)    
-    return no_part_hmm_model, intro_hmm_model, breakdown_hmm_model, buildup_hmm_model, drop_hmm_model, outro_hmm_model
-        
+    outro_hmm_model = get_outro_hmm_model(emissprob)
+    return (
+        no_part_hmm_model,
+        intro_hmm_model,
+        breakdown_hmm_model,
+        buildup_hmm_model,
+        drop_hmm_model,
+        outro_hmm_model,
+    )
+
+
 def get_no_part_hmm_model(emissprob):
-    no_part_startprob = np.array([0, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666,
-                          0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666])
+    no_part_startprob = np.array(
+        [
+            0,
+            0.06666666666,
+            0.06666666666,
+            0.06666666666,
+            0.06666666666,
+            0.06666666666,
+            0.06666666666,
+            0.06666666666,
+            0.06666666666,
+            0.06666666666,
+            0.06666666666,
+            0.06666666666,
+            0.06666666666,
+            0.06666666666,
+            0.06666666666,
+            0.06666666666,
+        ]
+    )
     no_part_transmat = np.array(
-        [[0, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666, 0.06666666666]] * 16)
+        [
+            [
+                0,
+                0.06666666666,
+                0.06666666666,
+                0.06666666666,
+                0.06666666666,
+                0.06666666666,
+                0.06666666666,
+                0.06666666666,
+                0.06666666666,
+                0.06666666666,
+                0.06666666666,
+                0.06666666666,
+                0.06666666666,
+                0.06666666666,
+                0.06666666666,
+                0.06666666666,
+            ]
+        ]
+        * 16
+    )
     no_part_hmm_model = hmm.MultinomialHMM(n_components=16)
     no_part_hmm_model.startprob_ = no_part_startprob
     no_part_hmm_model.transmat_ = no_part_transmat
@@ -857,30 +1048,29 @@ def get_no_part_hmm_model(emissprob):
     no_part_hmm_model.emissionprob_ = emissprob
     return no_part_hmm_model
 
+
 def get_intro_hmm_model(emissprob):
     intro_startprob = np.array(
-        [0,
-         0.1,
-         0.8/13,
-         0.1,
-         0.8/13,
-         0.8/13,
-         0.8/13,
-         0.8/13,
-         0.8/13,
-         0.8/13,
-         0.8/13,
-         0.8/13,
-         0.8/13,
-         0.8/13,
-         0.8/13,
-         0.8/13
-         ]
-    )
-    intro_transmat = np.array(
         [
-            intro_startprob
-        ] * 16)
+            0,
+            0.1,
+            0.8 / 13,
+            0.1,
+            0.8 / 13,
+            0.8 / 13,
+            0.8 / 13,
+            0.8 / 13,
+            0.8 / 13,
+            0.8 / 13,
+            0.8 / 13,
+            0.8 / 13,
+            0.8 / 13,
+            0.8 / 13,
+            0.8 / 13,
+            0.8 / 13,
+        ]
+    )
+    intro_transmat = np.array([intro_startprob] * 16)
 
     intro_hmm_model = hmm.MultinomialHMM(n_components=16)
     intro_hmm_model.startprob_ = intro_startprob
@@ -890,31 +1080,30 @@ def get_intro_hmm_model(emissprob):
 
     return intro_hmm_model
 
+
 def get_breakdown_hmm_model(emissprob):
     breakdown_startprob = np.array(
-        [0,
-         0.7/12,
-         0.7/12,
-         0.1,
-         0.7/12,
-         0.7/12,
-         0.15,
-         0.7/12,
-         0.7/12,
-         0.7/12,
-         0.7/12,
-         0.7/12,
-         0.7/12,
-         0.7/12,
-         0.05,
-         0.7/12
-         ]
+        [
+            0,
+            0.7 / 12,
+            0.7 / 12,
+            0.1,
+            0.7 / 12,
+            0.7 / 12,
+            0.15,
+            0.7 / 12,
+            0.7 / 12,
+            0.7 / 12,
+            0.7 / 12,
+            0.7 / 12,
+            0.7 / 12,
+            0.7 / 12,
+            0.05,
+            0.7 / 12,
+        ]
     )
 
-    breakdown_transmat = np.array(
-        [
-            breakdown_startprob
-        ] * 16)
+    breakdown_transmat = np.array([breakdown_startprob] * 16)
 
     breakdown_hmm_model = hmm.MultinomialHMM(n_components=16)
     breakdown_hmm_model.startprob_ = breakdown_startprob
@@ -923,30 +1112,29 @@ def get_breakdown_hmm_model(emissprob):
     breakdown_hmm_model.emissionprob_ = emissprob
     return breakdown_hmm_model
 
+
 def get_buildup_hmm_model(emissprob):
     buildup_startprob = np.array(
-        [0,
-         0.7/13,
-         0.7/13,
-         0.1,
-         0.7/13,
-         0.7/13,
-         0.7/13,
-         0.2,
-         0.7/13,
-         0.7/13,
-         0.7/13,
-         0.7/13,
-         0.7/13,
-         0.7/13,
-         0.7/13,
-         0.7/13
-         ]
-    )
-    buildup_transmat = np.array(
         [
-            buildup_startprob
-        ] * 16)
+            0,
+            0.7 / 13,
+            0.7 / 13,
+            0.1,
+            0.7 / 13,
+            0.7 / 13,
+            0.7 / 13,
+            0.2,
+            0.7 / 13,
+            0.7 / 13,
+            0.7 / 13,
+            0.7 / 13,
+            0.7 / 13,
+            0.7 / 13,
+            0.7 / 13,
+            0.7 / 13,
+        ]
+    )
+    buildup_transmat = np.array([buildup_startprob] * 16)
 
     buildup_hmm_model = hmm.MultinomialHMM(n_components=16)
     buildup_hmm_model.startprob_ = buildup_startprob
@@ -955,31 +1143,29 @@ def get_buildup_hmm_model(emissprob):
     buildup_hmm_model.emissionprob_ = emissprob
     return buildup_hmm_model
 
+
 def get_drop_hmm_model(emissprob):
     drop_startprob = np.array(
-        [0,
-         0.4/12,
-         0.4/12,
-         0.4/12,
-         0.4/12,
-         0.4/12,
-         0.4/12,
-         0.4/12,
-         0.4/12,
-         0.4/12,
-         0.4/12,
-         0.1,
-         0.4/12,
-         0.4/12,
-         0.2,
-         0.3
-         ]
-    )
-    drop_transmat = np.array(
         [
-            drop_startprob
-
-        ] * 16)
+            0,
+            0.4 / 12,
+            0.4 / 12,
+            0.4 / 12,
+            0.4 / 12,
+            0.4 / 12,
+            0.4 / 12,
+            0.4 / 12,
+            0.4 / 12,
+            0.4 / 12,
+            0.4 / 12,
+            0.1,
+            0.4 / 12,
+            0.4 / 12,
+            0.2,
+            0.3,
+        ]
+    )
+    drop_transmat = np.array([drop_startprob] * 16)
 
     drop_hmm_model = hmm.MultinomialHMM(n_components=16)
     drop_hmm_model.startprob_ = drop_startprob
@@ -988,30 +1174,29 @@ def get_drop_hmm_model(emissprob):
     drop_hmm_model.emissionprob_ = emissprob
     return drop_hmm_model
 
+
 def get_outro_hmm_model(emissprob):
     outro_startprob = np.array(
-        [0,
-         0.6/12,
-         0.6/12,
-         0.6/12,
-         0.1,
-         0.6/12,
-         0.6/12,
-         0.6/12,
-         0.15,
-         0.6/12,
-         0.6/12,
-         0.6/12,
-         0.15,
-         0.6/12,
-         0.6/12,
-         0.6/12
-         ]
-    )
-    outro_transmat = np.array(
         [
-            outro_startprob
-        ] * 16)
+            0,
+            0.6 / 12,
+            0.6 / 12,
+            0.6 / 12,
+            0.1,
+            0.6 / 12,
+            0.6 / 12,
+            0.6 / 12,
+            0.15,
+            0.6 / 12,
+            0.6 / 12,
+            0.6 / 12,
+            0.15,
+            0.6 / 12,
+            0.6 / 12,
+            0.6 / 12,
+        ]
+    )
+    outro_transmat = np.array([outro_startprob] * 16)
 
     outro_hmm_model = hmm.MultinomialHMM(n_components=16)
     outro_hmm_model.startprob_ = outro_startprob
@@ -1020,5 +1205,6 @@ def get_outro_hmm_model(emissprob):
     outro_hmm_model.emissionprob_ = emissprob
     return outro_hmm_model
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     app.run(debug=True, port=5000, threaded=True)
