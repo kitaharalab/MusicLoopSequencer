@@ -1,9 +1,10 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import "./Project.css";
 import { ListItem, UnorderedList, Button, Box } from "@chakra-ui/react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+
 import Link from "../components/Link/Link";
+import "./Project.css";
 
 function Project() {
   const [done, setDone] = useState(false);

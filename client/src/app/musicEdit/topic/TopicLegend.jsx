@@ -1,6 +1,5 @@
-/* eslint-disable import/no-unresolved */
-import React from "react";
 import * as d3 from "d3";
+import React from "react";
 
 export default function TopicLegend({ names, width, padding }) {
   const xScale = d3

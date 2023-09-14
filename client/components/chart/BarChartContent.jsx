@@ -1,5 +1,5 @@
-import React from "react";
 import * as d3 from "d3";
+import React from "react";
 
 export default function BarChartContent({ data, width, height, padding }) {
   if (data === undefined) {

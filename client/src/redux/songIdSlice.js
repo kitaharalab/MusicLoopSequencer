@@ -8,12 +8,12 @@ export const songIdSlice = createSlice({
   name: "sounds",
   initialState,
   reducers: {
-    setId: (state, action) => {
+    setSongId: (state, action) => {
       state.songId = action.payload;
     },
   },
 });
 
-export const { setId } = songIdSlice.actions;
+export const { setSongId } = songIdSlice.actions;
 
 export default songIdSlice.reducer;

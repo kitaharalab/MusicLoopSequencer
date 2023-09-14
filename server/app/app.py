@@ -308,10 +308,12 @@ def get_infomation_song(projectid, songid):
     sounds_ids = [["null" for i in range(4)] for j in range(32)]
     id_list = []
     path = "./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt"
-    with open(
-        "./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt"
-    ) as f:
-        id_list = f.read().split("\n")
+    try:
+        with open(path) as f:
+            id_list = f.read().split("\n")
+    except FileNotFoundError:
+        return {"parts": []}
+
     if id_list[len(id_list) - 1] == "":
         id_list.pop()
     count = 0
@@ -1207,4 +1209,4 @@ def get_outro_hmm_model(emissprob):
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000, threaded=True)
+    app.run(debug=True, port=8080, threaded=True)

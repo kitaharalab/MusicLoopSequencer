@@ -1,13 +1,3 @@
-import React, { useEffect, useRef, useState } from "react";
-// import { useSelector, useDispatch } from "react-redux";
-import * as d3 from "d3";
-// import insertSound from "./insertSound";
-// import onMusicLoop from "./onMusicLoop";
-// import { setPos } from "./redux/blockCanvasSlice";
-// import { setMusicLoopId } from "../../redux/musicLoopSlice";
-// import { setJson } from "./redux/soundDataSlice";
-// import { setParts } from "../../redux/soundsSlice";
-// import { setId } from "../../redux/songIdSlice";
 import {
   Box,
   ButtonGroup,
@@ -21,7 +11,13 @@ import {
   CardBody,
   Divider,
 } from "@chakra-ui/react";
+import * as d3 from "d3";
+import React, { useEffect, useRef, useState } from "react";
+// import { useSelector, useDispatch } from "react-redux";
+// import insertSound from "./insertSound";
+// import onMusicLoop from "./onMusicLoop";
 import { BiVolumeFull, BiSolidVolumeMute, BiRefresh } from "react-icons/bi";
+
 import ScatterPlot from "./ScatterPlot";
 
 function ZoomableChart({ children, width, height, zoomState }) {
@@ -73,6 +69,7 @@ function Content({ children, width, height }) {
             onClick={() => {
               setIsMute(!isMute);
             }}
+            isDisabled
           />
           <IconButton
             icon={<Icon as={BiRefresh} />}
@@ -96,7 +93,7 @@ export default function LoopMaterialView() {
   // const selectedMeasureId = useSelector((state) => state.block.posRectX);
   // const selectedPartId = useSelector((state) => state.block.posRectY)
   // const musicLoopId = useSelector((state) => state.musicLoop.musicLoopId);
-  const [_audio, _setAudio] = useState(null);
+  // const [audio, setAudio] = useState(null);
   // const [currentMusicLoop, setCurrentMusicLoop] = useState(null);
   // const parts = useSelector((state) => state.sounds.parts);
   // const measureId = useSelector((state) => state.canvas.measureId);
@@ -109,14 +106,6 @@ export default function LoopMaterialView() {
   // const clickRect = ({ nativeEvent }) => {
   //    const { offsetX, offsetY } = nativeEvent;
   //    dispatch(setPos({ offsetX, offsetY }))
-
-  // };
-
-  // const sleep = (waitMsec) => {
-  //   const startMsec = new Date();
-
-  //   // 指定ミリ秒間だけループさせる（CPUは常にビジー状態）
-  //   while (new Date() - startMsec < waitMsec);
   // };
 
   return (

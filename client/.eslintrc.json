@@ -4,6 +4,7 @@
     "es2021": true
   },
   "extends": ["airbnb", "prettier"],
+  "plugins": ["import"],
   "parserOptions": {
     "ecmaVersion": "latest",
     "sourceType": "module"
@@ -23,6 +24,14 @@
       }
     ],
     "react/prop-types": ["error", { "skipUndeclared": true }],
-    "import/no-extraneous-dependencies": ["off"]
+    "import/no-extraneous-dependencies": ["off"],
+    "import/order": [
+      "error",
+      {
+        "groups": ["builtin", "external", "parent", "sibling", "index"],
+        "newlines-between": "always",
+        "alphabetize": { "order": "asc" }
+      }
+    ]
   }
 }

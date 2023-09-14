@@ -1,6 +1,6 @@
 /* eslint-disable import/no-unresolved */
-import React from "react";
 import BarChartContent from "@components/chart/BarChartContent";
+import React from "react";
 
 export default function TopicPreferenceView({ data, width, height, padding }) {
   return (
