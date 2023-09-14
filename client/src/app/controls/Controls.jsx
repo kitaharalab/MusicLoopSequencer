@@ -17,11 +17,10 @@ export default function Controls({ projectId }) {
           <Button
             type="button"
             onClick={async () => {
-              console.log(max, lines);
               const music = await createMusic(projectId, lines, max);
-              console.log(music);
-              // dispatch(setParts(music.parts));
-              // dispatch(setId(music.songid));
+              console.log("get music", music);
+              dispatch(setParts(music.parts));
+              dispatch(setId(music.songid));
             }}
           >
             create
