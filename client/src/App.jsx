@@ -57,12 +57,12 @@ function App() {
   const [_play, { _stop, _pause }] = useSound(Sound);
 
   const [songHistory, setSongHistory] = useState([]);
-  const baseUrl = import.meta.env.VITE_SERVER_URL;
+  const baseUrl = `${import.meta.env.VITE_SERVER_URL}/projects/${projectId}`;
 
   const musicEditAreaWidth = 300;
 
   useEffect(() => {
-    const url = `${baseUrl}/projects/${projectId}/songs`;
+    const url = `${baseUrl}/songs`;
     axios
       .get(url) // サーバーから音素材の配列を受け取った後，then部分を実行する．
       .then((response) => {
@@ -77,7 +77,7 @@ function App() {
     if (songId === 0) {
       return;
     }
-    const url = `${baseUrl}/projects/${projectId}/songs/${songId}/wav`;
+    const url = `${baseUrl}/songs/${songId}/wav`;
 
     axios
       .get(url, { responseType: "blob" }) // サーバーから音素材の配列を受け取った後，then部分を実行する．
@@ -96,7 +96,7 @@ function App() {
   const handleChange = (e) => {
     setasdf(e.target.value);
     const selectSongId = e.target.value;
-    const url = `${baseUrl}/projects/${projectId}/songs/${selectSongId}`;
+    const url = `${baseUrl}/songs/${selectSongId}`;
     axios
       .get(url) // サーバーから音素材の配列を受け取った後，then部分を実行する．
       .then((response) => {
