@@ -29,12 +29,13 @@ import Controls from "./app/controls/Controls";
 import Header from "./app/Header";
 import ZoomedExcitementCurve from "./app/musicEdit/ZoomedExcitementCurve";
 import MusicInstrumentTable from "./app/musicEdit/MusicInstrumentTable";
+import { setSongId } from "./redux/songIdSlice";
 
 function App() {
   const [searchParams] = useSearchParams();
 
-  const json = useSelector((state) => state.soundData.json);
-  const musicLoopId = useSelector((state) => state.musicLoop.musicLoopId);
+  // const json = useSelector((state) => state.soundData.json);
+  // const musicLoopId = useSelector((state) => state.musicLoop.musicLoopId);
   // const measureId = useSelector((state) => state.canvas.measureId);
   // const parts = useSelector((state) => state.sounds.parts);
   const songId = useSelector((state) => state.songId.songId);
@@ -49,7 +50,7 @@ function App() {
   const [_audio, setAudio] = useState(null);
   const [_context2, _setContext2] = useState(null);
   const [_count, setCount] = useState(0);
-  const [_done1, setDone] = useState(false);
+  // const [done1, setDone] = useState(false);
 
   const [_asdf, setasdf] = useState([0]);
   const [_ctx2Width, _setCtx2Width] = useState(0);
@@ -61,15 +62,20 @@ function App() {
 
   const musicEditAreaWidth = 300;
 
+  // 読み込まれて最初にやりたいこと
   useEffect(() => {
-    const url = `${baseUrl}/songs`;
+    // 現在のプロジェクトで作られた曲の履歴を取得
+    const songHistoryURL = `${baseUrl}/songs`;
     axios
-      .get(url) // サーバーから音素材の配列を受け取った後，then部分を実行する．
+      .get(songHistoryURL) // サーバーから音素材の配列を受け取った後，then部分を実行する．
       .then((response) => {
-        setasdf(1234);
+        // setasdf(1234);
+        // setDone(true);
         const savedSongIds = response.data.songids;
         setSongHistory(savedSongIds.map((id) => ({ name: id, id })));
-        setDone(true);
+
+        const lastSongId = savedSongIds[savedSongIds.length - 1];
+        dispatch(setSongId(lastSongId));
       });
   }, []);
 
