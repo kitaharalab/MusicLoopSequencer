@@ -18,21 +18,15 @@ import Evaluation from "./Evaluation";
 export default function Controls({ projectId }) {
   const dispatch = useDispatch();
   const { lines, max } = useSelector((state) => state.lines1);
+  const songId = useSelector((state) => state.songId.songId);
   const [songHistory, setSongHistory] = useState([]);
   const [_asdf, setasdf] = useState([0]);
   const baseUrl = `${import.meta.env.VITE_SERVER_URL}/projects/${projectId}`;
 
-  const handleChange = (e) => {
+  const handleSelectedSongChange = (e) => {
     setasdf(e.target.value);
     const selectSongId = e.target.value;
-    const url = `${baseUrl}/songs/${selectSongId}`;
-    axios
-      .get(url) // サーバーから音素材の配列を受け取った後，then部分を実行する．
-      .then((response) => {
-        const { data } = response;
-        // console.log(data);
-        dispatch(setParts(data.parts));
-      });
+    dispatch(setSongId(selectSongId));
   };
 
   useEffect(() => {
@@ -65,11 +59,14 @@ export default function Controls({ projectId }) {
             <FormControl>
               <Select
                 id="number"
-                onChange={handleChange}
+                onChange={handleSelectedSongChange}
                 aria-label="select another"
+                value={songId}
               >
                 {songHistory.map(({ name, id }) => (
-                  <option key={`${name}${id}`}>{name}</option>
+                  <option key={`${name}${id}`} value={id}>
+                    {name}
+                  </option>
                 ))}
               </Select>
             </FormControl>
