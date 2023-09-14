@@ -196,7 +196,7 @@ def infoProject(projectid):
     return make_response(jsonify(response))
 
 
-def read_instrument_list_file(path: str) -> list | None:
+def read_instrument_list_file(path: str) -> list:
     content_list = None
     with open(path) as f:
         content_list = f.read().split("\n")

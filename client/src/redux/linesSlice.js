@@ -5,6 +5,7 @@ const curveInitial = 250;
 const linesY = new Array(curveLength).fill(curveInitial);
 const initialState = {
   lines: linesY,
+  max: curveInitial,
 };
 
 export const linesSlice = createSlice({
@@ -33,9 +34,25 @@ export const linesSlice = createSlice({
         }
       }
     },
+    setLine: (state, action) => {
+      const { lines } = action.payload;
+
+      return {
+        ...state,
+        lines,
+      };
+    },
+    setMax: (state, action) => {
+      const { max } = action.payload;
+
+      return {
+        ...state,
+        max,
+      };
+    },
   },
 });
 
-export const { setStart, setDraw } = linesSlice.actions;
+export const { setStart, setDraw, setLine, setMax } = linesSlice.actions;
 
 export default linesSlice.reducer;
