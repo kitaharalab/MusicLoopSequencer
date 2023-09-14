@@ -6,10 +6,10 @@ export default function AudioControls() {
 
   return (
     <ButtonGroup>
-      <Button type="button" onClick={() => audio.play()}>
+      <Button type="button" onClick={() => audio.play()} isDisabled>
         play
       </Button>
-      <Button type="button" onClick={() => audio.pause()}>
+      <Button type="button" onClick={() => audio.pause()} isDisabled>
         pause
       </Button>
       <Button
@@ -18,6 +18,7 @@ export default function AudioControls() {
           audio.pause();
           audio.currentTime = 0;
         }}
+        isDisabled
       >
         stop
       </Button>

@@ -73,6 +73,7 @@ function Content({ children, width, height }) {
             onClick={() => {
               setIsMute(!isMute);
             }}
+            isDisabled
           />
           <IconButton
             icon={<Icon as={BiRefresh} />}
