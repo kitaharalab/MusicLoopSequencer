@@ -10,7 +10,6 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import createMusic from "../../createMusic";
-import { setParts } from "../../redux/soundsSlice";
 import { setSongId } from "../../redux/songIdSlice";
 import AudioControls from "./AudioControls";
 import Evaluation from "./Evaluation";
@@ -48,9 +47,11 @@ export default function Controls({ projectId }) {
               type="button"
               onClick={async () => {
                 const music = await createMusic(projectId, lines, max);
-                console.log("get music", music);
-                dispatch(setParts(music.parts));
                 dispatch(setSongId(music.songid));
+                setSongHistory([
+                  ...songHistory,
+                  { name: music.songid, id: music.songid },
+                ]);
               }}
             >
               create
