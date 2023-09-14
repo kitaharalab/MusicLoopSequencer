@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Box } from "@chakra-ui/react";

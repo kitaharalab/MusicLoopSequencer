@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
-import useSound from "use-sound";
+// import useSound from "use-sound";
 import { useSearchParams } from "react-router-dom";
-// eslint-disable-next-line import/no-extraneous-dependencies
 import {
-  FormControl,
-  Select,
   Box,
   Flex,
   Card,
@@ -18,11 +15,9 @@ import {
   GridItem,
 } from "@chakra-ui/react";
 
-import Sound from "./song0.wav";
 import ExcitementCurve from "./app/excitementCurve/ExcitementCurve";
 import LoopTable from "./app/musicEdit/LoopTable";
 import LoopMaterialView from "./app/musicEdit/loopMaterisl/LoopMaterialView";
-import { setParts } from "./redux/soundsSlice";
 import TopicView from "./app/musicEdit/topic/TopicView";
 import Controls from "./app/controls/Controls";
 import Header from "./app/Header";
@@ -32,32 +27,18 @@ import { setSongId } from "./redux/songIdSlice";
 
 function App() {
   const [searchParams] = useSearchParams();
-
-  // const json = useSelector((state) => state.soundData.json);
-  // const musicLoopId = useSelector((state) => state.musicLoop.musicLoopId);
-  // const measureId = useSelector((state) => state.canvas.measureId);
-  // const parts = useSelector((state) => state.sounds.parts);
-  const songId = useSelector((state) => state.songId.songId);
-  // const partId = useSelector((state) => state.canvas.partId);
   const projectId = searchParams.get("projectid");
-  // const xCoordinate = useSelector((state) => state.musicData.xCoordinate);
-  // const yCoordinate = useSelector((state) => state.musicData.yCoordinate);
-  // const rangeList = useSelector((state) => state.musicData.rangeList);
+
   const dispatch = useDispatch();
-  // dispatch(setProjectId(projectId));
-  const [_context1, _setContext1] = useState(null);
+  const songId = useSelector((state) => state.songId.songId);
+  const baseUrl = `${import.meta.env.VITE_SERVER_URL}/projects/${projectId}`;
+  const musicEditAreaWidth = 300;
+
+  // TODO
   const [_audio, setAudio] = useState(null);
-  const [_context2, _setContext2] = useState(null);
   const [_count, setCount] = useState(0);
   // const [done1, setDone] = useState(false);
-
-  const [_ctx2Width, _setCtx2Width] = useState(0);
-  const [_ctx2Height, _setCtx2Height] = useState(0);
-  const [_play, { _stop, _pause }] = useSound(Sound);
-
-  const baseUrl = `${import.meta.env.VITE_SERVER_URL}/projects/${projectId}`;
-
-  const musicEditAreaWidth = 300;
+  // const [_play, { _stop, _pause }] = useSound(Sound);
 
   // 読み込まれて最初にやりたいこと
   useEffect(() => {
@@ -90,7 +71,6 @@ function App() {
         const test1 = new Audio(FILE);
         setAudio(test1);
       });
-    // setSongHistory([...songHistory, { name: songId, id: songId }]);
   }, [songId]);
 
   return (
