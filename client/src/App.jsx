@@ -109,7 +109,7 @@ function App() {
   return (
     <>
       <Header projectName={projectId} />
-      <Controls />
+      <Controls projectId={projectId} />
       <FormControl>
         <Select
           id="number"
