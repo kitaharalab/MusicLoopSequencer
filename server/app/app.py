@@ -321,7 +321,7 @@ def get_infomation_song(projectid, songid):
         if i % 4 == 3:
             count = count + 1
 
-    drums_list, bass_list, synth_list, sequence_list = format_list(sound_ids)
+    drums_list, bass_list, synth_list, sequence_list = format_list(sounds_ids)
     # response = {"sounds_ids": sounds_ids}
     response = {
         "parts": [
