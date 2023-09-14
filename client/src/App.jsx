@@ -45,7 +45,7 @@ function App() {
   // const yCoordinate = useSelector((state) => state.musicData.yCoordinate);
   // const rangeList = useSelector((state) => state.musicData.rangeList);
   const dispatch = useDispatch();
-  dispatch(setProjectId(projectId));
+  // dispatch(setProjectId(projectId));
   const [_context1, _setContext1] = useState(null);
   const [_audio, setAudio] = useState(null);
   const [_context2, _setContext2] = useState(null);
@@ -137,7 +137,7 @@ function App() {
                     <MusicInstrumentTable />
                   </GridItem>
                   <GridItem colSpan={9}>
-                    <LoopTable measure={32} />
+                    <LoopTable projectId={projectId} measure={32} />
                   </GridItem>
                 </Grid>
               </CardBody>

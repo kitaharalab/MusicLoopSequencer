@@ -13,8 +13,7 @@ import axios from "axios";
 import { setMusicData } from "../../redux/musicDataSlice";
 import selectBlock from "./selectBlock";
 
-export default function LoopTable({ measure }) {
-  const projectId = useSelector((state) => state.projectId.projectId);
+export default function LoopTable({ projectId, measure }) {
   const songId = useSelector((state) => state.songId.songId);
   const [parts, setParts] = useState();
   const dispatch = useDispatch();
