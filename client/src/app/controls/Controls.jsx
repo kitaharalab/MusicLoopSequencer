@@ -84,7 +84,7 @@ export default function Controls({ projectId }) {
           </Flex>
         </Box>
         <Spacer />
-        <AudioControls />
+        <AudioControls projectId={projectId} />
         <Spacer />
         <Evaluation />
       </Flex>
