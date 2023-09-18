@@ -10,8 +10,8 @@ import {
   GridItem,
 } from "@chakra-ui/react";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
 // import useSound from "use-sound";
 import { useSearchParams } from "react-router-dom";
 
@@ -30,13 +30,10 @@ function App() {
   const projectId = searchParams.get("projectid");
 
   const dispatch = useDispatch();
-  const songId = useSelector((state) => state.songId.songId);
   const baseUrl = `${import.meta.env.VITE_SERVER_URL}/projects/${projectId}`;
   const musicEditAreaWidth = 300;
 
   // TODO
-  const [_audio, setAudio] = useState(null);
-  const [_count, setCount] = useState(0);
   // const [done1, setDone] = useState(false);
   // const [_play, { _stop, _pause }] = useSound(Sound);
 
@@ -53,25 +50,6 @@ function App() {
         dispatch(setSongId(lastSongId));
       });
   }, []);
-
-  useEffect(() => {
-    if (songId === 0) {
-      return;
-    }
-    const url = `${baseUrl}/songs/${songId}/wav`;
-
-    axios
-      .get(url, { responseType: "blob" }) // サーバーから音素材の配列を受け取った後，then部分を実行する．
-      .then((response) => {
-        const FILE = window.URL.createObjectURL(
-          new Blob([response.data], { type: "audio/wav" }),
-        );
-        // const newCount = count + 1;
-        setCount(FILE);
-        const test1 = new Audio(FILE);
-        setAudio(test1);
-      });
-  }, [songId]);
 
   return (
     <>

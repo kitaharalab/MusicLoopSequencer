@@ -8,7 +8,7 @@ import urllib.parse
 import numpy as np
 import pandas as pd
 from flask import Flask, jsonify, make_response, request, send_file, send_from_directory
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from hmmlearn import hmm
 from model import Model
 from pydub import AudioSegment
@@ -20,6 +20,12 @@ topic_n = 4
 excitement_len = 32
 selected_constitution_determine = 0
 selected_fix_determine = 0
+allowed_origins = [
+    "http://localhost:5173",
+    "https://project-musicloopsequencer.web.app",
+    "https://project-musicloopsequencer.firebaseapp.com/",
+]
+
 app = Flask(__name__)
 CORS(app)
 
@@ -584,11 +590,14 @@ def downloadSong(projectid,songid,filename):
 
 
 @app.route("/projects/<projectid>/songs/<songid>/wav", methods=["GET"])
+@cross_origin(origins=allowed_origins, methods=["GET"])
 def download_song(projectid, songid):
-    return send_file(
-        "./project/" + projectid + "/songs/" + songid + "/song" + songid + ".wav",
-        as_attachment=True,
-    )
+    file_name = f"./project/{projectid}/songs/{songid}/song{songid}.wav"
+    exist_file = os.path.isfile(file_name)
+    if not exist_file:
+        return make_response(jsonify({"message": "指定された楽曲ファイルは存在しません"})), 204
+
+    return send_file(file_name, as_attachment=True)
 
 
 @app.route("/parts/<partid>/musicloops/<musicloopid>/wav", methods=["GET"])
