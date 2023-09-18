@@ -9,19 +9,35 @@ export default function AudioControls({ projectId }) {
   const songId = useSelector((state) => state.songId.songId);
 
   useEffect(() => {
+    if (!songId) {
+      return () => {};
+    }
+
     const url = `${
       import.meta.env.VITE_SERVER_URL
     }/projects/${projectId}/songs/${songId}/wav`;
-    axios.get(url, { responseType: "blob" }).then((response) => {
-      const { data } = response;
-      const songUrl = window.URL.createObjectURL(
-        new Blob([data], { type: "audio/wav" }),
-      );
-      setAudioUrl(songUrl);
+    axios
+      .get(url, {
+        responseType: "arraybuffer",
+        headers: { "Content-Type": "audio/wav" },
+      })
+      .then((response) => {
+        if (response.status !== 200) {
+          return;
+        }
 
-      const songAudio = new Audio(songUrl);
-      setAudio(songAudio);
-    });
+        const { data } = response;
+        const songUrl = window.URL.createObjectURL(
+          new Blob([data], { type: "audio/wav" }),
+        );
+        setAudioUrl(songUrl);
+
+        const songAudio = new Audio(songUrl);
+        setAudio(songAudio);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
 
     return () => {
       window.URL.revokeObjectURL(audioUrl);
@@ -41,7 +57,11 @@ export default function AudioControls({ projectId }) {
       <Button
         type="button"
         onClick={() => {
-          audio?.pause();
+          if (!audio) {
+            return;
+          }
+
+          audio.pause();
           audio.currentTime = 0;
         }}
       >
