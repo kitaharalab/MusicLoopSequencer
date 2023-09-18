@@ -7,6 +7,7 @@ import urllib.parse
 
 import numpy as np
 import pandas as pd
+from dotenv import load_dotenv
 from flask import Flask, jsonify, make_response, request, send_file, send_from_directory
 from flask_cors import CORS
 from hmmlearn import hmm
@@ -14,6 +15,8 @@ from model import Model
 from pydub import AudioSegment
 from pydub.playback import play
 from view import View
+
+load_dotenv()
 
 fix_len = 4
 topic_n = 4
@@ -585,10 +588,14 @@ def downloadSong(projectid,songid,filename):
 
 @app.route("/projects/<projectid>/songs/<songid>/wav", methods=["GET"])
 def download_song(projectid, songid):
-    return send_file(
-        "./project/" + projectid + "/songs/" + songid + "/song" + songid + ".wav",
-        as_attachment=True,
-    )
+    file_name = f"./project/{projectid}/songs/{songid}/song{songid}.wav"
+    exist_file = os.path.isfile(file_name)
+    if not exist_file:
+        return make_response(jsonify({"message": "指定された楽曲ファイルは存在しません"})), 204
+
+    response = make_response(send_file(file_name, as_attachment=True))
+    response.headers["Access-Control-Allow-Origin"] = os.getenv("CLIENT_URL")
+    return response
 
 
 @app.route("/parts/<partid>/musicloops/<musicloopid>/wav", methods=["GET"])
