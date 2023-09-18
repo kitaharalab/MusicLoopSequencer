@@ -49,7 +49,11 @@ export default function AudioControls({ projectId }) {
       <Button
         type="button"
         onClick={() => {
-          audio?.pause();
+          if (!audio) {
+            return;
+          }
+
+          audio.pause();
           audio.currentTime = 0;
         }}
       >
