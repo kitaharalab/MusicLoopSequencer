@@ -16,20 +16,28 @@ export default function AudioControls({ projectId }) {
     const url = `${
       import.meta.env.VITE_SERVER_URL
     }/projects/${projectId}/songs/${songId}/wav`;
-    axios.get(url, { responseType: "blob" }).then((response) => {
-      if (response.status !== 200) {
-        return;
-      }
+    axios
+      .get(url, {
+        responseType: "arraybuffer",
+        headers: { "Content-Type": "audio/wav" },
+      })
+      .then((response) => {
+        if (response.status !== 200) {
+          return;
+        }
 
-      const { data } = response;
-      const songUrl = window.URL.createObjectURL(
-        new Blob([data], { type: "audio/wav" }),
-      );
-      setAudioUrl(songUrl);
+        const { data } = response;
+        const songUrl = window.URL.createObjectURL(
+          new Blob([data], { type: "audio/wav" }),
+        );
+        setAudioUrl(songUrl);
 
-      const songAudio = new Audio(songUrl);
-      setAudio(songAudio);
-    });
+        const songAudio = new Audio(songUrl);
+        setAudio(songAudio);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
 
     return () => {
       window.URL.revokeObjectURL(audioUrl);
