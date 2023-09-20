@@ -2,18 +2,12 @@ import math
 import os
 import random
 import re
-import tkinter as tk
-import urllib.parse
 
 import numpy as np
-import pandas as pd
-from flask import Flask, jsonify, make_response, request, send_file, send_from_directory
+from flask import Flask, jsonify, make_response, request, send_file
 from flask_cors import CORS, cross_origin
 from hmmlearn import hmm
-from model import Model
 from pydub import AudioSegment
-from pydub.playback import play
-from view import View
 
 fix_len = 4
 topic_n = 4
