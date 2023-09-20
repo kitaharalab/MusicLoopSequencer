@@ -1,5 +1,6 @@
 /* eslint-disable import/no-unresolved */
 import { Box, Card, CardBody, Text } from "@chakra-ui/react";
+import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 
 import LoopTopicView from "./LoopTopicView";
@@ -20,9 +21,10 @@ const sampleLoopTopic = [
   { name: "highest", value: 4 },
 ];
 
-export default function TopicView() {
+export default function TopicView({ projectId }) {
   const wrapperRef = useRef();
   const [width, setWidth] = useState(400);
+  const [topicPreferenceData, setTopicPreferenceData] = useState();
   const contentHeight = 200;
   const legendHeight = 100;
   const margin = 25;
@@ -30,6 +32,16 @@ export default function TopicView() {
 
   useEffect(() => {
     setWidth(wrapperRef?.current?.clientWidth);
+
+    const getTopicPreferenceData = async () => {
+      const response = await axios.get(
+        `${import.meta.env.VITE_SERVER_URL}/topic`,
+      );
+      const { data } = response;
+      console.log(data, data["ratio-topic"]);
+    };
+
+    getTopicPreferenceData();
   }, []);
 
   return (

@@ -2,18 +2,12 @@ import math
 import os
 import random
 import re
-import tkinter as tk
-import urllib.parse
 
 import numpy as np
-import pandas as pd
-from flask import Flask, jsonify, make_response, request, send_file, send_from_directory
+from flask import Flask, jsonify, make_response, request, send_file
 from flask_cors import CORS, cross_origin
 from hmmlearn import hmm
-from model import Model
 from pydub import AudioSegment
-from pydub.playback import play
-from view import View
 
 fix_len = 4
 topic_n = 4
@@ -23,8 +17,9 @@ selected_fix_determine = 0
 allowed_origins = [
     "http://localhost:5173",
     "https://project-musicloopsequencer.web.app",
-    "https://project-musicloopsequencer.firebaseapp.com/",
+    "https://project-musicloopsequencer.firebaseapp.com",
 ]
+PARTS = ["Drums", "Bass", "Synth", "Sequence"]
 
 app = Flask(__name__)
 CORS(app)
@@ -636,6 +631,32 @@ def download_musicloop(partid, musicloopid):
         + ".wav",
         as_attachment=True,
     )
+
+
+@app.route("/topic", methods=["GET"])
+def get_topic_preference():
+    ratio_topic = load_topic_preference()
+    response = {"ratio-topic": ratio_topic}
+
+    return make_response(jsonify(response))
+
+
+def load_topic_preference():
+    ratio_topic = [[[1.0 for i in range(topic_n)] for j in range(5)] for k in range(4)]
+    part_list = ["Drums", "Bass", "Synth", "Sequence"]
+    for i in range(4):
+        for j in range(5):
+            pass_ratio_topic = (
+                "./lda/" + part_list[i] + "/ratio_topic" + str(j) + ".txt"
+            )
+            topic = []
+            with open(pass_ratio_topic) as f:
+                topic = f.read().split("\n")
+            for k in range(4):
+                ratio_topic[i][j][k] = float(topic[k])
+            print(ratio_topic[i][j][0:])
+
+    return ratio_topic
 
 
 def createMusic(array, projectid):
