@@ -23,6 +23,7 @@ const sampleLoopTopic = [
 export default function TopicView() {
   const wrapperRef = useRef();
   const [width, setWidth] = useState(400);
+  const [topicPreferenceData, setTopicPreferenceData] = useState();
   const contentHeight = 200;
   const legendHeight = 100;
   const margin = 25;
