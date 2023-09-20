@@ -19,6 +19,7 @@ allowed_origins = [
     "https://project-musicloopsequencer.web.app",
     "https://project-musicloopsequencer.firebaseapp.com",
 ]
+PARTS = ["Drums", "Bass", "Synth", "Sequence"]
 
 app = Flask(__name__)
 CORS(app)
@@ -630,6 +631,32 @@ def download_musicloop(partid, musicloopid):
         + ".wav",
         as_attachment=True,
     )
+
+
+@app.route("/topic", methods=["GET"])
+def get_topic_preference():
+    ratio_topic = load_topic_preference()
+    response = {"ratio-topic": ratio_topic}
+
+    return make_response(jsonify(response))
+
+
+def load_topic_preference():
+    ratio_topic = [[[1.0 for i in range(topic_n)] for j in range(5)] for k in range(4)]
+    part_list = ["Drums", "Bass", "Synth", "Sequence"]
+    for i in range(4):
+        for j in range(5):
+            pass_ratio_topic = (
+                "./lda/" + part_list[i] + "/ratio_topic" + str(j) + ".txt"
+            )
+            topic = []
+            with open(pass_ratio_topic) as f:
+                topic = f.read().split("\n")
+            for k in range(4):
+                ratio_topic[i][j][k] = float(topic[k])
+            print(ratio_topic[i][j][0:])
+
+    return ratio_topic
 
 
 def createMusic(array, projectid):
