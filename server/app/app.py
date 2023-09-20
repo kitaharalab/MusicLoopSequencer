@@ -23,7 +23,7 @@ selected_fix_determine = 0
 allowed_origins = [
     "http://localhost:5173",
     "https://project-musicloopsequencer.web.app",
-    "https://project-musicloopsequencer.firebaseapp.com/",
+    "https://project-musicloopsequencer.firebaseapp.com",
 ]
 
 app = Flask(__name__)
