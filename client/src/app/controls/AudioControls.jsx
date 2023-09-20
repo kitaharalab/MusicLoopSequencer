@@ -9,7 +9,7 @@ export default function AudioControls({ projectId }) {
   const songId = useSelector((state) => state.songId.songId);
 
   useEffect(() => {
-    if (!songId) {
+    if (songId === undefined || songId === null) {
       return () => {};
     }
 
