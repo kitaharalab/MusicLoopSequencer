@@ -71,7 +71,7 @@ function App() {
                   <Box className="music-loops-container">
                     <LoopMaterialView />
                   </Box>
-                  <TopicView />
+                  <TopicView projectId={projectId} />
                 </Flex>
               </CardBody>
             </Card>
