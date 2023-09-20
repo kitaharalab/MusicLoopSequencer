@@ -1,6 +1,6 @@
 /* eslint-disable import/no-unresolved */
 import { Box, Card, CardBody, Text } from "@chakra-ui/react";
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import LoopTopicView from "./LoopTopicView";
 import TopicLegend from "./TopicLegend";
@@ -22,11 +22,15 @@ const sampleLoopTopic = [
 
 export default function TopicView() {
   const wrapperRef = useRef();
-  const width = wrapperRef?.current?.clientWidth ?? 100;
+  const [width, setWidth] = useState(400);
   const contentHeight = 200;
   const legendHeight = 100;
   const margin = 25;
   const barPadding = 0.2;
+
+  useEffect(() => {
+    setWidth(wrapperRef?.current?.clientWidth);
+  }, []);
 
   return (
     <Card marginY={4}>

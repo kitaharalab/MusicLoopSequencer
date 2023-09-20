@@ -71,6 +71,12 @@ export default function LoopTable({ projectId, measure }) {
         const { data } = response;
         setParts(data.parts);
       });
+
+    return () => {
+      dispatch(
+        setMusicData({ xCoordinate: [], yCoordinate: [], rangeList: [] }),
+      );
+    };
   }, [songId]);
 
   if (parts === undefined) {
