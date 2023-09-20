@@ -101,7 +101,11 @@ export default function LoopMaterialView() {
   // const projectId = useSelector((state) => state.projectId.projectId);
   // const dispatch = useDispatch();
   const wrapperRef = useRef();
-  const width = wrapperRef?.current?.clientWidth;
+  const [width, setWidth] = useState(400);
+
+  useEffect(() => {
+    setWidth(wrapperRef?.current?.clientWidth);
+  }, []);
 
   // const clickRect = ({ nativeEvent }) => {
   //    const { offsetX, offsetY } = nativeEvent;
