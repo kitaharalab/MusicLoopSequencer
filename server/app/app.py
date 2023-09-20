@@ -19,6 +19,7 @@ allowed_origins = [
     "https://project-musicloopsequencer.web.app",
     "https://project-musicloopsequencer.firebaseapp.com",
 ]
+PARTS = ["Drums", "Bass", "Synth", "Sequence"]
 
 app = Flask(__name__)
 CORS(app)
@@ -632,7 +633,7 @@ def download_musicloop(partid, musicloopid):
     )
 
 
-@app.route("/topic/", methods=["POST"])
+@app.route("/topic", methods=["GET"])
 def get_topic_preference():
     ratio_topic = load_topic_preference()
     response = {"ratio-topic": ratio_topic}
