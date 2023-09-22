@@ -7,6 +7,7 @@ export default function insertSound(
   musicLoopId,
   parts,
 ) {
+  console.log("insert sound func");
   const url = `${import.meta.env.VITE_SERVER_URL}/projects/${String(
     projectId,
   )}/parts/${String(partId)}/measures/${String(measureId)}/musicloops/${String(
