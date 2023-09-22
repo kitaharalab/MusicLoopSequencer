@@ -113,9 +113,13 @@ export default function LoopMaterialView({ projectId, songId }) {
       });
     };
     getMusicParts();
-  }, []);
+  }, [songId]);
 
   function handleInsertLoopMaterial(loopId) {
+    if (part === null || measure === null || partsRef === null) {
+      return;
+    }
+
     const insertLoop = async () => {
       const music = await insertSound(
         projectId,
