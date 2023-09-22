@@ -11,14 +11,19 @@ import {
   CardBody,
   Divider,
 } from "@chakra-ui/react";
+import axios from "axios";
 import * as d3 from "d3";
 import React, { useEffect, useRef, useState } from "react";
 // import { useSelector, useDispatch } from "react-redux";
 // import insertSound from "./insertSound";
 // import onMusicLoop from "./onMusicLoop";
 import { BiVolumeFull, BiSolidVolumeMute, BiRefresh } from "react-icons/bi";
+import { useDispatch, useSelector } from "react-redux";
+
+import { setSongId } from "../../../redux/songIdSlice";
 
 import ScatterPlot from "./ScatterPlot";
+import insertSound from "./insertSound";
 
 function ZoomableChart({ children, width, height, zoomState }) {
   const { zoomTransform, setZoomTransform } = zoomState;
@@ -37,7 +42,7 @@ function ZoomableChart({ children, width, height, zoomState }) {
         setZoomTransform(event.transform);
       });
 
-    d3.select(svgRef.current).call(zoom);
+    d3.select(svgRef.current).call(zoom).on("dblclick.zoom", null);
   }, []);
 
   return (
@@ -89,7 +94,7 @@ function Content({ children, width, height }) {
   );
 }
 
-export default function LoopMaterialView() {
+export default function LoopMaterialView({ projectId, songId }) {
   // const selectedMeasureId = useSelector((state) => state.block.posRectX);
   // const selectedPartId = useSelector((state) => state.block.posRectY)
   // const musicLoopId = useSelector((state) => state.musicLoop.musicLoopId);
@@ -102,15 +107,45 @@ export default function LoopMaterialView() {
   // const dispatch = useDispatch();
   const wrapperRef = useRef();
   const [width, setWidth] = useState(400);
+  // const songId = useSelector((state) => state.songId.songId);
+  const { part, measure } = useSelector((store) => store.sounds);
+  const partsRef = useRef();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     setWidth(wrapperRef?.current?.clientWidth);
+
+    const getMusicParts = () => {
+      const url = `${
+        import.meta.env.VITE_SERVER_URL
+      }/projects/${projectId}/songs/${songId}`;
+      axios.get(url).then((response) => {
+        const { data } = response;
+        partsRef.current = data.parts;
+      });
+    };
+    getMusicParts();
   }, []);
 
   // const clickRect = ({ nativeEvent }) => {
   //    const { offsetX, offsetY } = nativeEvent;
   //    dispatch(setPos({ offsetX, offsetY }))
   // };
+
+  function handleInsertLoopMaterial(loopId) {
+    const insertLoop = async () => {
+      const music = await insertSound(
+        projectId,
+        part,
+        measure,
+        loopId,
+        partsRef.current,
+      );
+      dispatch(setSongId(music.songid));
+    };
+
+    insertLoop();
+  }
 
   return (
     <>
@@ -153,7 +188,11 @@ export default function LoopMaterialView() {
         <CardBody>
           <Box ref={wrapperRef}>
             <Content width={width} height={width}>
-              <ScatterPlot width={width} height={width} />
+              <ScatterPlot
+                width={width}
+                height={width}
+                handleInsertLoopMaterial={handleInsertLoopMaterial}
+              />
             </Content>
           </Box>
         </CardBody>

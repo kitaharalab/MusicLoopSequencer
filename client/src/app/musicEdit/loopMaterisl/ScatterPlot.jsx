@@ -2,7 +2,11 @@ import * as d3 from "d3";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 
-export default function ScatterPlot({ width, height, selectState }) {
+export default function ScatterPlot({
+  width,
+  height,
+  handleInsertLoopMaterial,
+}) {
   const xCoordinate = useSelector((state) => state.musicData.xCoordinate);
   const yCoordinate = useSelector((state) => state.musicData.yCoordinate);
   const rangeList = useSelector((state) => state.musicData.rangeList);
@@ -44,6 +48,15 @@ export default function ScatterPlot({ width, height, selectState }) {
             fillOpacity={selectId === undefined || selectId === id ? 1 : 0.5}
             onClick={() => {
               setSelectId(selectId === id ? undefined : id);
+            }}
+            onContextMenu={(event) => {
+              event.preventDefault();
+              if (selectId !== id) {
+                return;
+              }
+
+              handleInsertLoopMaterial(id);
+              setSelectId(undefined);
             }}
           />
         );
