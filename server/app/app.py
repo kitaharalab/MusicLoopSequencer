@@ -5,7 +5,7 @@ import re
 
 import numpy as np
 from flask import Flask, jsonify, make_response, request, send_file
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 from hmmlearn import hmm
 from pydub import AudioSegment
 
@@ -585,7 +585,6 @@ def downloadSong(projectid,songid,filename):
 
 
 @app.route("/projects/<projectid>/songs/<songid>/wav", methods=["GET"])
-@cross_origin(origins=allowed_origins, methods=["GET"])
 def download_song(projectid, songid):
     file_name = f"./project/{projectid}/songs/{songid}/song{songid}.wav"
     exist_file = os.path.isfile(file_name)
