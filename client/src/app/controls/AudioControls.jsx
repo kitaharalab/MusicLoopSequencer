@@ -9,6 +9,7 @@ export default function AudioControls({ projectId }) {
   const songId = useSelector((state) => state.songId.songId);
 
   useEffect(() => {
+    audio?.pause();
     if (songId === undefined || songId === null) {
       return () => {};
     }

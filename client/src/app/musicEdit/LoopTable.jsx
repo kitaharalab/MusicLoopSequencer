@@ -12,6 +12,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import { setMusicData } from "../../redux/musicDataSlice";
+import { setSelectedLoop } from "../../redux/soundsSlice";
 
 import selectBlock from "./selectBlock";
 
@@ -45,13 +46,17 @@ export default function LoopTable({ projectId, measure }) {
       measure,
       part,
     };
-
     const selectSame =
       JSON.stringify(selectMeasurePart) ===
       JSON.stringify(newSelectMeasurePart);
 
     setSelectMeasurePart(
       selectSame ? initSelectMeasurePart : newSelectMeasurePart,
+    );
+    dispatch(
+      setSelectedLoop(
+        selectSame ? initSelectMeasurePart : newSelectMeasurePart,
+      ),
     );
 
     const musicData = await selectBlock(part);

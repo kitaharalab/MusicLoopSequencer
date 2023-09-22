@@ -9,7 +9,8 @@ export const songIdSlice = createSlice({
   initialState,
   reducers: {
     setSongId: (state, action) => {
-      state.songId = action.payload;
+      const songId = action.payload;
+      return { ...state, songId };
     },
   },
 });
