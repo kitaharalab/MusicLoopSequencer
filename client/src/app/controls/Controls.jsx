@@ -42,6 +42,11 @@ export default function Controls({ projectId }) {
     });
   }, []);
 
+  useEffect(() => {
+    const historySet = new Set([...songHistory, { name: songId, id: songId }]);
+    setSongHistory([...historySet]);
+  }, [songId]);
+
   return (
     <FormControl>
       <Flex>
