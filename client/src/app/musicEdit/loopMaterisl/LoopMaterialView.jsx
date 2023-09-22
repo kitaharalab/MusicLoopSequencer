@@ -14,8 +14,6 @@ import {
 import axios from "axios";
 import * as d3 from "d3";
 import React, { useEffect, useRef, useState } from "react";
-// import { useSelector, useDispatch } from "react-redux";
-// import insertSound from "./insertSound";
 // import onMusicLoop from "./onMusicLoop";
 import { BiVolumeFull, BiSolidVolumeMute, BiRefresh } from "react-icons/bi";
 import { useDispatch, useSelector } from "react-redux";
@@ -95,19 +93,9 @@ function Content({ children, width, height }) {
 }
 
 export default function LoopMaterialView({ projectId, songId }) {
-  // const selectedMeasureId = useSelector((state) => state.block.posRectX);
-  // const selectedPartId = useSelector((state) => state.block.posRectY)
-  // const musicLoopId = useSelector((state) => state.musicLoop.musicLoopId);
   // const [audio, setAudio] = useState(null);
-  // const [currentMusicLoop, setCurrentMusicLoop] = useState(null);
-  // const parts = useSelector((state) => state.sounds.parts);
-  // const measureId = useSelector((state) => state.canvas.measureId);
-  // const partId = useSelector((state) => state.canvas.partId);
-  // const projectId = useSelector((state) => state.projectId.projectId);
-  // const dispatch = useDispatch();
   const wrapperRef = useRef();
   const [width, setWidth] = useState(400);
-  // const songId = useSelector((state) => state.songId.songId);
   const { part, measure } = useSelector((store) => store.sounds);
   const partsRef = useRef();
   const dispatch = useDispatch();
@@ -126,11 +114,6 @@ export default function LoopMaterialView({ projectId, songId }) {
     };
     getMusicParts();
   }, []);
-
-  // const clickRect = ({ nativeEvent }) => {
-  //    const { offsetX, offsetY } = nativeEvent;
-  //    dispatch(setPos({ offsetX, offsetY }))
-  // };
 
   function handleInsertLoopMaterial(loopId) {
     const insertLoop = async () => {
@@ -165,20 +148,6 @@ export default function LoopMaterialView({ projectId, songId }) {
                 // test.play();
                 setCurrentMusicLoop(i);
               }
-            }
-          }
-        }}
-        onMouseDown={async ({ nativeEvent }) => {
-          for (let i = 0; i < xCoordinate.length; i++) {
-              const music = await insertSound(
-                projectId,
-                partId,
-                measureId,
-                musicLoopId,
-                parts,
-              );
-              dispatch(setParts(music.parts));
-              dispatch(setId(music.songid));
             }
           }
         }}
