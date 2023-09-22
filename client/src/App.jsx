@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 // import useSound from "use-sound";
 import { useSearchParams } from "react-router-dom";
 
@@ -32,6 +32,8 @@ function App() {
   const dispatch = useDispatch();
   const baseUrl = `${import.meta.env.VITE_SERVER_URL}/projects/${projectId}`;
   const musicEditAreaWidth = 300;
+
+  const songId = useSelector((state) => state.songId.songId);
 
   // TODO
   // const [done1, setDone] = useState(false);
@@ -69,7 +71,7 @@ function App() {
               <CardBody>
                 <Flex flexDirection="column" width={musicEditAreaWidth}>
                   <Box className="music-loops-container">
-                    <LoopMaterialView />
+                    <LoopMaterialView projectId={projectId} songId={songId} />
                   </Box>
                   <TopicView projectId={projectId} />
                 </Flex>
