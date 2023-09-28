@@ -357,6 +357,7 @@ def get_infomation_of_inserted_sounds_in_selected_part(projectid,songid,partid):
     
     #response = {"sounds_ids": sounds_ids}
     response = {'partid':partid,'sounds':partid_list}
+    
                          
     return make_response(jsonify(response))
 @app.route("/projects/<projectid>/songs/<songid>/parts/<partid>/measures/<measureid>", methods=['GET'])
