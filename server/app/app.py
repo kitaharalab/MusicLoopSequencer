@@ -941,7 +941,7 @@ def connect_sound(sound_list, projectid):
         for s in sound:
             if s != "null":
                 if block_sound_exist:
-                    block_sound = block_sound.overlay(AudioSegment.from_file(s))
+                    block_sound = output_sound.overlay(AudioSegment.from_file(s))
                 else:
                     block_sound = AudioSegment.from_file(s)
                     block_sound_exist = True
