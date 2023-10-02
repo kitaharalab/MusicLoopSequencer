@@ -46,6 +46,7 @@ export default function LoopTable({ projectId, measure }) {
     const selectSame =
       JSON.stringify(selectMeasurePart) ===
       JSON.stringify(newSelectMeasurePart);
+    const selectSamePart = part === selectMeasurePart.part;
 
     setSelectMeasurePart(
       selectSame ? initSelectMeasurePart : newSelectMeasurePart,
@@ -57,7 +58,7 @@ export default function LoopTable({ projectId, measure }) {
       ),
     );
 
-    if (!exist) {
+    if (selectSamePart) {
       return;
     }
 
