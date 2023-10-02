@@ -31,16 +31,13 @@ export default function LoopTable({ projectId, measure }) {
   // TODO
   const colorScale = ["red.200", "yellow.200", "green.200", "blue.200"];
   const colorFilter = (select) => (select ? null : "contrast(60%)");
+  const borderColor = ["red.400", "yellow.400", "green.400", "blue.400"];
 
   async function handleOnClickMeasurePart(event) {
     const { dataset } = event.target;
     const part = JSON.parse(dataset.part);
     const measure = JSON.parse(dataset.measure);
     const exist = JSON.parse(dataset.exist);
-
-    if (!exist) {
-      return;
-    }
 
     const newSelectMeasurePart = {
       measure,
@@ -53,11 +50,16 @@ export default function LoopTable({ projectId, measure }) {
     setSelectMeasurePart(
       selectSame ? initSelectMeasurePart : newSelectMeasurePart,
     );
+
     dispatch(
       setSelectedLoop(
         selectSame ? initSelectMeasurePart : newSelectMeasurePart,
       ),
     );
+
+    if (!exist) {
+      return;
+    }
 
     const musicData = await selectBlock(part);
     const xCoordinate = musicData.x_coordinate;
@@ -126,6 +128,8 @@ export default function LoopTable({ projectId, measure }) {
                     <Td
                       key={`${partid}-${i}`}
                       bgColor={exist ? colorScale[partid] : "white"}
+                      borderColor={borderColor[partid]}
+                      borderWidth={isSelect ? 3 : 0}
                       borderRadius="8px"
                       filter={colorFilter(isSelect || !exist)}
                       data-part={partid}
