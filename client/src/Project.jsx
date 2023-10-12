@@ -1,9 +1,19 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { ListItem, UnorderedList, Button, Box } from "@chakra-ui/react";
+import { AddIcon } from "@chakra-ui/icons";
+import {
+  Box,
+  SimpleGrid,
+  Card,
+  CardBody,
+  CardHeader,
+  IconButton,
+  Text,
+} from "@chakra-ui/react";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 
 import Link from "../components/Link/Link";
+
 import "./Project.css";
 
 function Project() {
@@ -47,16 +57,29 @@ function Project() {
 
   return (
     <Box id="project">
-      <Button type="button" onClick={() => createNewProject()}>
-        createNewProject
-      </Button>
-      <UnorderedList>
+      <Card bgColor="darkslategrey" align="center" width="30vw">
+        <CardBody>
+          <Box>
+            <IconButton
+              type="button"
+              onClick={() => createNewProject()}
+              icon={<AddIcon />}
+              width="25%"
+              alignSelf="center"
+            />
+          </Box>
+          <Text color="white">create new project</Text>
+        </CardBody>
+      </Card>
+      <SimpleGrid minChildWidth="30vw" spacing={4} marginTop={2}>
         {projects.map((project, i) => (
-          <ListItem key={project}>
-            <Link to={`App?projectid=${i}`}>{project}</Link>
-          </ListItem>
+          <Card key={project} width="30vw">
+            <Link to={`App?projectid=${i}`}>
+              <CardHeader>{project}</CardHeader>
+            </Link>
+          </Card>
         ))}
-      </UnorderedList>
+      </SimpleGrid>
     </Box>
   );
 }
