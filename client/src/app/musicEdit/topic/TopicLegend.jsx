@@ -2,6 +2,10 @@ import * as d3 from "d3";
 import React from "react";
 
 export default function TopicLegend({ names, width, padding }) {
+  if (names === undefined) {
+    return <g />;
+  }
+
   const xScale = d3
     .scaleBand()
     .domain(names)
@@ -10,7 +14,7 @@ export default function TopicLegend({ names, width, padding }) {
 
   return (
     <g>
-      {names.map((name) => (
+      {names?.map((name) => (
         <text
           key={name}
           x={xScale(name) + xScale.bandwidth() / 2}
