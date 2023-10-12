@@ -22,6 +22,7 @@ import { setSongId } from "../../../redux/songIdSlice";
 
 import ScatterPlot from "./ScatterPlot";
 import insertSound from "./insertSound";
+import onMusicLoop from "./onMusicLoop";
 
 function ZoomableChart({ children, width, height, zoomState }) {
   const { zoomTransform, setZoomTransform } = zoomState;
@@ -54,10 +55,35 @@ function ZoomableChart({ children, width, height, zoomState }) {
   );
 }
 
-function Content({ children, width, height }) {
+function Chart({
+  width,
+  height,
+  zoomState,
+  handleInsertLoopMaterial,
+  handleOnClick,
+}) {
+  return (
+    <ZoomableChart width={width} height={height} zoomState={zoomState}>
+      <ScatterPlot
+        width={width}
+        height={width}
+        handleInsertLoopMaterial={handleInsertLoopMaterial}
+        handleOnClick={handleOnClick}
+      />
+    </ZoomableChart>
+  );
+}
+
+function Content({ width, height, handleInsertLoopMaterial, handlePlayAudio }) {
   const [isMute, setIsMute] = useState(false);
   const [zoomTransform, setZoomTransform] = useState(d3.zoomIdentity);
   const zoomState = { zoomTransform, setZoomTransform };
+
+  function handleOnClick(id) {
+    if (!isMute) {
+      handlePlayAudio(id);
+    }
+  }
 
   return (
     <>
@@ -72,7 +98,6 @@ function Content({ children, width, height }) {
             onClick={() => {
               setIsMute(!isMute);
             }}
-            isDisabled
           />
           <IconButton
             icon={<Icon as={BiRefresh} />}
@@ -84,9 +109,13 @@ function Content({ children, width, height }) {
       </Flex>
       <Divider />
       <Box>
-        <ZoomableChart width={width} height={height} zoomState={zoomState}>
-          {children}
-        </ZoomableChart>
+        <Chart
+          width={width}
+          height={height}
+          zoomState={zoomState}
+          handleInsertLoopMaterial={handleInsertLoopMaterial}
+          handleOnClick={handleOnClick}
+        />
       </Box>
     </>
   );
@@ -97,6 +126,7 @@ export default function LoopMaterialView({ projectId, songId }) {
   const wrapperRef = useRef();
   const [width, setWidth] = useState(400);
   const { part, measure } = useSelector((store) => store.sounds);
+  const [audio, setAudio] = useState();
   const partsRef = useRef();
   const dispatch = useDispatch();
 
@@ -134,42 +164,28 @@ export default function LoopMaterialView({ projectId, songId }) {
     insertLoop();
   }
 
-  return (
-    <>
-      {/* <canvas
-        ref={canvasRef}
-        width="400"
-        height="400"
-        id="canvas3"
-        onMouseMove={async ({ nativeEvent }) => {
-          dispatch(setMusicLoopId(null));
-          for (let i = 0; i < xCoordinate.length; i++) {
-              dispatch(setMusicLoopId(i));
-              if (currentMusicLoop !== i) {
-                dispatch(setMusicLoopId(i));
-                const test = await onMusicLoop(partId, i);
-                setAudio(test);
-                // test.play();
-                setCurrentMusicLoop(i);
-              }
-            }
-          }
-        }}
-      /> */}
+  function handlePlayAudio(id) {
+    async function getAndPlayMusicLoop() {
+      audio?.pause();
+      const loop = await onMusicLoop(part, id);
+      setAudio(loop);
+      loop.play();
+    }
+    getAndPlayMusicLoop();
+  }
 
-      <Card>
-        <CardBody>
-          <Box ref={wrapperRef}>
-            <Content width={width} height={width}>
-              <ScatterPlot
-                width={width}
-                height={width}
-                handleInsertLoopMaterial={handleInsertLoopMaterial}
-              />
-            </Content>
-          </Box>
-        </CardBody>
-      </Card>
-    </>
+  return (
+    <Card>
+      <CardBody>
+        <Box ref={wrapperRef}>
+          <Content
+            width={width}
+            height={width}
+            handleInsertLoopMaterial={handleInsertLoopMaterial}
+            handlePlayAudio={handlePlayAudio}
+          />
+        </Box>
+      </CardBody>
+    </Card>
   );
 }
