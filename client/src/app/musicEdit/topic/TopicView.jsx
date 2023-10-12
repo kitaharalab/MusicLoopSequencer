@@ -38,7 +38,23 @@ export default function TopicView({ projectId }) {
         `${import.meta.env.VITE_SERVER_URL}/topic`,
       );
       const { data } = response;
-      console.log(data, data["ratio-topic"]);
+      const partList = ["Drums", "Bass", "Synth", "Sequence"];
+      const newTopicPreferenceData = data["ratio-topic"].flatMap(
+        (topicRatio, i) =>
+          topicRatio.reduce((topicRatioAcc, topic, j) => {
+            const topics = topic.reduce(
+              (topicAcc, value, k) => ({
+                ...topicAcc,
+                name: partList[i],
+                [`${j}-${k}`]: value,
+              }),
+              {},
+            );
+            return { ...topicRatioAcc, ...topics };
+          }, {}),
+      );
+
+      setTopicPreferenceData(newTopicPreferenceData);
     };
 
     getTopicPreferenceData();
@@ -49,25 +65,19 @@ export default function TopicView({ projectId }) {
       <CardBody>
         <Text>Topic Rate</Text>
         <Box ref={wrapperRef}>
-          <svg
-            width={width}
-            height={contentHeight * 2 + legendHeight + margin * 4}
-          >
+          <svg width={width} height={contentHeight + legendHeight + margin}>
             <g className="content" transform={`translate(0 ${margin})`}>
-              <g className="wrapper">
+              {/* <g className="wrapper">
                 <LoopTopicView
                   data={sampleLoopTopic}
                   width={width}
                   height={contentHeight}
                   padding={barPadding}
                 />
-              </g>
-              <g
-                className="wrapper"
-                transform={`translate(0 ${margin + contentHeight})`}
-              >
+              </g> */}
+              <g className="wrapper" transform={`translate(0 ${margin})`}>
                 <TopicPreferenceView
-                  data={sampleTopicPreference}
+                  data={topicPreferenceData}
                   width={width}
                   height={contentHeight}
                   padding={barPadding}
@@ -76,10 +86,10 @@ export default function TopicView({ projectId }) {
             </g>
             <g
               className="legend-wrapper"
-              transform={`translate(0 ${margin * 3 + contentHeight * 2})`}
+              transform={`translate(0 ${margin * 3 + contentHeight})`}
             >
               <TopicLegend
-                names={sampleLoopTopic.map(({ name }) => name)}
+                names={topicPreferenceData?.map(({ name }) => name)}
                 width={width}
                 padding={barPadding}
               />

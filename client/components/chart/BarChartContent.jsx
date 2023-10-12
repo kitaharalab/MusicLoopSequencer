@@ -18,6 +18,8 @@ export default function BarChartContent({ data, width, height, padding }) {
     .scaleSequential(d3.interpolateRainbow)
     .domain([0, data.length]);
 
+  //   console.log(data);
+
   return (
     <g>
       {data?.map(({ name, value }, i) => (
