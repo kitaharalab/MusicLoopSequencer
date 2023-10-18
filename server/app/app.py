@@ -2,11 +2,15 @@ import math
 import os
 import random
 import re
+from unittest import result
 
 import numpy as np
+import psycopg2
+from dotenv import load_dotenv
 from flask import Flask, jsonify, make_response, request, send_file
 from flask_cors import CORS
 from hmmlearn import hmm
+from psycopg2.extras import DictCursor
 from pydub import AudioSegment
 
 fix_len = 4
@@ -21,17 +25,30 @@ allowed_origins = [
 ]
 PARTS = ["Drums", "Bass", "Synth", "Sequence"]
 
+
+load_dotenv()
+
+
+def get_connection():
+    host = os.environ.get("PGHOST")
+    dbname = os.environ.get("PGDATABASE")
+    user = os.environ.get("PGUSER")
+    password = os.environ.get("PGPASSWORD")
+    return psycopg2.connect(host=host, dbname=dbname, user=user, password=password)
+
+
 app = Flask(__name__)
 CORS(app)
 
 
 @app.route("/parts", methods=["GET"])
 def get_infomation_of_parts():
-    partids = []
-    with open("./text/partid.txt") as f:
-        partids = f.read().split()
-
-    response = {"part-ids": partids}
+    response = None
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute("SELECT * FROM parts")
+            result = cur.fetchall()
+            response = [dict(row) for row in result]
     return make_response(jsonify(response))
 
 
