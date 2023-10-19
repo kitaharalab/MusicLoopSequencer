@@ -12,6 +12,7 @@ from flask_cors import CORS
 from hmmlearn import hmm
 from psycopg2.extras import DictCursor
 from pydub import AudioSegment
+from sqls.sqls import get_parts
 
 fix_len = 4
 topic_n = 4
@@ -216,25 +217,50 @@ def get_infomation_of_project(projectid):
 def create_song(projectid):
     data = request.get_json()  # WebページからのJSONデータを受け取る．
     curves = data["curves"]
-    # root = tk.Tk()
-    # view = View(master=root)       #他のpyファイルのクラスを読み込む．
-    # array, songid = view.createMusic(curves, projectid)
     array, songid = createMusic(curves, projectid)
     drums_list, bass_list, synth_list, sequence_list, array = name_to_id(
         projectid, songid, array
     )
+    song_list = {
+        "Drums": drums_list,
+        "Bass": bass_list,
+        "Synth": synth_list,
+        "Sequence": sequence_list,
+    }
+    parts = get_parts()
+    part2id = {p["name"]: p["id"] for p in parts}
+    index2part = {0: "Sequence", 1: "Synth", 2: "Bass", 3: "Drums"}
+
+    print(array)
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            for i in range(len(array)):
+                for j in range(len(array[0])):
+                    cur.execute(
+                        "INSERT INTO song_details (song_id, measure, part_id, loop_id) VALUES (%s, %s, %s, %s)",
+                        (
+                            int(songid),
+                            i + 1,
+                            part2id[index2part[j]],
+                            int(array[i][j]) if array[i][j] != "null" else None,
+                        ),
+                    )
+
+            conn.commit()
 
     drums_list, bass_list, synth_list, sequence_list = format_list(array)
-
-    response = {
-        "songid": int(songid),
-        "parts": [
-            {"partid": 0, "sounds": sequence_list},
-            {"partid": 1, "sounds": synth_list},
-            {"partid": 2, "sounds": bass_list},
-            {"partid": 3, "sounds": drums_list},
-        ],
+    song_list = {
+        "Drums": drums_list,
+        "Bass": bass_list,
+        "Synth": synth_list,
+        "Sequence": sequence_list,
     }
+    response = {"songId": songid, "parts": []}
+
+    for part in parts:
+        id = part["id"]
+        name = part["name"]
+        response["parts"].append({"id": id, "sounds": song_list[name]})
 
     return make_response(jsonify(response))
 
@@ -266,16 +292,7 @@ def name_to_id(projectid, songid, array):
                 for k in range(len(sequence_list)):
                     if array[i][j] == sequence_list[k]:
                         array[i][j] = str(k)
-    with open(
-        "./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt",
-        mode="w",
-    ) as f:
-        for i in range(len(array)):
-            for j in range(len(array[0])):
-                if i == 0 and j == 0:
-                    f.write(str(array[i][j]))
-                else:
-                    f.write("\n" + str(array[i][j]))
+
     return drums_list, bass_list, synth_list, sequence_list, array
 
 
@@ -288,19 +305,19 @@ def format_list(array):
     )
 
     for i in range(32):
-        if array[i][0] == "null":
+        if array[i][0] == "null" or array[i][0] is None:
             drums_list[i] = None
         else:
             drums_list[i] = int(array[i][0])
-        if array[i][1] == "null":
+        if array[i][1] == "null" or array[i][1] is None:
             bass_list[i] = None
         else:
             bass_list[i] = int(array[i][1])
-        if array[i][2] == "null":
+        if array[i][2] == "null" or array[i][2] is None:
             synth_list[i] = None
         else:
             synth_list[i] = int(array[i][2])
-        if array[i][3] == "null":
+        if array[i][3] == "null" or array[i][3] is None:
             sequence_list[i] = None
         else:
             sequence_list[i] = int(array[i][3])
@@ -965,26 +982,17 @@ def connect_sound(sound_list, projectid):
         output_sound = output_sound + block_sound
 
     # 楽曲を更新する
-    songid = 0
-    created = False
-    while created == False:
-        if os.path.exists("./project/" + projectid + "/songs/" + str(songid)) == False:
-            os.mkdir("./project/" + projectid + "/songs/" + str(songid))
-            output_sound.export(
-                "./project/"
-                + projectid
-                + "/songs/"
-                + str(songid)
-                + "/song"
-                + str(songid)
-                + ".wav",
-                format="wav",
+    song_id = 0
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute(
+                "INSERT INTO songs (project_id) VALUES (%s) RETURNING id", (projectid,)
             )
-            created = True
-        else:
-            songid = songid + 1
+            song_id = cur.fetchone()[0]
+            print(song_id)
+            conn.commit()
 
-    return str(songid)
+    return song_id
 
 
 def initialize_Hmm():
