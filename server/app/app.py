@@ -343,9 +343,7 @@ def get_infomation_song(projectid, songid):
     sounds_ids = [["null" for i in range(4)] for j in range(32)]
 
     for row in sql_response:
-        print(row)
         sounds_ids[row["measure"] - 1][row["part_id"] - 1] = row["loop_id"]
-        pass
 
     drums_list, bass_list, synth_list, sequence_list = format_list(sounds_ids)
     response = {
