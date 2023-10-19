@@ -23,7 +23,10 @@ export default function Controls({ projectId }) {
   const songId = useSelector((state) => state.songId.songId);
   const [songHistory, setSongHistory] = useState([]);
   const [_asdf, setasdf] = useState([0]);
-  const baseUrl = `${import.meta.env.VITE_SERVER_URL}/projects/${projectId}`;
+  // TODO: projectIdの対応関係
+  const baseUrl = `${import.meta.env.VITE_SERVER_URL}/projects/${
+    projectId + 1
+  }`;
   const songCreatedToast = useToast();
 
   const handleSelectedSongChange = (e) => {
@@ -37,8 +40,8 @@ export default function Controls({ projectId }) {
     const songHistoryURL = `${baseUrl}/songs`;
     axios.get(songHistoryURL).then((response) => {
       // setasdf(1234);
-      const savedSongIds = response.data.songids;
-      setSongHistory(savedSongIds.map((id) => ({ name: id, id })));
+      const { data } = response;
+      setSongHistory(data.map(({ id }) => ({ name: id, id })));
     });
   }, []);
 
