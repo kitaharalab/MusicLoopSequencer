@@ -1,8 +1,8 @@
+import json
 import math
 import os
 import random
 import re
-from unittest import result
 
 import numpy as np
 import psycopg2
@@ -163,25 +163,21 @@ def get_infomation_sound(partid, soundid):
 
 @app.route("/projects", methods=["POST"])
 def create_project():
-    projectId = 0
-    created = False
-    while created == False:
-        if os.path.exists("./project/" + str(projectId)) == False:
-            os.mkdir("./project/" + str(projectId))
-            os.mkdir("./project/" + str(projectId) + "/songs")
-            os.mkdir("./project/" + str(projectId) + "/curve")
-            created = True
-        else:
-            projectId = projectId + 1
-    curves = ["271" for i in range(1152)]
-    with open("./project/" + str(projectId) + "/curve/curve.txt", mode="w") as f:
-        for i in range(len(curves)):
-            if i == 0:
-                f.write(str(curves[i]))
-            else:
-                f.write("\n" + str(curves[i]))
-    print("project" + str(projectId) + " is created")
-    response = {"projectid": projectId}
+    create_sql = "INSERT INTO projects (name) VALUES (%s) RETURNING id, name"
+    print(request.data)
+    req_data = None if request.data == b"" else request.data.decode("utf-8")
+
+    data_json = json.loads(req_data) if req_data is not None else {}
+    title = data_json.get("title", None)
+    title = title if title is not None else "Untitled"
+    response = None
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute(create_sql, (title,))
+            returning = cur.fetchone()
+            response = dict(returning) if returning is not None else None
+            conn.commit()
+
     return make_response(jsonify(response))
 
 

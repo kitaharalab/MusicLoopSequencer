@@ -26,10 +26,9 @@ function Project() {
     axios
       .post(url) // サーバーから音素材の配列を受け取った後，then部分を実行する．
       .then((response) => {
-        const { projectid } = response.data;
-        setProjects([...projects, projectid]);
+        const { data } = response;
+        setProjects([...projects, data]);
       });
-    console.log("OK");
   };
 
   useEffect(() => {
