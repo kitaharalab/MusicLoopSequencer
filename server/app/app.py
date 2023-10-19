@@ -329,26 +329,25 @@ def get_infomation_songs(projectid):
 
 @app.route("/projects/<projectid>/songs/<songid>", methods=["GET"])
 def get_infomation_song(projectid, songid):
+    sql_response = None
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute(
+                "SELECT * FROM song_details WHERE song_id = %s",
+                (int(songid),),
+            )
+            # cur.execute("SELECT * FROM song_details")
+            result = cur.fetchall()
+            sql_response = [dict(row) for row in result] if result is not None else {}
+
     sounds_ids = [["null" for i in range(4)] for j in range(32)]
-    id_list = []
-    path = "./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt"
-    try:
-        with open(path) as f:
-            id_list = f.read().split("\n")
-    except FileNotFoundError:
-        return {"parts": []}
 
-    if id_list[len(id_list) - 1] == "":
-        id_list.pop()
-    count = 0
-
-    for i in range(len(id_list)):
-        sounds_ids[count][i % 4] = id_list[i]
-        if i % 4 == 3:
-            count = count + 1
+    for row in sql_response:
+        print(row)
+        sounds_ids[row["measure"] - 1][row["part_id"] - 1] = row["loop_id"]
+        pass
 
     drums_list, bass_list, synth_list, sequence_list = format_list(sounds_ids)
-    # response = {"sounds_ids": sounds_ids}
     response = {
         "parts": [
             {"partid": 0, "sounds": sequence_list},
