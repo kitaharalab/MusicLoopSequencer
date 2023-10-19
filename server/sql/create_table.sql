@@ -11,3 +11,14 @@ VALUES
     ('Bass'),
     ('Synth'),
     ('Sequence');
+
+-- Projectsテーブル
+DROP TABLE IF EXISTS projects;
+
+CREATE TABLE
+    projects (id serial PRIMARY KEY, NAME TEXT NOT NULL);
+
+INSERT INTO
+    projects (NAME)
+VALUES
+    ('test');
