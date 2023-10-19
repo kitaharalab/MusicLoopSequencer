@@ -31,7 +31,7 @@ export default function Controls({ projectId }) {
 
   const handleSelectedSongChange = (e) => {
     setasdf(e.target.value);
-    const selectSongId = e.target.value;
+    const selectSongId = parseInt(e.target.value, 10);
     dispatch(setSongId(selectSongId));
   };
 
@@ -46,8 +46,11 @@ export default function Controls({ projectId }) {
   }, []);
 
   useEffect(() => {
-    const historySet = new Set([...songHistory, { name: songId, id: songId }]);
-    setSongHistory([...historySet]);
+    const historySet = new Set([
+      ...songHistory.map((h) => JSON.stringify(h)),
+      JSON.stringify({ name: songId, id: songId }),
+    ]);
+    setSongHistory([...historySet].map((h) => JSON.parse(h)));
   }, [songId]);
 
   return (
@@ -83,7 +86,7 @@ export default function Controls({ projectId }) {
                 value={songId}
               >
                 {songHistory.map(({ name, id }) => (
-                  <option key={`${name}${id}`} value={id}>
+                  <option key={`${id}`} value={id}>
                     {name}
                   </option>
                 ))}
