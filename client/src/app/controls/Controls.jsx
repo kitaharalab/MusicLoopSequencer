@@ -24,9 +24,7 @@ export default function Controls({ projectId }) {
   const [songHistory, setSongHistory] = useState([]);
   const [_asdf, setasdf] = useState([0]);
   // TODO: projectIdの対応関係
-  const baseUrl = `${import.meta.env.VITE_SERVER_URL}/projects/${
-    projectId + 1
-  }`;
+  const baseUrl = `${import.meta.env.VITE_SERVER_URL}/projects/${projectId}`;
   const songCreatedToast = useToast();
 
   const handleSelectedSongChange = (e) => {
@@ -62,10 +60,11 @@ export default function Controls({ projectId }) {
               type="button"
               onClick={async () => {
                 const music = await createMusic(projectId, lines, max);
-                dispatch(setSongId(music.songid));
+                const { songId: newSongId } = music;
+                dispatch(setSongId(newSongId));
                 setSongHistory([
                   ...songHistory,
-                  { name: music.songid, id: music.songid },
+                  { name: newSongId, id: newSongId },
                 ]);
                 songCreatedToast({
                   title: "created song",

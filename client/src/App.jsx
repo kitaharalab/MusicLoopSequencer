@@ -31,9 +31,7 @@ function App() {
 
   const dispatch = useDispatch();
   // TODO: projectIdの対応関係
-  const baseUrl = `${import.meta.env.VITE_SERVER_URL}/projects/${
-    projectId + 1
-  }`;
+  const baseUrl = `${import.meta.env.VITE_SERVER_URL}/projects/${projectId}`;
   const musicEditAreaWidth = 300;
 
   const songId = useSelector((state) => state.songId.songId);

@@ -74,7 +74,7 @@ function Project() {
         {projects?.map(({ id, name }) => (
           <Card key={id} width="30vw">
             {/* TODO: idに対応したプロジェクトの値 */}
-            <Link to={`App?projectid=${id - 1}`}>
+            <Link to={`App?projectid=${id}`}>
               <CardHeader>{name}</CardHeader>
             </Link>
           </Card>
