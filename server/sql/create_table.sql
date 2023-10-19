@@ -1,5 +1,5 @@
 -- 楽器テーブル
-DROP TABLE IF EXISTS parts;
+DROP TABLE IF EXISTS parts CASCADE;
 
 CREATE TABLE
     parts (id serial PRIMARY KEY, NAME TEXT NOT NULL);
@@ -13,7 +13,7 @@ VALUES
     ('Sequence');
 
 -- Projectsテーブル
-DROP TABLE IF EXISTS projects;
+DROP TABLE IF EXISTS projects CASCADE;
 
 CREATE TABLE
     projects (id serial PRIMARY KEY, NAME TEXT NOT NULL);
@@ -26,7 +26,7 @@ VALUES
 
 -- 楽曲テーブル
 -- projectが保有している楽曲
-DROP TABLE IF EXISTS songs;
+DROP TABLE IF EXISTS songs CASCADE;
 
 CREATE TABLE
     songs (
@@ -45,7 +45,7 @@ VALUES
     (1);
 
 -- 楽曲詳細テーブル
-DROP TABLE IF EXISTS song_details;
+DROP TABLE IF EXISTS song_details CASCADE;
 
 CREATE TABLE
     song_details (
