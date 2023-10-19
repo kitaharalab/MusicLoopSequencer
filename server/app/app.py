@@ -187,11 +187,13 @@ def create_project():
 
 @app.route("/projects", methods=["GET"])
 def get_infomation_of_projects():
-    dir_list = os.listdir("./project")
-    for i in range(len(dir_list)):
-        dir_list[i] = int(dir_list[i])
-    dir_list = sorted(dir_list)
-    response = {"projects_list": dir_list}
+    response = None
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute("SELECT * FROM projects")
+            result = cur.fetchall()
+            response = [dict(row) for row in result]
+
     return make_response(jsonify(response))
 
 
