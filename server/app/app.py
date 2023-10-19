@@ -314,12 +314,16 @@ def format_list(array):
 
 @app.route("/projects/<projectid>/songs", methods=["GET"])
 def get_infomation_songs(projectid):
-    songids = os.listdir("./project/" + projectid + "/songs")
-    for i in range(len(songids)):
-        songids[i] = int(songids[i])
-    songids = sorted(songids)
-    print(songids)
-    response = {"songids": songids}
+    response = None
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute(
+                "SELECT id FROM songs WHERE project_id = %s ORDER BY id",
+                (int(projectid),),
+            )
+            result = cur.fetchall()
+            response = [dict(row) for row in result]
+
     return make_response(jsonify(response))
 
 
