@@ -52,7 +52,7 @@ CREATE TABLE
         song_id INTEGER NOT NULL,
         part_id INTEGER NOT NULL,
         measure INTEGER NOT NULL,
-        loop_id INTEGER NOT NULL,
+        loop_id INTEGER,
         FOREIGN KEY (song_id) REFERENCES songs (id),
         FOREIGN KEY (part_id) REFERENCES parts (id),
         PRIMARY KEY (song_id, part_id, measure)
