@@ -13,7 +13,7 @@ from flask_cors import CORS
 from hmmlearn import hmm
 from psycopg2.extras import DictCursor
 from pydub import AudioSegment
-from sqls.sqls import get_parts
+from sqls.sqls import add_song, get_parts, sound_array_wrap
 
 fix_len = 4
 topic_n = 4
@@ -72,7 +72,6 @@ def get_infomation_of_sounds(partid):
     with open(path) as f:
         sounds = f.read().split("\n")
 
-    print(sounds[len(sounds) - 1])
     if sounds[len(sounds) - 1] == "":
         sounds.pop()
     soundIds = []
@@ -166,7 +165,6 @@ def get_infomation_sound(partid, soundid):
 @app.route("/projects", methods=["POST"])
 def create_project():
     create_sql = "INSERT INTO projects (name) VALUES (%s) RETURNING id, name"
-    print(request.data)
     req_data = None if request.data == b"" else request.data.decode("utf-8")
 
     data_json = json.loads(req_data) if req_data is not None else {}
@@ -231,26 +229,9 @@ def create_song(projectid):
         "Synth": synth_list,
         "Sequence": sequence_list,
     }
+
+    add_song(sound_array_wrap(array), songid)
     parts = get_parts()
-    part2id = {p["name"]: p["id"] for p in parts}
-    index2part = {0: "Sequence", 1: "Synth", 2: "Bass", 3: "Drums"}
-
-    print(array)
-    with get_connection() as conn:
-        with conn.cursor(cursor_factory=DictCursor) as cur:
-            for i in range(len(array)):
-                for j in range(len(array[0])):
-                    cur.execute(
-                        "INSERT INTO song_details (song_id, measure, part_id, loop_id) VALUES (%s, %s, %s, %s)",
-                        (
-                            int(songid),
-                            i + 1,
-                            part2id[index2part[j]],
-                            int(array[i][j]) if array[i][j] != "null" else None,
-                        ),
-                    )
-
-            conn.commit()
 
     drums_list, bass_list, synth_list, sequence_list = format_list(array)
     song_list = {
@@ -763,6 +744,7 @@ def delete_music_loop(
                         sound_array[i][j] = sequence_list[k]
                     elif sound_array[i][j] is None:
                         sound_array[i][j] = "null"
+
     return sound_array
 
 
@@ -787,16 +769,8 @@ def save_music_data(
                 for k in range(len(sequence_list)):
                     if sound_array[i][j] == sequence_list[k]:
                         sound_array[i][j] = str(k)
-    with open(
-        "./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt",
-        mode="w",
-    ) as f:
-        for i in range(len(sound_array)):
-            for j in range(len(sound_array[0])):
-                if i == 0 and j == 0:
-                    f.write(str(sound_array[i][j]))
-                else:
-                    f.write("\n" + str(sound_array[i][j]))
+
+    add_song(sound_array_wrap(sound_array), songid)
 
 
 """@app.route("/projects/<projectid>/songs/<songid>/<filename>", methods=['GET'])
@@ -841,8 +815,6 @@ def download_musicloop(partid, musicloopid):
         if i == int(musicloopid):
             musicLoopName = musicLoop_list[i]
     split_name = re.split("/|\.", musicLoopName)
-    print(split_name)
-    print(split_name[3], split_name[4], split_name[5])
 
     return send_file(
         "./TechnoTrance/"
@@ -925,7 +897,6 @@ def load_topic_preference():
                 topic = f.read().split("\n")
             for k in range(4):
                 ratio_topic[i][j][k] = float(topic[k])
-            print(ratio_topic[i][j][0:])
 
     return ratio_topic
 
@@ -1283,7 +1254,6 @@ def connect_sound(sound_list, projectid, mode, songid):
                 "INSERT INTO songs (project_id) VALUES (%s) RETURNING id", (projectid,)
             )
             song_id = cur.fetchone()[0]
-            print(song_id)
             conn.commit()
 
     return song_id
