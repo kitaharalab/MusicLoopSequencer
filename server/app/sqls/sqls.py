@@ -91,4 +91,20 @@ def get_song_details(song_id):
     return response
 
 
-# get_song_details(6)
+def update_song_details(song_id: int, part_id: int, measure: int, loop_id: int):
+    """楽曲において，ある小節における音素材を変更する
+
+    Args:
+       - song_id (int): 変更したい楽曲のID
+       - part_id (int): 変更したい楽曲における楽器のID
+       - measure (int): 変更したい小節の番号
+       - loop_id (int): 変更先の音素材のID
+    """
+
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute(
+                "UPDATE song_details SET loop_id=%s WHERE song_id=%s and part_id=%s and measure=%s",
+                (loop_id, song_id, part_id, measure),
+            )
+            conn.commit()
