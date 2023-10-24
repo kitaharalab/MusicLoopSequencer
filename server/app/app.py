@@ -136,7 +136,7 @@ def get_infomation_of_project(projectid):
     return make_response(jsonify(response))
 
 
-@app.route("/projects/<projectid>/songs", methods=["POST"])
+@app.route("/projects/<int:projectid>/songs", methods=["POST"])
 def create_song(projectid):
     data = request.get_json()  # WebページからのJSONデータを受け取る．
     curves = data["curves"]
@@ -144,7 +144,7 @@ def create_song(projectid):
 
     array = name_to_id(array)
 
-    add_song(sound_array_wrap(array), songid)
+    song_id = add_song(sound_array_wrap(array), projectid)
     parts = get_parts()
 
     drums_list, bass_list, synth_list, sequence_list = format_list(array)
@@ -156,9 +156,9 @@ def create_song(projectid):
     }
 
     response = create_response(
-        section_array, songid, drums_list, bass_list, synth_list, sequence_list
+        section_array, song_id, drums_list, bass_list, synth_list, sequence_list
     )
-    response = {"songId": songid, "parts": [], "section": response.get("section", [])}
+    response = {"songId": song_id, "parts": [], "section": response.get("section", [])}
 
     for part in parts:
         id = part["id"]
@@ -1181,16 +1181,10 @@ def connect_new_song(projectid, output_sound, mode, songid):
         songid = 0
         created = False
         while not created:
-            if not os.path.exists("./project/" + projectid + "/songs/" + str(songid)):
-                os.mkdir("./project/" + projectid + "/songs/" + str(songid))
+            if not os.path.exists(f"./project/{projectid }/songs/{songid}"):
+                os.mkdir(f"./project/{projectid }/songs/{songid}")
                 output_sound.export(
-                    "./project/"
-                    + projectid
-                    + "/songs/"
-                    + str(songid)
-                    + "/song"
-                    + str(songid)
-                    + ".wav",
+                    f"./project/{projectid}/songs/{songid}/song{songid}.wav",
                     format="wav",
                 )
                 created = True
