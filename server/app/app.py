@@ -18,14 +18,13 @@ from sqls import (
     add_project,
     add_song,
     get_connection,
+    get_part_name,
     get_parts,
     get_projects,
     get_song_details,
     sound_array_wrap,
     update_song_details,
 )
-
-from server.app.sqls.part import get_part_name
 
 fix_len = 4
 topic_n = 4
@@ -99,19 +98,11 @@ def get_infomation_sound(partid, soundid):
 
 @app.route("/projects", methods=["POST"])
 def create_project():
-    # create_sql = "INSERT INTO projects (name) VALUES (%s) RETURNING id, name"
     req_data = None if request.data == b"" else request.data.decode("utf-8")
 
     data_json = json.loads(req_data) if req_data is not None else {}
     title = data_json.get("title", None)
     title = title if title is not None else "Untitled"
-    # response = None
-    # with get_connection() as conn:
-    #     with conn.cursor(cursor_factory=DictCursor) as cur:
-    #         cur.execute(create_sql, (title,))
-    #         returning = cur.fetchone()
-    #         response = dict(returning) if returning is not None else None
-    #         conn.commit()
     new_project_id = add_project(title)
 
     return make_response(jsonify(new_project_id))
