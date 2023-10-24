@@ -24,3 +24,13 @@ def get_projects():
             result = cur.fetchall()
             response = [dict(row) for row in result]
     return response
+
+
+def get_project_song_ids(project_id):
+    response = None
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute("SELECT id FROM songs WHERE project_id = %s", (project_id,))
+            result = cur.fetchall()
+            response = [dict(row) for row in result]
+    return response
