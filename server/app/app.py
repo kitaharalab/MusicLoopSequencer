@@ -13,7 +13,7 @@ from flask_cors import CORS
 from hmmlearn import hmm
 from psycopg2.extras import DictCursor
 from pydub import AudioSegment
-from readFiles import readLoopsPath, readPartCoordinates
+from readFiles import readFile, readLoopsPath, readPartCoordinates
 from sqls import (
     add_project,
     add_song,
@@ -142,15 +142,7 @@ def create_song(projectid):
     curves = data["curves"]
     array, songid, section_array = createMusic(curves, projectid)
 
-    drums_list, bass_list, synth_list, sequence_list, array = name_to_id(
-        projectid, songid, array
-    )
-    song_list = {
-        "Drums": drums_list,
-        "Bass": bass_list,
-        "Synth": synth_list,
-        "Sequence": sequence_list,
-    }
+    array = name_to_id(array)
 
     add_song(sound_array_wrap(array), songid)
     parts = get_parts()
@@ -226,35 +218,15 @@ def create_response(
     return response
 
 
-def name_to_id(projectid, songid, array):
-    with open("./text/drums_word_list.txt") as f:
-        drums_list = f.read().split("\n")
-    with open("./text/bass_word_list.txt") as f:
-        bass_list = f.read().split("\n")
-    with open("./text/synth_word_list.txt") as f:
-        synth_list = f.read().split("\n")
-    with open("./text/sequence_word_list.txt") as f:
-        sequence_list = f.read().split("\n")
+def name_to_id(array):
+    part_list = [readLoopsPath(part) for part in PARTS]
     for i in range(len(array)):
         for j in range(len(array[0])):
-            if j == 0:
-                for k in range(len(drums_list)):
-                    if array[i][j] == drums_list[k]:
-                        array[i][j] = str(k)
-            elif j == 1:
-                for k in range(len(bass_list)):
-                    if array[i][j] == bass_list[k]:
-                        array[i][j] = str(k)
-            elif j == 2:
-                for k in range(len(synth_list)):
-                    if array[i][j] == synth_list[k]:
-                        array[i][j] = str(k)
-            else:
-                for k in range(len(sequence_list)):
-                    if array[i][j] == sequence_list[k]:
-                        array[i][j] = str(k)
+            for k in range(len(part_list[j])):
+                if array[i][j] == part_list[j][k]:
+                    array[i][j] = str(k)
 
-    return drums_list, bass_list, synth_list, sequence_list, array
+    return array
 
 
 def format_list(array):
