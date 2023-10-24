@@ -13,7 +13,13 @@ from flask_cors import CORS
 from hmmlearn import hmm
 from psycopg2.extras import DictCursor
 from pydub import AudioSegment
-from sqls.sqls import add_song, get_parts, sound_array_wrap
+from sqls.sqls import (
+    add_song,
+    get_parts,
+    get_song_details,
+    sound_array_wrap,
+    update_song_details,
+)
 
 fix_len = 4
 topic_n = 4
@@ -487,26 +493,30 @@ def get_infomation_of_inserted_sound(projectid, songid, partid, measureid):
     methods=["POST"],
 )
 def insert_sound(projectid, songid, partid, measureid, musicloopid):
-    sound_array = load_music_data(
-        "./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt"
-    )
+    parts = get_parts()
+    part_name2index = {"Drums": 0, "Bass": 1, "Synth": 2, "Sequence": 3}
+    parts = sorted(parts, key=lambda x: part_name2index[x["name"]])
 
-    drums_list, bass_list, synth_list, sequence_list = get_sound_data()
-
-    sound_array = rewrite_music_data(
-        measureid,
-        partid,
-        musicloopid,
-        sound_array,
-        drums_list,
-        bass_list,
-        synth_list,
-        sequence_list,
+    update_song_details(
+        songid, parts[int(partid)]["id"], int(measureid) + 1, musicloopid
     )
+    song_details = get_song_details(song_id=songid)
+
+    # 0:drums
+    # 1:bass
+    # 2:synth
+    # 3:sequence
+    sound_array = [song_details[part["id"]] for part in parts]
+    """sound_array[part_id][measure] = loop_id"""
+    sound_array = [list(arr) for arr in zip(*sound_array)]
+
+    sound_array = rewrite_music_data(measureid, partid, musicloopid, sound_array)
     # root = tk.Tk()
     # view = View(master=root)
     songid = connect_sound(sound_array, projectid, "insert", songid)
 
+    # 各音素材へのパス
+    drums_list, bass_list, synth_list, sequence_list = get_sound_data()
     save_music_data(
         projectid, songid, sound_array, drums_list, bass_list, synth_list, sequence_list
     )
@@ -591,19 +601,9 @@ def rewrite_music_data(
     partid,
     musicloopid,
     sound_array,
-    drums_list,
-    bass_list,
-    synth_list,
-    sequence_list,
 ):
-    if int(partid) == 0:
-        sound_array[int(measureid)][3 - int(partid)] = int(musicloopid)
-    elif int(partid) == 1:
-        sound_array[int(measureid)][3 - int(partid)] = int(musicloopid)
-    elif int(partid) == 2:
-        sound_array[int(measureid)][3 - int(partid)] = int(musicloopid)
-    else:
-        sound_array[int(measureid)][3 - int(partid)] = int(musicloopid)
+    # 各音素材へのパス
+    drums_list, bass_list, synth_list, sequence_list = get_sound_data()
 
     for i in range(len(sound_array)):
         for j in range(len(sound_array[0])):
@@ -636,9 +636,8 @@ def rewrite_music_data(
 
 
 def update_topic_ratio(sound_array, measureid, partid):
-    print(sound_array[int(measureid)][3 - int(partid)])
     print("ここまでは大丈夫")
-    split_name = re.split("/|\.", sound_array[int(measureid)][3 - int(partid)])
+    split_name = re.split("/|\.", sound_array[int(measureid)][int(partid)])
     # part_list = ["Drums", "Bass", "Synth", "Sequence"]
     pass_ratio_topic = (
         "./lda/" + split_name[3] + "/ratio_topic" + split_name[4] + ".txt"
