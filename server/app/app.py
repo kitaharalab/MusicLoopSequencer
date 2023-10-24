@@ -79,11 +79,11 @@ def get_infomation_sound(partid, soundid):
     degree_of_excitement = 0
     if soundid < int(range_lists[0]):
         degree_of_excitement = 0
-    elif int(range_lists[0]) <= soundid and soundid < int(range_lists[1]):
+    elif soundid < int(range_lists[1]):
         degree_of_excitement = 1
-    elif int(range_lists[1]) <= soundid and soundid < int(range_lists[2]):
+    elif soundid < int(range_lists[2]):
         degree_of_excitement = 2
-    elif int(range_lists[2]) <= soundid and soundid < int(range_lists[3]):
+    elif soundid < int(range_lists[3]):
         degree_of_excitement = 3
     else:
         degree_of_excitement = 4
