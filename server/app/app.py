@@ -216,9 +216,8 @@ def get_infomation_of_project(projectid):
 def create_song(projectid):
     data = request.get_json()  # WebページからのJSONデータを受け取る．
     curves = data["curves"]
-    array, songid = createMusic(curves, projectid)
-    # array, songid, section_array = createMusic(curves, projectid)
-    # response = create_response(section_array, songid, drums_list, bass_list, synth_list, sequence_list)
+    array, songid, section_array = createMusic(curves, projectid)
+
     # print(response)
     drums_list, bass_list, synth_list, sequence_list, array = name_to_id(
         projectid, songid, array
@@ -240,7 +239,11 @@ def create_song(projectid):
         "Synth": synth_list,
         "Sequence": sequence_list,
     }
-    response = {"songId": songid, "parts": []}
+
+    response = create_response(
+        section_array, songid, drums_list, bass_list, synth_list, sequence_list
+    )
+    response = {"songId": songid, "parts": [], "section": response.get("section", [])}
 
     for part in parts:
         id = part["id"]
