@@ -4,7 +4,16 @@ from .connection import get_connection
 from .part import get_parts
 
 
-def add_song(song_loop_id_by_part, song_id):
+def add_song(song_loop_id_by_part, project_id):
+    song_id = 0
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute(
+                "INSERT INTO songs (project_id) VALUES (%s) RETURNING id", (project_id,)
+            )
+            song_id = cur.fetchone()[0]
+            conn.commit()
+
     with get_connection() as conn:
         with conn.cursor(cursor_factory=DictCursor) as cur:
             for part_id, loop_items in song_loop_id_by_part.items():
@@ -14,6 +23,8 @@ def add_song(song_loop_id_by_part, song_id):
                         (song_id, part_id, mesure1 + 1, loop_id),
                     )
             conn.commit()
+
+    return song_id
 
 
 def sound_array_wrap(sound_array):
