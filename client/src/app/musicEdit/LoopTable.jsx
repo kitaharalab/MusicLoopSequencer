@@ -36,7 +36,7 @@ export default function LoopTable({ projectId, measure }) {
   async function handleOnClickMeasurePart(event) {
     const { dataset } = event.target;
     const part = JSON.parse(dataset.part);
-    const measure = JSON.parse(dataset.measure);
+    const measure = JSON.parse(dataset.measure) - 1;
     const exist = JSON.parse(dataset.exist);
 
     const newSelectMeasurePart = {
@@ -116,25 +116,25 @@ export default function LoopTable({ projectId, measure }) {
           </Tr>
         </Thead>
         <Tbody>
-          {parts?.map(({ partid, sounds }) => {
+          {parts?.map(({ partId, sounds }) => {
             const existSound = measureRange.map((i) => sounds[i] != null);
             return (
-              <Tr key={partid}>
+              <Tr key={partId}>
                 {existSound.map((exist, i) => {
                   const isSelect =
                     selectMeasurePart.measure === i &&
-                    selectMeasurePart.part === partid;
+                    selectMeasurePart.part === partId;
 
                   return (
                     <Td
-                      key={`${partid}-${i}`}
-                      bgColor={exist ? colorScale[partid] : "white"}
-                      borderColor={borderColor[partid]}
+                      key={`${partId}-${i}`}
+                      bgColor={exist ? colorScale[partId] : "white"}
+                      borderColor={borderColor[partId]}
                       borderWidth={isSelect ? 3 : 0}
                       borderRadius="8px"
                       filter={colorFilter(isSelect || !exist)}
-                      data-part={partid}
-                      data-measure={i}
+                      data-part={partId}
+                      data-measure={i + 1}
                       data-exist={exist}
                       onClick={handleOnClickMeasurePart}
                       height="30px"
