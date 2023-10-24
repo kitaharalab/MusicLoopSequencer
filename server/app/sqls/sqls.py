@@ -84,9 +84,9 @@ def get_song_details(song_id):
     details_by_part_id = dict()
     for part in parts:
         part_id = part["id"]
-        details_by_part_id[part_id] = list(
-            filter(lambda x: x["part_id"] == part_id, response)
-        )
+        details = list(filter(lambda x: x["part_id"] == part_id, response))
+        loop_ids = list(map(lambda x: x["loop_id"], details))
+        details_by_part_id[part_id] = loop_ids
 
     return details_by_part_id
 
