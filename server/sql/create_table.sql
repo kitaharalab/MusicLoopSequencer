@@ -66,3 +66,27 @@ VALUES
     (1, 3, 3, 51),
     (1, 4, 4, 128),
     (1, 1, 5, 38);
+
+-- 盛り上がり度曲線テーブル
+DROP TABLE IF EXISTS excitement_curve CASCADE;
+
+CREATE TABLE
+    excitement_curve (
+        song_id INTEGER NOT NULL,
+        excitement_id serial,
+        excitement INTEGER NOT NULL,
+        FOREIGN KEY (song_id) REFERENCES songs (id),
+        PRIMARY KEY (song_id, excitement_id)
+    );
+
+INSERT INTO
+    excitement_curve (song_id, excitement)
+VALUES
+    (1, 0),
+    (1, 1),
+    (1, 2),
+    (1, 3),
+    (1, 4),
+    (1, 5),
+    (1, 6),
+    (1, 7);
