@@ -69,4 +69,26 @@ def sound_array_wrap(sound_array):
     return song_loop_id_by_part
 
 
-# print(get_parts())
+def get_song_details(song_id):
+    response = None
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute(
+                "SELECT * FROM song_details WHERE song_id = %s order by part_id, measure",
+                (song_id,),
+            )
+            result = cur.fetchall()
+            response = [dict(row) for row in result]
+
+    parts = get_parts()
+    details_by_part_id = dict()
+    for part in parts:
+        part_id = part["id"]
+        details_by_part_id[part_id] = list(
+            filter(lambda x: x["part_id"] == part_id, response)
+        )
+
+    return response
+
+
+# get_song_details(6)
