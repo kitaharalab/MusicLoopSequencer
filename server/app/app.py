@@ -3,46 +3,40 @@ import math
 import os
 import random
 import re
+from pydoc import getpager
 
 import numpy as np
 import pandas as pd
-import psycopg2
 from dotenv import load_dotenv
 from flask import Flask, jsonify, make_response, request, send_file
 from flask_cors import CORS
 from hmmlearn import hmm
 from psycopg2.extras import DictCursor
 from pydub import AudioSegment
-from sqls.sqls import (
+from readFiles import readLoopsPath, readPartCoordinates
+from sqls import (
+    add_project,
     add_song,
+    get_connection,
     get_parts,
+    get_projects,
     get_song_details,
     sound_array_wrap,
     update_song_details,
 )
+
+from server.app.sqls.part import get_part_name
 
 fix_len = 4
 topic_n = 4
 excitement_len = 32
 selected_constitution_determine = 1
 selected_fix_determine = 0
-allowed_origins = [
-    "http://localhost:5173",
-    "https://project-musicloopsequencer.web.app",
-    "https://project-musicloopsequencer.firebaseapp.com",
-]
+
 PARTS = ["Drums", "Bass", "Synth", "Sequence"]
 
 
 load_dotenv()
-
-
-def get_connection():
-    host = os.environ.get("PGHOST")
-    dbname = os.environ.get("PGDATABASE")
-    user = os.environ.get("PGUSER")
-    password = os.environ.get("PGPASSWORD")
-    return psycopg2.connect(host=host, dbname=dbname, user=user, password=password)
 
 
 app = Flask(__name__)
@@ -51,43 +45,25 @@ CORS(app)
 
 @app.route("/parts", methods=["GET"])
 def get_infomation_of_parts():
-    response = None
-    with get_connection() as conn:
-        with conn.cursor(cursor_factory=DictCursor) as cur:
-            cur.execute("SELECT * FROM parts")
-            result = cur.fetchall()
-            response = [dict(row) for row in result]
-    return make_response(jsonify(response))
+    parts = get_parts()
+    return make_response(jsonify(parts))
 
 
-@app.route("/parts/<partid>/sounds", methods=["GET"])
+@app.route("/parts/<int:partid>/sounds", methods=["GET"])
 def get_infomation_of_sounds(partid):
     partid = int(partid)
-    partName = ""
-    if partid == 0:
-        partName = "sequence"
-    elif partid == 1:
-        partName = "synth"
-    elif partid == 2:
-        partName = "bass"
-    else:
-        partName = "drums"
+    parts = get_parts()
+    partName = list(filter(lambda x: x["id"] == partid, parts))[0]["name"]
 
-    path = "./text/" + partName + "_word_list.txt"
-    sounds = []
-    with open(path) as f:
-        sounds = f.read().split("\n")
+    # sounds = readLoopsPath(partName)
+    # soundIds = []
+    # for i in range(len(sounds)):
+    #     soundIds.append(i)
 
-    if sounds[len(sounds) - 1] == "":
-        sounds.pop()
-    soundIds = []
-    for i in range(len(sounds)):
-        soundIds.append(i)
-
-    x_coordinate, y_coordinate, range_lists = get_coordinate(partName)
+    x_coordinate, y_coordinate, range_lists = readPartCoordinates(partName)
 
     response = {
-        "sound-ids": soundIds,
+        # "sound-ids": soundIds,
         "x_coordinate": x_coordinate,
         "y_coordinate": y_coordinate,
         "range_lists": range_lists,
@@ -129,25 +105,12 @@ def get_coordinate(partName):
     return x_coordinate, y_coordinate, range_lists
 
 
-@app.route("/parts/<partid>/sounds/<soundid>", methods=["GET"])
+@app.route("/parts/<int:partid>/sounds/<int:soundid>", methods=["GET"])
 def get_infomation_sound(partid, soundid):
-    partid = int(partid)
-    soundid = int(soundid)
+    part_name = get_part_name(partid)
+    x_coordinate, y_coordinate, range_lists = readLoopsPath(part_name)
 
-    if partid == 0:
-        partName = "sequence"
-    elif partid == 1:
-        partName = "synth"
-    elif partid == 2:
-        partName = "bass"
-    else:
-        partName = "drums"
-    x_coordinate, y_coordinate, range_lists = get_coordinate(partName)
     degree_of_excitement = 0
-
-    for i in range(len(x_coordinate)):
-        x_coordinate[i] = float(x_coordinate[i])
-        y_coordinate[i] = float(y_coordinate[i])
     if soundid < int(range_lists[0]):
         degree_of_excitement = 0
     elif int(range_lists[0]) <= soundid and soundid < int(range_lists[1]):
@@ -170,31 +133,27 @@ def get_infomation_sound(partid, soundid):
 
 @app.route("/projects", methods=["POST"])
 def create_project():
-    create_sql = "INSERT INTO projects (name) VALUES (%s) RETURNING id, name"
+    # create_sql = "INSERT INTO projects (name) VALUES (%s) RETURNING id, name"
     req_data = None if request.data == b"" else request.data.decode("utf-8")
 
     data_json = json.loads(req_data) if req_data is not None else {}
     title = data_json.get("title", None)
     title = title if title is not None else "Untitled"
-    response = None
-    with get_connection() as conn:
-        with conn.cursor(cursor_factory=DictCursor) as cur:
-            cur.execute(create_sql, (title,))
-            returning = cur.fetchone()
-            response = dict(returning) if returning is not None else None
-            conn.commit()
+    # response = None
+    # with get_connection() as conn:
+    #     with conn.cursor(cursor_factory=DictCursor) as cur:
+    #         cur.execute(create_sql, (title,))
+    #         returning = cur.fetchone()
+    #         response = dict(returning) if returning is not None else None
+    #         conn.commit()
+    new_project_id = add_project(title)
 
-    return make_response(jsonify(response))
+    return make_response(jsonify(new_project_id))
 
 
 @app.route("/projects", methods=["GET"])
 def get_infomation_of_projects():
-    response = None
-    with get_connection() as conn:
-        with conn.cursor(cursor_factory=DictCursor) as cur:
-            cur.execute("SELECT * FROM projects")
-            result = cur.fetchall()
-            response = [dict(row) for row in result]
+    response = get_projects()
 
     return make_response(jsonify(response))
 
@@ -224,7 +183,6 @@ def create_song(projectid):
     curves = data["curves"]
     array, songid, section_array = createMusic(curves, projectid)
 
-    # print(response)
     drums_list, bass_list, synth_list, sequence_list, array = name_to_id(
         projectid, songid, array
     )
@@ -284,7 +242,6 @@ def create_response(
             ],
             "section": [],
         }
-    print(section_array)
     id, start, end = 0, 0, 0
     section_name = ["intro", "breakdown", "buildup", "drop", "outro"]
     for i in range(len(section_array)):
@@ -403,15 +360,33 @@ def get_infomation_song(projectid, songid):
     for row in sql_response:
         sounds_ids[row["measure"] - 1][row["part_id"] - 1] = row["loop_id"]
 
+    parts = get_parts()
+    part_name2index = {"Drums": 0, "Bass": 1, "Synth": 2, "Sequence": 3}
+    parts = sorted(parts, key=lambda x: part_name2index[x["name"]])
+
+    song_details = get_song_details(songid)
+
     drums_list, bass_list, synth_list, sequence_list = format_list(sounds_ids)
-    response = {
-        "parts": [
-            {"partid": 0, "sounds": sequence_list},
-            {"partid": 1, "sounds": synth_list},
-            {"partid": 2, "sounds": bass_list},
-            {"partid": 3, "sounds": drums_list},
-        ]
-    }
+    response = {"parts": []}
+    for part in parts:
+        response["parts"].append(
+            {
+                "partId": part["id"],
+                "partNmae": part["name"],
+                "sounds": song_details[part["id"]],
+            }
+        )
+    # response = {
+    #     "parts": [
+    #         {
+    #             "partid": parts[part_name2index["Sequence"]]["id"],
+    #             "sounds": song_details[parts[part_name2index["Sequence"]]["id"]],
+    #         },
+    #         {"partid": 1, "sounds": synth_list},
+    #         {"partid": 2, "sounds": bass_list},
+    #         {"partid": 3, "sounds": drums_list},
+    #     ]
+    # }
     return make_response(jsonify(response))
 
 
@@ -489,17 +464,15 @@ def get_infomation_of_inserted_sound(projectid, songid, partid, measureid):
 
 
 @app.route(
-    "/projects/<projectid>/songs/<songid>/parts/<partid>/measures/<measureid>/musicloops/<musicloopid>",
+    "/projects/<int:projectid>/songs/<int:songid>/parts/<int:partid>/measures/<int:measureid>/musicloops/<int:musicloopid>",
     methods=["POST"],
 )
 def insert_sound(projectid, songid, partid, measureid, musicloopid):
     parts = get_parts()
-    part_name2index = {"Drums": 0, "Bass": 1, "Synth": 2, "Sequence": 3}
-    parts = sorted(parts, key=lambda x: part_name2index[x["name"]])
+    # part_name2index = {"Drums": 0, "Bass": 1, "Synth": 2, "Sequence": 3}
+    parts = sorted(parts, key=lambda x: x["id"])
 
-    update_song_details(
-        songid, parts[int(partid)]["id"], int(measureid) + 1, musicloopid
-    )
+    update_song_details(songid, partid, int(measureid) + 1, musicloopid)
     song_details = get_song_details(song_id=songid)
 
     # 0:drums
@@ -509,29 +482,41 @@ def insert_sound(projectid, songid, partid, measureid, musicloopid):
     sound_array = [song_details[part["id"]] for part in parts]
     """sound_array[part_id][measure] = loop_id"""
     sound_array = [list(arr) for arr in zip(*sound_array)]
+    print(song_details[partid][measureid])
+    print(partid, measureid, musicloopid)
+    print(sound_array[measureid][partid - 1])
 
     sound_array = rewrite_music_data(measureid, partid, musicloopid, sound_array)
     # root = tk.Tk()
     # view = View(master=root)
-    songid = connect_sound(sound_array, projectid, "insert", songid)
+    connect_sound(sound_array, projectid, "insert", songid)
 
     # 各音素材へのパス
-    drums_list, bass_list, synth_list, sequence_list = get_sound_data()
-    save_music_data(
-        projectid, songid, sound_array, drums_list, bass_list, synth_list, sequence_list
-    )
+    # drums_list, bass_list, synth_list, sequence_list = get_sound_data()
+    # save_music_data(
+    #     projectid, songid, sound_array, drums_list, bass_list, synth_list, sequence_list
+    # )
 
-    drums_list, bass_list, synth_list, sequence_list = format_list(sound_array)
+    # drums_list, bass_list, synth_list, sequence_list = format_list(sound_array)
 
-    response = {
-        "songid": int(songid),
-        "parts": [
-            {"partid": 0, "sounds": sequence_list},
-            {"partid": 1, "sounds": synth_list},
-            {"partid": 2, "sounds": bass_list},
-            {"partid": 3, "sounds": drums_list},
-        ],
-    }
+    response = {"songId": int(songid), "parts": []}
+    for part in parts:
+        response["parts"].append(
+            {
+                "partId": part["id"],
+                "partName": part["name"],
+                "sounds": song_details[part["id"]],
+            }
+        )
+    # response = {
+    #     "songid": int(songid),
+    #     "parts": [
+    #         {"partid": 0, "sounds": sequence_list},
+    #         {"partid": 1, "sounds": synth_list},
+    #         {"partid": 2, "sounds": bass_list},
+    #         {"partid": 3, "sounds": drums_list},
+    #     ],
+    # }
     return make_response(jsonify(response))
 
 
@@ -636,14 +621,13 @@ def rewrite_music_data(
 
 
 def update_topic_ratio(sound_array, measureid, partid):
-    print("ここまでは大丈夫")
-    split_name = re.split("/|\.", sound_array[int(measureid)][int(partid)])
+    # print("ここまでは大丈夫")
+    # TODO: partidをむりやり変更，現在のIDから1を引けば同じになるという前提．measureIDも同様
+    split_name = re.split("/|\.", str(sound_array[int(measureid)][int(partid) - 1]))
     # part_list = ["Drums", "Bass", "Synth", "Sequence"]
-    pass_ratio_topic = (
-        "./lda/" + split_name[3] + "/ratio_topic" + split_name[4] + ".txt"
-    )
+    pass_ratio_topic = f"./lda/{split_name[3]}/ratio_topic{split_name[4]}.txt"
     ratio_topic = read_file(pass_ratio_topic)
-    print(ratio_topic)
+    # print(ratio_topic)
     for i in range(len(ratio_topic)):
         ratio_topic[i] = float(ratio_topic[i])
     df = pd.read_csv(
@@ -653,7 +637,7 @@ def update_topic_ratio(sound_array, measureid, partid):
     )
     feature_names = df.index.values
     n = 0
-    print(split_name[3], split_name[4], split_name[5])
+    # print(split_name[3], split_name[4], split_name[5])
     for i in range(len(feature_names)):
         if feature_names[i] == split_name[5]:
             n = i
@@ -663,7 +647,7 @@ def update_topic_ratio(sound_array, measureid, partid):
 
     with open(pass_ratio_topic, mode="w") as f:
         for k in range(4):
-            print(k)
+            # print(k)
             if k == 0:
                 f.write(str(ratio_topic[k]))
             else:
@@ -851,8 +835,8 @@ def get_topic_ratio(partid, musicloopid):
         if i == int(musicloopid):
             musicLoopName = musicLoop_list[i]
     split_name = re.split("/|\.", musicLoopName)
-    print(split_name)
-    print(split_name[3], split_name[4], split_name[5])
+    # print(split_name)
+    # print(split_name[3], split_name[4], split_name[5])
     df = pd.read_csv(
         "./lda/" + split_name[3] + "/lda" + split_name[4] + ".csv",
         header=0,
@@ -860,7 +844,7 @@ def get_topic_ratio(partid, musicloopid):
     )
     feature_names = df.index.values
     n = 0
-    print(split_name[3], split_name[4], split_name[5])
+    # print(split_name[3], split_name[4], split_name[5])
     for i in range(len(feature_names)):
         if feature_names[i] == split_name[5]:
             n = i
@@ -1246,19 +1230,19 @@ def connect_sound(sound_list, projectid, mode, songid):
                     block_sound_exist = True
 
         output_sound = output_sound + block_sound
-    songid = connect_new_song(projectid, output_sound, mode, songid)
-
+    connect_new_song(projectid, output_sound, mode, songid)
+    # print(songid)
     # 楽曲を更新する
-    song_id = 0
-    with get_connection() as conn:
-        with conn.cursor(cursor_factory=DictCursor) as cur:
-            cur.execute(
-                "INSERT INTO songs (project_id) VALUES (%s) RETURNING id", (projectid,)
-            )
-            song_id = cur.fetchone()[0]
-            conn.commit()
-
-    return song_id
+    # song_id = 0
+    # with get_connection() as conn:
+    #     with conn.cursor(cursor_factory=DictCursor) as cur:
+    #         cur.execute(
+    #             "INSERT INTO songs (project_id) VALUES (%s) RETURNING id", (projectid,)
+    #         )
+    #         song_id = cur.fetchone()[0]
+    #         conn.commit()
+    # print(song_id)
+    return songid
 
 
 def connect_new_song(projectid, output_sound, mode, songid):
@@ -1285,13 +1269,7 @@ def connect_new_song(projectid, output_sound, mode, songid):
                 songid = songid + 1
     else:
         output_sound.export(
-            "./project/"
-            + projectid
-            + "/songs/"
-            + songid
-            + "/song"
-            + str(songid)
-            + ".wav",
+            f"./project/{projectid}/songs/{songid}/song{songid}.wav",
             format="wav",
         )
     return songid
