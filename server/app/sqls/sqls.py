@@ -50,7 +50,7 @@ def sound_array_wrap(sound_array):
             3:sequence
 
     After:
-        song_loop_id_by_part [ part_id_from_DB ] [ measure ] = loop_id_int
+        song_loop_ids_by_part [ part_id_from_DB ] = list of loop id by measure
     """
     sound_array = list(zip(*sound_array))
     song_loop_id_by_part: dict[int, list[int | None]] = dict()
@@ -88,7 +88,7 @@ def get_song_details(song_id):
             filter(lambda x: x["part_id"] == part_id, response)
         )
 
-    return response
+    return details_by_part_id
 
 
 def update_song_details(song_id: int, part_id: int, measure: int, loop_id: int):
