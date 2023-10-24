@@ -71,40 +71,6 @@ def get_infomation_of_sounds(partid):
     return make_response(jsonify(response))
 
 
-def get_coordinate(partName):
-    pass_movedpointx = "./text/" + partName + "_movedpointx_list" + ".txt"
-    pass_movedpointy = "./text/" + partName + "_movedpointy_list" + ".txt"
-    pass_range = "./text/" + partName + "_range_list" + ".txt"
-
-    x_coordinate = []
-    y_coordinate = []
-    range_lists = []
-
-    with open(pass_movedpointx) as f:
-        x_coordinate = f.read().split("\n")
-    with open(pass_movedpointy) as f:
-        y_coordinate = f.read().split("\n")
-    with open(pass_range) as f:
-        range_lists = f.read().split("\n")
-
-    if x_coordinate[len(x_coordinate) - 1] == "":
-        x_coordinate.pop()
-
-    if y_coordinate[len(y_coordinate) - 1] == "":
-        y_coordinate.pop()
-
-    if range_lists[len(range_lists) - 1] == "":
-        range_lists.pop()
-
-    for i in range(len(x_coordinate)):
-        x_coordinate[i] = math.floor(float(x_coordinate[i]))
-        y_coordinate[i] = math.floor(float(y_coordinate[i]))
-
-    for i in range(len(range_lists)):
-        range_lists[i] = int(range_lists[i])
-    return x_coordinate, y_coordinate, range_lists
-
-
 @app.route("/parts/<int:partid>/sounds/<int:soundid>", methods=["GET"])
 def get_infomation_sound(partid, soundid):
     part_name = get_part_name(partid)
