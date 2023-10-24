@@ -18,8 +18,10 @@ from sqls import (
     add_project,
     add_song,
     get_connection,
+    get_excitement_curve,
     get_part_name,
     get_parts,
+    get_project_song_ids,
     get_projects,
     get_song_details,
     sound_array_wrap,
@@ -115,22 +117,22 @@ def get_infomation_of_projects():
     return make_response(jsonify(response))
 
 
-@app.route("/projects/<projectid>", methods=["GET"])
+# TODO: 楽曲のIDごとに盛り上がり度曲線を記録している
+@app.route("/projects/<int:projectid>", methods=["GET"])
 def get_infomation_of_project(projectid):
-    dir_list = os.listdir("./project/" + projectid + "/songs")
-    number_of_sound = 0
-    if len(dir_list) == 0:
-        number_of_sound = 0
-    else:
-        number_of_sound = len(dir_list)
-    curves = []
-    with open("./project/" + projectid + "/curve/curve.txt") as f:
-        curves = f.read().split("\n")
-    if curves[len(curves) - 1] == "":
-        curves.pop()
-    for i in range(len(curves)):
-        curves[i] = int(curves[i])
-    response = {"number-of-sound": number_of_sound, "curves": curves}
+    song_ids = get_project_song_ids(projectid)
+    response = {"song_ids": song_ids}
+
+    # curves = get_excitement_curve()
+    # curves = []
+    # with open(f"./project/{projectid}/curve/curve.txt") as f:
+    #     curves = f.read().split("\n")
+    # if curves[len(curves) - 1] == "":
+    #     curves.pop()
+    # for i in range(len(curves)):
+    #     curves[i] = int(curves[i])
+    # response = {""number-of-sound": len(song_ids), "curves": curves"}
+
     return make_response(jsonify(response))
 
 
