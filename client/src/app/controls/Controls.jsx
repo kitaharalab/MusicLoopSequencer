@@ -61,6 +61,8 @@ export default function Controls({ projectId }) {
               onClick={async () => {
                 const music = await createMusic(projectId, lines, max);
                 const { songId: newSongId } = music;
+                // const { section } = music;
+                // console.log(section);
                 dispatch(setSongId(newSongId));
                 setSongHistory([
                   ...songHistory,

@@ -153,6 +153,7 @@ export default function LoopMaterialView({ projectId, songId }) {
     const insertLoop = async () => {
       const music = await insertSound(
         projectId,
+        songId,
         part,
         measure,
         loopId,
