@@ -22,6 +22,7 @@ from sqls import (
     get_project_song_ids,
     get_projects,
     get_song_details,
+    play_song_log,
     sound_array_wrap,
     update_song_details,
 )
@@ -668,10 +669,23 @@ def downloadSong(projectid,songid,filename):
 def download_song(projectid, songid):
     file_name = f"./project/{projectid}/songs/{songid}/song{songid}.wav"
     exist_file = os.path.isfile(file_name)
+
     if not exist_file:
         return make_response(jsonify({"message": "指定された楽曲ファイルは存在しません"})), 204
 
     return send_file(file_name, as_attachment=True)
+
+
+@app.route("/projects/<projectid>/songs/<songid>/wav", methods=["POST"])
+def log_play_song(projectid, songid):
+    file_name = f"./project/{projectid}/songs/{songid}/song{songid}.wav"
+    exist_file = os.path.isfile(file_name)
+
+    if not exist_file:
+        return make_response(jsonify({"message": "指定された楽曲ファイルは存在しません"})), 204
+
+    play_song_log(projectid, songid)
+    return make_response(jsonify({"message": "操作がログに書き込まれました"})), 200
 
 
 @app.route("/parts/<int:partid>/musicloops/<musicloopid>/wav", methods=["GET"])
