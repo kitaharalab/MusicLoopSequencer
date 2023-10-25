@@ -175,10 +175,10 @@ export default function LoopMaterialView({ projectId, songId }) {
     insertLoop();
   }
 
-  function handlePlayAudio(id) {
+  function handlePlayAudio(id, part) {
     async function getAndPlayMusicLoop() {
       audio?.pause();
-      const loop = await onMusicLoop(projectId, songId, part, measure + 1, id);
+      const loop = await onMusicLoop(projectId, songId, part, id);
       setAudio(loop);
       loop.play();
     }
@@ -195,7 +195,9 @@ export default function LoopMaterialView({ projectId, songId }) {
             handleInsertLoopMaterial={(id) => {
               handleInsertLoopMaterial(id, songId);
             }}
-            handlePlayAudio={handlePlayAudio}
+            handlePlayAudio={(id) => {
+              handlePlayAudio(id, part);
+            }}
           />
         </Box>
       </CardBody>
