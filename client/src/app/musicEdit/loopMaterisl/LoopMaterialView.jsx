@@ -15,6 +15,7 @@ import axios from "axios";
 import * as d3 from "d3";
 import React, { useEffect, useRef, useState } from "react";
 // import onMusicLoop from "./onMusicLoop";
+import { flushSync } from "react-dom";
 import { BiVolumeFull, BiSolidVolumeMute, BiRefresh } from "react-icons/bi";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -130,22 +131,26 @@ export default function LoopMaterialView({ projectId, songId }) {
   const partsRef = useRef();
   const dispatch = useDispatch();
 
+  const getMusicParts = () => {
+    if (songId === null || songId === undefined) {
+      return;
+    }
+
+    const url = `${
+      import.meta.env.VITE_SERVER_URL
+    }/projects/${projectId}/songs/${songId}`;
+    axios.get(url).then((response) => {
+      const { data } = response;
+      partsRef.current = data.parts;
+    });
+  };
+
   useEffect(() => {
     setWidth(wrapperRef?.current?.clientWidth);
-
-    const getMusicParts = () => {
-      const url = `${
-        import.meta.env.VITE_SERVER_URL
-      }/projects/${projectId}/songs/${songId}`;
-      axios.get(url).then((response) => {
-        const { data } = response;
-        partsRef.current = data.parts;
-      });
-    };
     getMusicParts();
   }, [songId]);
 
-  function handleInsertLoopMaterial(loopId) {
+  function handleInsertLoopMaterial(loopId, songId) {
     if (part === null || measure === null || partsRef === null) {
       return;
     }
@@ -159,7 +164,12 @@ export default function LoopMaterialView({ projectId, songId }) {
         loopId,
         partsRef.current,
       );
-      dispatch(setSongId(music.songid));
+
+      flushSync(() => {
+        dispatch(setSongId(null));
+      });
+      dispatch(setSongId(music.songId));
+      getMusicParts();
     };
 
     insertLoop();
@@ -182,7 +192,9 @@ export default function LoopMaterialView({ projectId, songId }) {
           <Content
             width={width}
             height={width}
-            handleInsertLoopMaterial={handleInsertLoopMaterial}
+            handleInsertLoopMaterial={(id) => {
+              handleInsertLoopMaterial(id, songId);
+            }}
             handlePlayAudio={handlePlayAudio}
           />
         </Box>
