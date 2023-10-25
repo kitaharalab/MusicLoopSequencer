@@ -90,3 +90,14 @@ VALUES
     (1, 5),
     (1, 6),
     (1, 7);
+
+-- 音素材パステーブル
+DROP TABLE IF EXISTS loop_paths CASCADE;
+
+CREATE TABLE
+    loop_paths (
+        id serial PRIMARY KEY,
+        PATH TEXT NOT NULL,
+        part_id INTEGER NOT NULL,
+        FOREIGN KEY (part_id) REFERENCES parts (id)
+    );
