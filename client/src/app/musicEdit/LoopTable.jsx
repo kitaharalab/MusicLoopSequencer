@@ -8,6 +8,7 @@ import {
   Tbody,
 } from "@chakra-ui/react";
 import axios from "axios";
+import * as d3 from "d3";
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -27,12 +28,51 @@ export default function LoopTable({ projectId, measure }) {
   const [selectMeasurePart, setSelectMeasurePart] = useState(
     initSelectMeasurePart,
   );
-  const measureRange = [...Array(measure)].map((_, i) => i);
-  // TODO
-  const colorScale = ["red.200", "yellow.200", "green.200", "blue.200"];
-  const colorFilter = (select) => (select ? null : "contrast(60%)");
-  const borderColor = ["red.400", "yellow.400", "green.400", "blue.400"];
 
+  useEffect(() => {
+    if (songId === null || songId === undefined) {
+      return () => {
+        dispatch(
+          setMusicData({ xCoordinate: [], yCoordinate: [], rangeList: [] }),
+        );
+      };
+    }
+
+    const url = `${
+      import.meta.env.VITE_SERVER_URL
+    }/projects/${projectId}/songs/${songId}`;
+    axios
+      .get(url) // サーバーから音素材の配列を受け取った後，then部分を実行する．
+      .then((response) => {
+        const { data } = response;
+        console.log(data);
+        setParts(data.parts);
+      });
+
+    return () => {
+      dispatch(
+        setMusicData({ xCoordinate: [], yCoordinate: [], rangeList: [] }),
+      );
+    };
+  }, [songId]);
+
+  if (parts === undefined) {
+    return <div>loading</div>;
+  }
+
+  if (parts === null) {
+    return <div>nothing</div>;
+  }
+
+  const measureRange = [...Array(measure)].map((_, i) => i);
+
+  const baseColor = ["red.200", "yellow.200", "green.200", "blue.200"];
+  const colorScale = d3.scaleOrdinal().range(baseColor);
+
+  const borderColor = ["red.400", "yellow.400", "green.400", "blue.400"];
+  const borderColorScale = d3.scaleOrdinal().range(borderColor);
+
+  const colorFilter = (select) => (select ? null : "contrast(60%)");
   async function handleOnClickMeasurePart(event) {
     const { dataset } = event.target;
     const part = JSON.parse(dataset.part);
@@ -69,40 +109,6 @@ export default function LoopTable({ projectId, measure }) {
     dispatch(setMusicData({ xCoordinate, yCoordinate, rangeList }));
   }
 
-  useEffect(() => {
-    if (songId === null || songId === undefined) {
-      return () => {
-        dispatch(
-          setMusicData({ xCoordinate: [], yCoordinate: [], rangeList: [] }),
-        );
-      };
-    }
-
-    const url = `${
-      import.meta.env.VITE_SERVER_URL
-    }/projects/${projectId}/songs/${songId}`;
-    axios
-      .get(url) // サーバーから音素材の配列を受け取った後，then部分を実行する．
-      .then((response) => {
-        const { data } = response;
-        setParts(data.parts);
-      });
-
-    return () => {
-      dispatch(
-        setMusicData({ xCoordinate: [], yCoordinate: [], rangeList: [] }),
-      );
-    };
-  }, [songId]);
-
-  if (parts === undefined) {
-    return <div>loading</div>;
-  }
-
-  if (parts === null) {
-    return <div>nothing</div>;
-  }
-
   return (
     <TableContainer>
       <Table
@@ -136,8 +142,8 @@ export default function LoopTable({ projectId, measure }) {
                   return (
                     <Td
                       key={`${partId}-${i}`}
-                      bgColor={exist ? colorScale[partId] : "white"}
-                      borderColor={borderColor[partId]}
+                      bgColor={exist ? colorScale(partId) : "white"}
+                      borderColor={borderColorScale(partId)}
                       borderWidth={isSelect ? 3 : 0}
                       borderRadius="8px"
                       filter={colorFilter(isSelect || !exist)}
