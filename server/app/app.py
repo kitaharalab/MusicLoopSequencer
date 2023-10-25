@@ -14,7 +14,7 @@ from pydub import AudioSegment
 from readFiles import readFile, readLoopsPath, readPartCoordinates
 from sqls import (
     add_project,
-    add_song,
+    create_song,
     get_connection,
     get_excitement_curve,
     get_part_name,
@@ -139,7 +139,7 @@ def create_song(projectid):
 
     array = name_to_id(array)
 
-    song_id = add_song(sound_array_wrap(array), projectid)
+    song_id = create_song(sound_array_wrap(array), projectid)
     parts = get_parts()
 
     drums_list, bass_list, synth_list, sequence_list = format_list(array)
@@ -652,7 +652,7 @@ def save_music_data(
                     if sound_array[i][j] == sequence_list[k]:
                         sound_array[i][j] = str(k)
 
-    add_song(sound_array_wrap(sound_array), songid)
+    create_song(sound_array_wrap(sound_array), songid)
 
 
 """@app.route("/projects/<projectid>/songs/<songid>/<filename>", methods=['GET'])

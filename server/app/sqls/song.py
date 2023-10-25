@@ -4,7 +4,7 @@ from .connection import get_connection
 from .part import get_parts
 
 
-def add_song(song_loop_id_by_part, project_id):
+def create_song(song_loop_id_by_part, project_id):
     song_id = 0
     with get_connection() as conn:
         with conn.cursor(cursor_factory=DictCursor) as cur:
