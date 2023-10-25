@@ -709,24 +709,11 @@ def download_song(projectid, songid):
     return send_file(file_name, as_attachment=True)
 
 
-@app.route("/parts/<partid>/musicloops/<musicloopid>/wav", methods=["GET"])
+@app.route("/parts/<int:partid>/musicloops/<musicloopid>/wav", methods=["GET"])
 def download_musicloop(partid, musicloopid):
-    part = "null"
-    if partid == "0":
-        part = "sequence"
-    elif partid == "1":
-        part = "synth"
-    elif partid == "2":
-        part = "bass"
-    else:
-        part = "drums"
+    part_name = get_part_name(partid)
+    musicLoop_list = readLoopsPath(part_name)
 
-    musicLoop_list = []
-    """bass_word_list.txt"""
-    with open("./text/" + part + "_word_list.txt") as f:
-        musicLoop_list = f.read().split("\n")
-    if musicLoop_list[len(musicLoop_list) - 1] == "":
-        musicLoop_list.pop()
     musicLoopName = "null"
     for i in range(len(musicLoop_list)):
         if i == int(musicloopid):
