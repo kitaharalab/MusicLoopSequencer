@@ -34,3 +34,35 @@ def create_song_log(project_id: int, song_id: int):
                 (LogEvent.CREATE_SONG.name, project_id, song_id),
             )
             conn.commit()
+
+
+def change_loop_log(
+    project_id: int,
+    song_id: int,
+    part_id: int,
+    measure: int,
+    from_loop_id: int,
+    to_loop_id: int,
+):
+    sql = """
+    insert into
+        operation_logs (event, project_id, song_id, part_id, measure, from_loop_id, to_loop_id)
+    values
+        (%s, %s, %s, %s, %s, %s, %s);
+    """
+
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute(
+                sql,
+                (
+                    LogEvent.CHANGE_LOOP.name,
+                    project_id,
+                    song_id,
+                    part_id,
+                    measure,
+                    from_loop_id,
+                    to_loop_id,
+                ),
+            )
+            conn.commit()
