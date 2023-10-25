@@ -12,9 +12,9 @@ from hmmlearn import hmm
 from psycopg2.extras import DictCursor
 from pydub import AudioSegment
 from readFiles import readFile, readLoopsPath, readPartCoordinates
+from sqls import add_project
+from sqls import create_song as add_song
 from sqls import (
-    add_project,
-    create_song,
     get_connection,
     get_excitement_curve,
     get_part_name,
@@ -139,7 +139,7 @@ def create_song(projectid):
 
     array = name_to_id(array)
 
-    song_id = create_song(sound_array_wrap(array), projectid)
+    song_id = add_song(sound_array_wrap(array), projectid)
     parts = get_parts()
 
     drums_list, bass_list, synth_list, sequence_list = format_list(array)
@@ -652,7 +652,7 @@ def save_music_data(
                     if sound_array[i][j] == sequence_list[k]:
                         sound_array[i][j] = str(k)
 
-    create_song(sound_array_wrap(sound_array), songid)
+    add_song(sound_array_wrap(sound_array), songid)
 
 
 """@app.route("/projects/<projectid>/songs/<songid>/<filename>", methods=['GET'])
