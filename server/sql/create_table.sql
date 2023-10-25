@@ -101,3 +101,29 @@ CREATE TABLE
         part_id INTEGER NOT NULL,
         FOREIGN KEY (part_id) REFERENCES parts (id)
     );
+
+-- 操作ログテーブル
+DROP TABLE IF EXISTS operation_logs CASCADE;
+
+SET
+    SESSION timezone TO 'Asia/Tokyo';
+
+CREATE TABLE
+    operation_logs (
+        id serial PRIMARY KEY,
+        TIME TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+        EVENT TEXT NOT NULL,
+        project_id INTEGER NOT NULL,
+        song_id INTEGER NOT NULL,
+        part_id INTEGER,
+        measure INTEGER,
+        loop_id INTEGER,
+        from_loop_id INTEGER,
+        to_loop_id INTEGER,
+        FOREIGN KEY (project_id) REFERENCES projects (id),
+        FOREIGN KEY (song_id) REFERENCES songs (id),
+        FOREIGN KEY (part_id) REFERENCES parts (id),
+        FOREIGN KEY (loop_id) REFERENCES loop_paths (id),
+        FOREIGN KEY (from_loop_id) REFERENCES loop_paths (id),
+        FOREIGN KEY (to_loop_id) REFERENCES loop_paths (id)
+    );
