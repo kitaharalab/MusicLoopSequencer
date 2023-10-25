@@ -166,7 +166,7 @@ export default function LoopMaterialView({ projectId, songId }) {
       );
 
       flushSync(() => {
-        dispatch(setSongId(null));
+        dispatch(setSongId(undefined));
       });
       dispatch(setSongId(music.songId));
       getMusicParts();
