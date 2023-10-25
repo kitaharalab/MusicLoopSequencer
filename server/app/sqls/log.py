@@ -8,9 +8,7 @@ from .connection import get_connection
 
 class LogEvent(Enum):
     CREATE_SONG = auto()
-    CHANGE_SONG = auto()
     PLAY_SONG = auto()
-    STOP_SONG = auto()
     CHANGE_LOOP = auto()
     PLAY_LOOP = auto()
 
