@@ -45,7 +45,6 @@ export default function LoopTable({ projectId, measure }) {
       .get(url) // サーバーから音素材の配列を受け取った後，then部分を実行する．
       .then((response) => {
         const { data } = response;
-        console.log(data);
         setParts(data.parts);
       });
 
