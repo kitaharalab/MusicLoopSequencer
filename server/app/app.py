@@ -1,3 +1,4 @@
+import ast
 import json
 import os
 import random
@@ -22,6 +23,7 @@ from sqls import (
     get_project_song_ids,
     get_projects,
     get_song_details,
+    play_loop_log,
     play_song_log,
     sound_array_wrap,
     update_song_details,
@@ -709,6 +711,15 @@ def download_musicloop(partid, musicloopid):
         + ".wav",
         as_attachment=True,
     )
+
+
+@app.route("/parts/<int:partid>/musicloops/<musicloopid>/wav", methods=["POST"])
+def log_loop_play(partid, musicloopid):
+    data = ast.literal_eval(request.get_data().decode("utf-8"))
+    print(data)
+    play_loop_log(data["projectId"], data["songId"], partid, musicloopid)
+
+    return make_response(jsonify({"message": "操作がログに書き込まれました"})), 200
 
 
 @app.route("/parts/<partid>/musicloops/<musicloopid>/topic", methods=["GET"])
