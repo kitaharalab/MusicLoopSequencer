@@ -70,6 +70,14 @@ export default function LoopTable({ projectId, measure }) {
   }
 
   useEffect(() => {
+    if (songId === null || songId === undefined) {
+      return () => {
+        dispatch(
+          setMusicData({ xCoordinate: [], yCoordinate: [], rangeList: [] }),
+        );
+      };
+    }
+
     const url = `${
       import.meta.env.VITE_SERVER_URL
     }/projects/${projectId}/songs/${songId}`;
