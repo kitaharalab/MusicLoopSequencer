@@ -1,5 +1,4 @@
 import json
-import math
 import os
 import random
 import re
@@ -7,7 +6,6 @@ from pydoc import getpager
 
 import numpy as np
 import pandas as pd
-from dotenv import load_dotenv
 from flask import Flask, jsonify, make_response, request, send_file
 from flask_cors import CORS
 from hmmlearn import hmm
@@ -35,9 +33,6 @@ selected_constitution_determine = 1
 selected_fix_determine = 0
 
 PARTS = ["Drums", "Bass", "Synth", "Sequence"]
-
-
-load_dotenv()
 
 
 app = Flask(__name__)
@@ -282,7 +277,6 @@ def get_infomation_song(projectid, songid):
                 "SELECT * FROM song_details WHERE song_id = %s",
                 (int(songid),),
             )
-            # cur.execute("SELECT * FROM song_details")
             result = cur.fetchall()
             sql_response = [dict(row) for row in result] if result is not None else {}
 
@@ -297,7 +291,7 @@ def get_infomation_song(projectid, songid):
 
     song_details = get_song_details(songid)
 
-    drums_list, bass_list, synth_list, sequence_list = format_list(sounds_ids)
+    # drums_list, bass_list, synth_list, sequence_list = format_list(sounds_ids)
     response = {"parts": []}
     for part in parts:
         response["parts"].append(
@@ -307,17 +301,7 @@ def get_infomation_song(projectid, songid):
                 "sounds": song_details[part["id"]],
             }
         )
-    # response = {
-    #     "parts": [
-    #         {
-    #             "partid": parts[part_name2index["Sequence"]]["id"],
-    #             "sounds": song_details[parts[part_name2index["Sequence"]]["id"]],
-    #         },
-    #         {"partid": 1, "sounds": synth_list},
-    #         {"partid": 2, "sounds": bass_list},
-    #         {"partid": 3, "sounds": drums_list},
-    #     ]
-    # }
+
     return make_response(jsonify(response))
 
 
@@ -418,17 +402,7 @@ def insert_sound(projectid, songid, partid, measureid, musicloopid):
     print(sound_array[measureid][partid - 1])
 
     sound_array = rewrite_music_data(measureid, partid, musicloopid, sound_array)
-    # root = tk.Tk()
-    # view = View(master=root)
     connect_sound(sound_array, projectid, "insert", songid)
-
-    # 各音素材へのパス
-    # drums_list, bass_list, synth_list, sequence_list = get_sound_data()
-    # save_music_data(
-    #     projectid, songid, sound_array, drums_list, bass_list, synth_list, sequence_list
-    # )
-
-    # drums_list, bass_list, synth_list, sequence_list = format_list(sound_array)
 
     response = {"songId": int(songid), "parts": []}
     for part in parts:
@@ -439,15 +413,7 @@ def insert_sound(projectid, songid, partid, measureid, musicloopid):
                 "sounds": song_details[part["id"]],
             }
         )
-    # response = {
-    #     "songid": int(songid),
-    #     "parts": [
-    #         {"partid": 0, "sounds": sequence_list},
-    #         {"partid": 1, "sounds": synth_list},
-    #         {"partid": 2, "sounds": bass_list},
-    #         {"partid": 3, "sounds": drums_list},
-    #     ],
-    # }
+
     return make_response(jsonify(response))
 
 
@@ -480,7 +446,6 @@ def get_music_data(data):
     bass_list = data["bassList"]
     drums_list = data["drumsList"]
 
-    # sounds_ids = [["null" for i in range(4)] for j in range(32)]
     sound_array = [["null" for i in range(4)] for j in range(32)]
 
     for i in range(len(sound_array)):
@@ -558,7 +523,7 @@ def update_topic_ratio(sound_array, measureid, partid):
     # part_list = ["Drums", "Bass", "Synth", "Sequence"]
     pass_ratio_topic = f"./lda/{split_name[3]}/ratio_topic{split_name[4]}.txt"
     ratio_topic = read_file(pass_ratio_topic)
-    # print(ratio_topic)
+
     for i in range(len(ratio_topic)):
         ratio_topic[i] = float(ratio_topic[i])
     df = pd.read_csv(
@@ -568,7 +533,7 @@ def update_topic_ratio(sound_array, measureid, partid):
     )
     feature_names = df.index.values
     n = 0
-    # print(split_name[3], split_name[4], split_name[5])
+
     for i in range(len(feature_names)):
         if feature_names[i] == split_name[5]:
             n = i
