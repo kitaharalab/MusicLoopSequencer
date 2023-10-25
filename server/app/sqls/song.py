@@ -1,10 +1,11 @@
 from psycopg2.extras import DictCursor
 
 from .connection import get_connection
+from .log import create_song_log
 from .part import get_parts
 
 
-def add_song(song_loop_id_by_part, project_id):
+def create_song(song_loop_id_by_part, project_id):
     song_id = 0
     with get_connection() as conn:
         with conn.cursor(cursor_factory=DictCursor) as cur:
@@ -13,6 +14,8 @@ def add_song(song_loop_id_by_part, project_id):
             )
             song_id = cur.fetchone()[0]
             conn.commit()
+
+    create_song_log(project_id, song_id)
 
     with get_connection() as conn:
         with conn.cursor(cursor_factory=DictCursor) as cur:
@@ -71,3 +74,18 @@ def get_excitement_curve(song_id: int):
             result = cur.fetchall()
             excitement_data = [dict(row) for row in result]
             return [excitement["excitement"] for excitement in excitement_data]
+
+
+def get_project_id_from_song_id(song_id: int) -> int:
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute(
+                """
+                SELECT project_id
+                FROM songs
+                WHERE id = %s
+                """,
+                (song_id,),
+            )
+            result = dict(cur.fetchone())
+            return result["project_id"]

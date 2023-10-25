@@ -1,3 +1,4 @@
+import ast
 import json
 import os
 import random
@@ -12,9 +13,9 @@ from hmmlearn import hmm
 from psycopg2.extras import DictCursor
 from pydub import AudioSegment
 from readFiles import readFile, readLoopsPath, readPartCoordinates
+from sqls import add_project
+from sqls import create_song as add_song
 from sqls import (
-    add_project,
-    add_song,
     get_connection,
     get_excitement_curve,
     get_part_name,
@@ -22,6 +23,8 @@ from sqls import (
     get_project_song_ids,
     get_projects,
     get_song_details,
+    play_loop_log,
+    play_song_log,
     sound_array_wrap,
     update_song_details,
 )
@@ -668,10 +671,23 @@ def downloadSong(projectid,songid,filename):
 def download_song(projectid, songid):
     file_name = f"./project/{projectid}/songs/{songid}/song{songid}.wav"
     exist_file = os.path.isfile(file_name)
+
     if not exist_file:
         return make_response(jsonify({"message": "指定された楽曲ファイルは存在しません"})), 204
 
     return send_file(file_name, as_attachment=True)
+
+
+@app.route("/projects/<projectid>/songs/<songid>/wav", methods=["POST"])
+def log_play_song(projectid, songid):
+    file_name = f"./project/{projectid}/songs/{songid}/song{songid}.wav"
+    exist_file = os.path.isfile(file_name)
+
+    if not exist_file:
+        return make_response(jsonify({"message": "指定された楽曲ファイルは存在しません"})), 204
+
+    play_song_log(projectid, songid)
+    return make_response(jsonify({"message": "操作がログに書き込まれました"})), 200
 
 
 @app.route("/parts/<int:partid>/musicloops/<musicloopid>/wav", methods=["GET"])
@@ -695,6 +711,15 @@ def download_musicloop(partid, musicloopid):
         + ".wav",
         as_attachment=True,
     )
+
+
+@app.route("/parts/<int:partid>/musicloops/<musicloopid>/wav", methods=["POST"])
+def log_loop_play(partid, musicloopid):
+    data = ast.literal_eval(request.get_data().decode("utf-8"))
+    print(data)
+    play_loop_log(data["projectId"], data["songId"], partid, musicloopid)
+
+    return make_response(jsonify({"message": "操作がログに書き込まれました"})), 200
 
 
 @app.route("/parts/<partid>/musicloops/<musicloopid>/topic", methods=["GET"])

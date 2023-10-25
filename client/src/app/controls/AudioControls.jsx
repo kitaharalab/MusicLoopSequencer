@@ -48,7 +48,16 @@ export default function AudioControls({ projectId }) {
 
   return (
     <ButtonGroup>
-      <Button type="button" onClick={() => audio?.play()}>
+      <Button
+        type="button"
+        onClick={() => {
+          const url = `${
+            import.meta.env.VITE_SERVER_URL
+          }/projects/${projectId}/songs/${songId}/wav`;
+          axios.post(url);
+          audio?.play();
+        }}
+      >
         play
       </Button>
 
