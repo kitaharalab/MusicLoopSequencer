@@ -74,3 +74,18 @@ def get_excitement_curve(song_id: int):
             result = cur.fetchall()
             excitement_data = [dict(row) for row in result]
             return [excitement["excitement"] for excitement in excitement_data]
+
+
+def get_project_id_from_song_id(song_id: int) -> int:
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute(
+                """
+                SELECT project_id
+                FROM songs
+                WHERE id = %s
+                """,
+                (song_id,),
+            )
+            result = dict(cur.fetchone())
+            return result["project_id"]
