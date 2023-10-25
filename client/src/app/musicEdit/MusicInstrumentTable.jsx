@@ -17,7 +17,7 @@ export default function MusicInstrumentTable() {
     const url = `${import.meta.env.VITE_SERVER_URL}/parts`;
     axios.get(url).then((response) => {
       const { data } = response;
-      setPartName(data["part-ids"]);
+      setPartName(data.map(({ name }) => name));
     });
   }, []);
 

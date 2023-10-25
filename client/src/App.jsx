@@ -30,6 +30,7 @@ function App() {
   const projectId = searchParams.get("projectid");
 
   const dispatch = useDispatch();
+  // TODO: projectIdの対応関係
   const baseUrl = `${import.meta.env.VITE_SERVER_URL}/projects/${projectId}`;
   const musicEditAreaWidth = 300;
 
@@ -47,8 +48,8 @@ function App() {
       .get(songHistoryURL) // サーバーから音素材の配列を受け取った後，then部分を実行する．
       .then((response) => {
         // setDone(true);
-        const savedSongIds = response.data.songids;
-        const lastSongId = savedSongIds[savedSongIds.length - 1];
+        const { data } = response;
+        const lastSongId = data[data.length - 1].id;
         dispatch(setSongId(lastSongId));
       });
   }, []);

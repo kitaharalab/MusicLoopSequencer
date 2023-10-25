@@ -48,8 +48,11 @@ export default function ScatterPlot({
             fill={fillColor}
             fillOpacity={selectId === undefined || selectId === id ? 1 : 0.5}
             onClick={(e) => {
-              setSelectId(selectId === id ? undefined : id);
-              handleOnClick(id);
+              const reSelect = selectId === id;
+              setSelectId(reSelect ? undefined : id);
+              if (!reSelect) {
+                handleOnClick(id);
+              }
             }}
             onContextMenu={(event) => {
               event.preventDefault();

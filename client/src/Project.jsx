@@ -26,10 +26,9 @@ function Project() {
     axios
       .post(url) // サーバーから音素材の配列を受け取った後，then部分を実行する．
       .then((response) => {
-        const { projectid } = response.data;
-        setProjects([...projects, projectid]);
+        const { data } = response;
+        setProjects([...projects, data]);
       });
-    console.log("OK");
   };
 
   useEffect(() => {
@@ -42,8 +41,8 @@ function Project() {
       axios
         .get(`${import.meta.env.VITE_SERVER_URL}/projects`)
         .then((response) => {
-          const resProjects = response.data.projects_list;
-          setProjects(resProjects);
+          const { data } = response;
+          setProjects(data);
           setDone(true);
         });
     }
@@ -72,10 +71,11 @@ function Project() {
         </CardBody>
       </Card>
       <SimpleGrid minChildWidth="30vw" spacing={4} marginTop={2}>
-        {projects.map((project, i) => (
-          <Card key={project} width="30vw">
-            <Link to={`App?projectid=${i}`}>
-              <CardHeader>{project}</CardHeader>
+        {projects?.map(({ id, name }) => (
+          <Card key={id} width="30vw">
+            {/* TODO: idに対応したプロジェクトの値 */}
+            <Link to={`App?projectid=${id}`}>
+              <CardHeader>{name}</CardHeader>
             </Link>
           </Card>
         ))}
