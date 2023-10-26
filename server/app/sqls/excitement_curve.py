@@ -1,5 +1,3 @@
-import pprint
-
 from connection import get_connection
 from psycopg2.extras import DictCursor
 
