@@ -62,17 +62,13 @@ export default function Projects() {
       <SimpleGrid minChildWidth="30vw" spacing={4} marginTop={2}>
         {projects?.map(({ id, name }) => (
           <Card key={id} width="30vw">
-            {/* TODO: idに対応したプロジェクトの値 */}
-            <Link to={`App?projectid=${id}`}>
-              <CardHeader>{name}</CardHeader>
+            <Link to={`${id}`}>
+              <CardHeader>
+                {id}:{name}
+              </CardHeader>
             </Link>
           </Card>
         ))}
-        <Card width="30vw">
-          <Link to="experiment">
-            <CardHeader>experiment</CardHeader>
-          </Link>
-        </Card>
       </SimpleGrid>
     </Box>
   );
