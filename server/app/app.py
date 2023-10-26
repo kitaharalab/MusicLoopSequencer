@@ -1159,7 +1159,7 @@ def connect_new_song(projectid, output_sound, mode, songid):
         created = False
         while not created:
             if not os.path.exists(f"./project/{projectid }/songs/{songid}"):
-                os.mkdir(f"./project/{projectid }/songs/{songid}")
+                os.makedirs(f"./project/{projectid }/songs/{songid}", exist_ok=True)
                 output_sound.export(
                     f"./project/{projectid}/songs/{songid}/song{songid}.wav",
                     format="wav",
