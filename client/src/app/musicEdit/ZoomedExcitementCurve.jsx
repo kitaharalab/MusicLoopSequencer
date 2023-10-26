@@ -50,7 +50,7 @@ export default function ZoomedExcitementCurve() {
 
   return (
     <Box ref={wrapperRef} overflowX="auto">
-      <svg width={width * 4}>
+      <svg width={width}>
         <path
           d={line(excitementCurve)}
           stroke="black"
