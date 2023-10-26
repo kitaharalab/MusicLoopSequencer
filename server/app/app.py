@@ -286,8 +286,9 @@ def get_infomation_song(projectid, songid):
     parts = sorted(parts, key=lambda x: part_name2index[x["name"]])
 
     loop_ids_by_part = get_song_loop_ids(songid)
+    excitement_curve = get_excitement_curve(songid)
 
-    response = {"parts": []}
+    response = {"parts": [], "excitement_curve": excitement_curve}
     for part in parts:
         response["parts"].append(
             {
