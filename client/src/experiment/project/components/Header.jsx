@@ -1,15 +1,18 @@
-import { Flex, Heading, Text, Spacer, Button } from "@chakra-ui/react";
+import { Heading, Text, Button, Center, Box } from "@chakra-ui/react";
 import React from "react";
 
 export default function Header({ projectName }) {
   return (
     <Heading as="h1" marginY={4}>
-      <Flex>
-        <Button>休憩する</Button>
-        <Spacer />
+      <Box position="relative">
+        <Button position="absolute" top={1}>
+          休憩する
+        </Button>
+      </Box>
+
+      <Center>
         <Text>{projectName}</Text>
-        <Spacer />
-      </Flex>
+      </Center>
     </Heading>
   );
 }
