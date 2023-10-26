@@ -8,6 +8,8 @@ import {
   CardHeader,
   IconButton,
   Text,
+  Flex,
+  Spacer,
 } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
@@ -56,20 +58,33 @@ function Project() {
 
   return (
     <Box id="project">
-      <Card bgColor="darkslategrey" align="center" width="30vw">
-        <CardBody>
-          <Box>
-            <IconButton
-              type="button"
-              onClick={() => createNewProject()}
-              icon={<AddIcon />}
-              width="25%"
-              alignSelf="center"
-            />
-          </Box>
-          <Text color="white">create new project</Text>
-        </CardBody>
-      </Card>
+      <Flex>
+        <Card bgColor="darkslategrey" align="center" width="30vw">
+          <CardBody>
+            <Box>
+              <IconButton
+                type="button"
+                onClick={() => createNewProject()}
+                icon={<AddIcon />}
+                width="25%"
+                alignSelf="center"
+              />
+            </Box>
+            <Text color="white">create new project</Text>
+          </CardBody>
+        </Card>
+        <Spacer />
+        <Card bgColor="darkslategrey" align="center" width="30vw">
+          <Link to="/experiment">
+            <CardBody>
+              <CardHeader>
+                <Text color="white">experiment</Text>
+              </CardHeader>
+            </CardBody>
+          </Link>
+        </Card>
+      </Flex>
+
       <SimpleGrid minChildWidth="30vw" spacing={4} marginTop={2}>
         {projects?.map(({ id, name }) => (
           <Card key={id} width="30vw">

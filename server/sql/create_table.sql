@@ -24,6 +24,14 @@ VALUES
     ('test'),
     ('second');
 
+-- 実験用プロジェクト
+INSERT INTO
+    projects (NAME)
+VALUES
+    ('ExperimentUserApplicable'),
+    ('ExperimentUserNotApplicable'),
+    ('ExperimentRandomApplicable');
+
 -- 楽曲テーブル
 -- projectが保有している楽曲
 DROP TABLE IF EXISTS songs CASCADE;

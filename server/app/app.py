@@ -20,6 +20,7 @@ from sqls import (
     get_excitement_curve,
     get_part_name,
     get_parts,
+    get_project,
     get_project_song_ids,
     get_projects,
     get_song_details,
@@ -110,7 +111,12 @@ def create_project():
 
 @app.route("/projects", methods=["GET"])
 def get_infomation_of_projects():
-    response = get_projects()
+    isExperimentParam = request.args.get("experiment")
+    isExperiment = (
+        json.loads(isExperimentParam) if isExperimentParam is not None else False
+    )
+
+    response = get_projects(isExperiment)
 
     return make_response(jsonify(response))
 
@@ -118,8 +124,9 @@ def get_infomation_of_projects():
 # TODO: 楽曲のIDごとに盛り上がり度曲線を記録している
 @app.route("/projects/<int:projectid>", methods=["GET"])
 def get_infomation_of_project(projectid):
+    project_info = get_project(projectid)
     song_ids = get_project_song_ids(projectid)
-    response = {"song_ids": song_ids}
+    response = {"song_ids": song_ids, "project": project_info}
 
     # curves = get_excitement_curve()
     # curves = []
@@ -1159,7 +1166,7 @@ def connect_new_song(projectid, output_sound, mode, songid):
         created = False
         while not created:
             if not os.path.exists(f"./project/{projectid }/songs/{songid}"):
-                os.mkdir(f"./project/{projectid }/songs/{songid}")
+                os.makedirs(f"./project/{projectid }/songs/{songid}", exist_ok=True)
                 output_sound.export(
                     f"./project/{projectid}/songs/{songid}/song{songid}.wav",
                     format="wav",
