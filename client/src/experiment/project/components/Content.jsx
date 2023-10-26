@@ -10,16 +10,18 @@ import {
   GridItem,
 } from "@chakra-ui/react";
 import Controls from "@src/app/controls/Controls";
-import ExcitementCurve from "@src/app/excitementCurve/ExcitementCurve";
 import LoopTable from "@src/app/musicEdit/LoopTable";
 import MusicInstrumentTable from "@src/app/musicEdit/MusicInstrumentTable";
 import ZoomedExcitementCurve from "@src/app/musicEdit/ZoomedExcitementCurve";
 import LoopMaterialView from "@src/app/musicEdit/loopMaterisl/LoopMaterialView";
 import TopicView from "@src/app/musicEdit/topic/TopicView";
+import { setLine, setMax } from "@src/redux/linesSlice";
 import { setSongId } from "@src/redux/songIdSlice";
 import axios from "axios";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+
+import ExcitementCurve from "./ExcitementCurve";
 
 export default function Content({ projectId }) {
   const dispatch = useDispatch();
@@ -37,6 +39,23 @@ export default function Content({ projectId }) {
       dispatch(setSongId(lastSongId));
     });
   }, []);
+
+  useEffect(() => {
+    if (songId === null || songId === undefined) return;
+    const songURL = `${baseUrl}/songs/${songId}`;
+    axios.get(songURL).then((response) => {
+      const { data } = response;
+      const { excitement_curve: excitementCurve } = data;
+      if (excitementCurve === null) {
+        dispatch(setLine({ lines: [] }));
+        dispatch(setMax(0));
+      } else {
+        const { curve, max_value: max } = excitementCurve;
+        dispatch(setLine({ lines: curve }));
+        dispatch(setMax({ max }));
+      }
+    });
+  }, [songId]);
 
   return (
     <>

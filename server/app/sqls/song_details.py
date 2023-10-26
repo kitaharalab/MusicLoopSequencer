@@ -7,6 +7,39 @@ from .song import get_project_id_from_song_id
 
 
 def get_song_details(song_id):
+    """楽曲の楽器ごとの各小節の情報を取得する
+
+    Args:
+        song_id (int): 楽曲のID
+
+    Returns:
+        dict: 楽器ごとに，小節ごとの音素材のIDを格納した辞書
+    """
+    response = None
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute(
+                "SELECT measure, loop_id, part_id FROM song_details WHERE song_id = %s order by part_id, measure",
+                (song_id,),
+            )
+            result = cur.fetchall()
+            response = [dict(row) for row in result]
+
+    parts = get_parts()
+    details_by_part_id = dict()
+    for part in parts:
+        part_id = part["id"]
+        details = list(filter(lambda x: x["part_id"] == part_id, response))
+        details = sorted(details, key=lambda x: x["measure"])
+        details = list(
+            map(lambda x: {"loop_id": x["loop_id"], "measure": x["measure"]}, details)
+        )
+        details_by_part_id[part_id] = details
+
+    return details_by_part_id
+
+
+def get_song_loop_ids(song_id):
     response = None
     with get_connection() as conn:
         with conn.cursor(cursor_factory=DictCursor) as cur:

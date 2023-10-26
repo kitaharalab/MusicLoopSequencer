@@ -81,23 +81,40 @@ DROP TABLE IF EXISTS excitement_curve CASCADE;
 CREATE TABLE
     excitement_curve (
         song_id INTEGER NOT NULL,
-        excitement_id serial,
-        excitement INTEGER NOT NULL,
+        INDEX INTEGER NOT NULL,
+        VALUE INTEGER NOT NULL,
         FOREIGN KEY (song_id) REFERENCES songs (id),
-        PRIMARY KEY (song_id, excitement_id)
+        PRIMARY KEY (song_id, INDEX)
     );
 
 INSERT INTO
-    excitement_curve (song_id, excitement)
+    excitement_curve (song_id, INDEX, VALUE)
 VALUES
-    (1, 0),
-    (1, 1),
-    (1, 2),
-    (1, 3),
-    (1, 4),
-    (1, 5),
-    (1, 6),
-    (1, 7);
+    (1, 0, 10),
+    (1, 1, 15),
+    (1, 2, 20),
+    (1, 3, 5),
+    (1, 4, 89),
+    (1, 5, 27),
+    (1, 6, 99),
+    (1, 7, 76);
+
+-- 盛り上がり度曲線の詳細テーブル
+DROP TABLE IF EXISTS excitement_curve_info CASCADE;
+
+CREATE TABLE
+    excitement_curve_info (
+        song_id INTEGER NOT NULL,
+        LENGTH INTEGER NOT NULL,
+        max_value INTEGER NOT NULL,
+        FOREIGN KEY (song_id) REFERENCES songs (id),
+        PRIMARY KEY (song_id)
+    );
+
+INSERT INTO
+    excitement_curve_info (song_id, LENGTH, max_value)
+VALUES
+    (1, 10, 100);
 
 -- 音素材パステーブル
 DROP TABLE IF EXISTS loop_paths CASCADE;

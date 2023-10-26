@@ -17,6 +17,8 @@ export default function createMusic(projectid, linesY, max) {
 
   const data = {
     curves: excitementArray, // 盛り上がり度曲線のパラメーターを格納した配列をJSONデータにする
+    rawCurve: linesY,
+    curveMax: max,
   };
 
   return axios

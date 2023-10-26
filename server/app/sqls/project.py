@@ -23,7 +23,7 @@ def get_projects(isExperiment: bool = False):
             if isExperiment:
                 cur.execute("SELECT * FROM projects WHERE name LIKE 'Experiment%'")
             else:
-                cur.execute("SELECT * FROM projects WHERE name NOT LIKE 'Experiment%'")
+                cur.execute("SELECT * FROM projects")
             result = cur.fetchall()
             response = [dict(row) for row in result]
     return response
