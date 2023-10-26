@@ -9,6 +9,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { flushSync } from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import createMusic from "../../createMusic";
@@ -26,6 +27,7 @@ export default function Controls({ projectId }) {
   // TODO: projectIdの対応関係
   const baseUrl = `${import.meta.env.VITE_SERVER_URL}/projects/${projectId}`;
   const songCreatedToast = useToast();
+  const [creating, setCreating] = useState(false);
 
   const handleSelectedSongChange = (e) => {
     setasdf(e.target.value);
@@ -51,6 +53,21 @@ export default function Controls({ projectId }) {
     setSongHistory([...historySet].map((h) => JSON.parse(h)));
   }, [songId]);
 
+  async function handleCreateMusic() {
+    flushSync(() => setCreating(true));
+    const music = await createMusic(projectId, lines, max);
+    const { songId: newSongId } = music;
+    dispatch(setSongId(newSongId));
+    setSongHistory([...songHistory, { name: newSongId, id: newSongId }]);
+    songCreatedToast({
+      title: "created song",
+      status: "success",
+      position: "bottom-left",
+      isClosable: true,
+    });
+    setCreating(false);
+  }
+
   return (
     <FormControl>
       <Flex>
@@ -58,23 +75,8 @@ export default function Controls({ projectId }) {
           <Flex>
             <Button
               type="button"
-              onClick={async () => {
-                const music = await createMusic(projectId, lines, max);
-                const { songId: newSongId } = music;
-                // const { section } = music;
-                // console.log(section);
-                dispatch(setSongId(newSongId));
-                setSongHistory([
-                  ...songHistory,
-                  { name: newSongId, id: newSongId },
-                ]);
-                songCreatedToast({
-                  title: "created song",
-                  status: "success",
-                  position: "bottom-left",
-                  isClosable: true,
-                });
-              }}
+              isDisabled={creating}
+              onClick={async () => handleCreateMusic()}
             >
               create
             </Button>
