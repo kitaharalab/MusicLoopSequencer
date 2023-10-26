@@ -110,7 +110,12 @@ def create_project():
 
 @app.route("/projects", methods=["GET"])
 def get_infomation_of_projects():
-    response = get_projects()
+    isExperimentParam = request.args.get("experiment")
+    isExperiment = (
+        json.loads(isExperimentParam) if isExperimentParam is not None else False
+    )
+
+    response = get_projects(isExperiment)
 
     return make_response(jsonify(response))
 
