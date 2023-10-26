@@ -1168,6 +1168,7 @@ def connect_new_song(projectid, output_sound, mode, songid):
             else:
                 songid = songid + 1
     else:
+        os.makedirs(f"./project/{projectid }/songs/{songid}", exist_ok=True)
         output_sound.export(
             f"./project/{projectid}/songs/{songid}/song{songid}.wav",
             format="wav",
