@@ -11,15 +11,14 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-import Link from "../components/Link/Link";
+import Link from "../../components/Link/Link";
 
-import "./Project.css";
-
-function Project() {
-  const [done, setDone] = useState(false);
+export default function Projects() {
   const [sample, _setSample] = useState(null);
   const [projects, setProjects] = useState([]);
+  const navigate = useNavigate();
 
   const createNewProject = () => {
     const url = `${import.meta.env.VITE_SERVER_URL}/projects`;
@@ -32,26 +31,12 @@ function Project() {
   };
 
   useEffect(() => {
-    let ignore = false;
-    function makeLink() {
-      if (done) {
-        return;
-      }
-
-      axios
-        .get(`${import.meta.env.VITE_SERVER_URL}/projects`)
-        .then((response) => {
-          const { data } = response;
-          setProjects(data);
-          setDone(true);
-        });
-    }
-    if (!ignore) {
-      makeLink();
-    }
-    return () => {
-      ignore = true;
-    };
+    axios
+      .get(`${import.meta.env.VITE_SERVER_URL}/projects`)
+      .then((response) => {
+        const { data } = response;
+        setProjects(data);
+      });
   }, [sample]);
 
   return (
@@ -61,7 +46,11 @@ function Project() {
           <Box>
             <IconButton
               type="button"
-              onClick={() => createNewProject()}
+              onClick={() => {
+                createNewProject();
+                const createdProject = projects[projects.length - 1];
+                navigate(`${createdProject.id}`);
+              }}
               icon={<AddIcon />}
               width="25%"
               alignSelf="center"
@@ -80,7 +69,7 @@ function Project() {
           </Card>
         ))}
         <Card width="30vw">
-          <Link to="/experiment">
+          <Link to="experiment">
             <CardHeader>experiment</CardHeader>
           </Link>
         </Card>
@@ -88,5 +77,3 @@ function Project() {
     </Box>
   );
 }
-
-export default Project;
