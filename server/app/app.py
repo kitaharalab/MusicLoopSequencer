@@ -24,6 +24,7 @@ from sqls import (
     get_project_song_ids,
     get_projects,
     get_song_details,
+    get_song_loop_ids,
     play_loop_log,
     play_song_log,
     sound_array_wrap,
@@ -278,37 +279,21 @@ def get_infomation_songs(projectid):
     return make_response(jsonify(response))
 
 
-@app.route("/projects/<projectid>/songs/<songid>", methods=["GET"])
+@app.route("/projects/<int:projectid>/songs/<int:songid>", methods=["GET"])
 def get_infomation_song(projectid, songid):
-    sql_response = None
-    with get_connection() as conn:
-        with conn.cursor(cursor_factory=DictCursor) as cur:
-            cur.execute(
-                "SELECT * FROM song_details WHERE song_id = %s",
-                (int(songid),),
-            )
-            result = cur.fetchall()
-            sql_response = [dict(row) for row in result] if result is not None else {}
-
-    sounds_ids = [["null" for i in range(4)] for j in range(32)]
-
-    for row in sql_response:
-        sounds_ids[row["measure"] - 1][row["part_id"] - 1] = row["loop_id"]
-
-    parts = get_parts()
     part_name2index = {"Drums": 0, "Bass": 1, "Synth": 2, "Sequence": 3}
+    parts = get_parts()
     parts = sorted(parts, key=lambda x: part_name2index[x["name"]])
 
-    song_details = get_song_details(songid)
+    loop_ids_by_part = get_song_loop_ids(songid)
 
-    # drums_list, bass_list, synth_list, sequence_list = format_list(sounds_ids)
     response = {"parts": []}
     for part in parts:
         response["parts"].append(
             {
                 "partId": part["id"],
                 "partNmae": part["name"],
-                "sounds": song_details[part["id"]],
+                "sounds": loop_ids_by_part[part["id"]],
             }
         )
 
@@ -398,7 +383,7 @@ def insert_sound(projectid, songid, partid, measureid, musicloopid):
     parts = sorted(parts, key=lambda x: x["id"])
 
     update_song_details(songid, partid, int(measureid) + 1, musicloopid)
-    song_details = get_song_details(song_id=songid)
+    song_details = get_song_loop_ids(song_id=songid)
 
     # 0:drums
     # 1:bass
