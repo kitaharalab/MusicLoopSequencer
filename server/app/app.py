@@ -20,6 +20,7 @@ from sqls import (
     get_excitement_curve,
     get_part_name,
     get_parts,
+    get_project,
     get_project_song_ids,
     get_projects,
     get_song_details,
@@ -123,8 +124,9 @@ def get_infomation_of_projects():
 # TODO: 楽曲のIDごとに盛り上がり度曲線を記録している
 @app.route("/projects/<int:projectid>", methods=["GET"])
 def get_infomation_of_project(projectid):
+    project_info = get_project(projectid)
     song_ids = get_project_song_ids(projectid)
-    response = {"song_ids": song_ids}
+    response = {"song_ids": song_ids, "project": project_info}
 
     # curves = get_excitement_curve()
     # curves = []

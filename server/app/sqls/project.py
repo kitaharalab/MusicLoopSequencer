@@ -29,6 +29,16 @@ def get_projects(isExperiment: bool = False):
     return response
 
 
+def get_project(project_id: int):
+    response = None
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute("SELECT * FROM projects WHERE id = %s", (project_id,))
+            result = cur.fetchone()
+            response = dict(result) if result is not None else None
+    return response
+
+
 def get_project_song_ids(project_id):
     response = None
     with get_connection() as conn:
