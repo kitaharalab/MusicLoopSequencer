@@ -1,5 +1,4 @@
 import os
-import pprint
 
 import psycopg2
 from dotenv import load_dotenv
@@ -53,12 +52,14 @@ def insert_loop_path(path: str, part_id: int):
             conn.commit()
 
 
-parts = get_parts()
+def insert_loops():
+    parts = get_parts()
+    for part in parts:
+        print(part["name"])
+        loops = readLoopsPath(part["name"])
+        for loop in loops:
+            insert_loop_path(loop, part["id"])
 
-# pprint.pprint(readLoopsPath(parts[0]["name"]))
 
-for part in parts:
-    print(part["name"])
-    loops = readLoopsPath(part["name"])
-    for loop in loops:
-        insert_loop_path(loop, part["id"])
+if __name__ == "__main__":
+    insert_loops()
