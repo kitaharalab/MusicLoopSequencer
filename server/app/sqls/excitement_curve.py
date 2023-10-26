@@ -1,5 +1,6 @@
-from connection import get_connection
 from psycopg2.extras import DictCursor
+
+from .connection import get_connection
 
 
 def get_excitement_curve_values(song_id: int):

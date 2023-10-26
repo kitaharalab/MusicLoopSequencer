@@ -59,23 +59,6 @@ def sound_array_wrap(sound_array):
     return song_loop_id_by_part
 
 
-def get_excitement_curve(song_id: int):
-    with get_connection() as conn:
-        with conn.cursor(cursor_factory=DictCursor) as cur:
-            cur.execute(
-                """
-                SELECT excitement
-                FROM excitement_curve
-                WHERE song_id = %s
-                ORDER BY excitement_id
-                """,
-                (song_id,),
-            )
-            result = cur.fetchall()
-            excitement_data = [dict(row) for row in result]
-            return [excitement["excitement"] for excitement in excitement_data]
-
-
 def get_project_id_from_song_id(song_id: int) -> int:
     with get_connection() as conn:
         with conn.cursor(cursor_factory=DictCursor) as cur:
