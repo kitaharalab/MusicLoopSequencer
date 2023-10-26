@@ -13,7 +13,7 @@ from hmmlearn import hmm
 from psycopg2.extras import DictCursor
 from pydub import AudioSegment
 from readFiles import readFile, readLoopsPath, readPartCoordinates
-from sqls import add_project
+from sqls import add_excitement_curve, add_project
 from sqls import create_song as add_song
 from sqls import (
     get_connection,
@@ -151,6 +151,11 @@ def create_song(projectid):
     array = name_to_id(array)
 
     song_id = add_song(sound_array_wrap(array), projectid)
+
+    raw_curve = data["rawCurve"]
+    curve_max = data["curveMax"]
+    add_excitement_curve(song_id, raw_curve, curve_max)
+
     parts = get_parts()
 
     drums_list, bass_list, synth_list, sequence_list = format_list(array)
