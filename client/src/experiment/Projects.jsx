@@ -1,17 +1,14 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { AddIcon } from "@chakra-ui/icons";
 import {
   Box,
   SimpleGrid,
   Card,
   CardBody,
   CardHeader,
-  IconButton,
   Text,
 } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 import Link from "../../components/Link/Link";
 
