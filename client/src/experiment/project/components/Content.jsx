@@ -10,7 +10,6 @@ import {
   GridItem,
 } from "@chakra-ui/react";
 import Controls from "@src/app/controls/Controls";
-import ExcitementCurve from "@src/app/excitementCurve/ExcitementCurve";
 import LoopTable from "@src/app/musicEdit/LoopTable";
 import MusicInstrumentTable from "@src/app/musicEdit/MusicInstrumentTable";
 import ZoomedExcitementCurve from "@src/app/musicEdit/ZoomedExcitementCurve";
@@ -21,6 +20,8 @@ import { setSongId } from "@src/redux/songIdSlice";
 import axios from "axios";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+
+import ExcitementCurve from "./ExcitementCurve";
 
 export default function Content({ projectId }) {
   const dispatch = useDispatch();
@@ -51,7 +52,7 @@ export default function Content({ projectId }) {
       } else {
         const { curve, max_value: max } = excitementCurve;
         dispatch(setLine({ lines: curve }));
-        dispatch(setMax(max));
+        dispatch(setMax({ max }));
       }
     });
   }, [songId]);
