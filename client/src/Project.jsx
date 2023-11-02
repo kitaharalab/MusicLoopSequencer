@@ -1,58 +1,53 @@
-// import { Link } from "react-router-dom";
-import React, { useEffect, useState } from "react";
+/* eslint-disable import/no-extraneous-dependencies */
+import { AddIcon } from "@chakra-ui/icons";
+import {
+  Box,
+  SimpleGrid,
+  Card,
+  CardBody,
+  CardHeader,
+  IconButton,
+  Text,
+  Flex,
+  Spacer,
+} from "@chakra-ui/react";
 import axios from "axios";
+import React, { useEffect, useState } from "react";
+
+import Link from "../components/Link/Link";
+
 import "./Project.css";
 import SignUp from "./authentication/SignUp";
 
 function Project() {
   const [done, setDone] = useState(false);
   const [sample, _setSample] = useState(null);
-  let temp = 0;
+  const [projects, setProjects] = useState([]);
 
   const createNewProject = () => {
-    const url = "http://127.0.0.1:8080/projects";
+    const url = `${import.meta.env.VITE_SERVER_URL}/projects`;
     axios
       .post(url) // サーバーから音素材の配列を受け取った後，then部分を実行する．
       .then((response) => {
-        const { projectid } = response.data;
-        const div = document.getElementById("project");
-        const newElement = document.createElement("p");
-        const newProjectUrl = `App?projectid=${String(projectid)}`;
-        const tag = `<a href=${newProjectUrl}>${projectid}</a>`;
-        newElement.innerHTML = tag;
-        div.appendChild(newElement);
+        const { data } = response;
+        setProjects([...projects, data]);
       });
-    console.log("OK");
   };
 
   useEffect(() => {
     let ignore = false;
     function makeLink() {
-      (async () => {
-        const url = "http://127.0.0.1:8080/projects";
-        if (done === false) {
-          await axios
-            .get(url) // サーバーから音素材の配列を受け取った後，then部分を実行する．
-            .then((response) => {
-              const div = document.getElementById("project");
-              temp =
-                response.data.projects_list[
-                  response.data.projects_list.length - 1
-                ];
-              if (done === false) {
-                for (let i = 0; i <= temp; i++) {
-                  const newElement = document.createElement("p");
-                  const newProjectUrl = `App?projectid=${String(i)}`;
-                  const tag = `<a href=${newProjectUrl}>${i}</a>`;
-                  newElement.innerHTML = tag;
-                  div.appendChild(newElement);
-                }
-                const judge = true;
-                setDone(judge);
-              }
-            });
-        }
-      })();
+      if (done) {
+        return;
+      }
+
+      axios
+        .get(`${import.meta.env.VITE_SERVER_URL}/projects`)
+        .then((response) => {
+          const { data } = response;
+          setProjects(data);
+          setDone(true);
+        });
     }
     if (!ignore) {
       makeLink();
@@ -63,12 +58,46 @@ function Project() {
   }, [sample]);
 
   return (
-    <div id="project">
+    <Box id="project">
       <SignUp />
-      <button type="button" onClick={() => createNewProject()}>
-        createNewProject
-      </button>
-    </div>
+      <Flex>
+        <Card bgColor="darkslategrey" align="center" width="30vw">
+          <CardBody>
+            <Box>
+              <IconButton
+                type="button"
+                onClick={() => createNewProject()}
+                icon={<AddIcon />}
+                width="25%"
+                alignSelf="center"
+              />
+            </Box>
+            <Text color="white">create new project</Text>
+          </CardBody>
+        </Card>
+        <Spacer />
+        <Card bgColor="darkslategrey" align="center" width="30vw">
+          <Link to="/experiment">
+            <CardBody>
+              <CardHeader>
+                <Text color="white">experiment</Text>
+              </CardHeader>
+            </CardBody>
+          </Link>
+        </Card>
+      </Flex>
+
+      <SimpleGrid minChildWidth="30vw" spacing={4} marginTop={2}>
+        {projects?.map(({ id, name }) => (
+          <Card key={id} width="30vw">
+            {/* TODO: idに対応したプロジェクトの値 */}
+            <Link to={`App?projectid=${id}`}>
+              <CardHeader>{name}</CardHeader>
+            </Link>
+          </Card>
+        ))}
+      </SimpleGrid>
+    </Box>
   );
 }
 

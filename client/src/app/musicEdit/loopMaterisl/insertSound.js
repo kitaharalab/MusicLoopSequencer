@@ -2,18 +2,17 @@ import axios from "axios";
 
 export default function insertSound(
   projectId,
+  songId,
   partId,
   measureId,
   musicLoopId,
   parts,
 ) {
-  console.log("asdfl;kjqwerpoiuasdf;ljqwerpoiu");
-  const url = `http://127.0.0.1:8080//projects/${String(
-    projectId,
-  )}/parts/${String(partId)}/measures/${String(measureId)}/musicloops/${String(
-    musicLoopId,
-  )}`;
-  console.log(parts);
+  // TODO: partIdはindexが入ってるので，idに変換する必要がある．
+  const url = new URL(
+    `/projects/${projectId}/songs/${songId}/parts/${partId}/measures/${measureId}/musicloops/${musicLoopId}`,
+    import.meta.env.VITE_SERVER_URL,
+  );
   const sequenceList = parts[0].sounds;
   const synthList = parts[1].sounds;
   const bassList = parts[2].sounds;

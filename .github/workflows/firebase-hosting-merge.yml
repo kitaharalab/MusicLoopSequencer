@@ -1,0 +1,23 @@
+name: Deploy to Firebase Hosting on merge
+"on":
+  push:
+    branches:
+      - main
+    paths: "client/**"
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+    steps:
+      - uses: actions/checkout@v3
+      - run: yarn && yarn run build
+        env:
+          VITE_SERVER_URL: ${{ secrets.SERVER_URL }}
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEVELOP }}"
+          channelId: live
+          projectId: project-musicloopsequencer

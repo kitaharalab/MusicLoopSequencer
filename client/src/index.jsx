@@ -2,28 +2,52 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import { Provider } from "react-redux";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { ChakraProvider, Box } from "@chakra-ui/react";
+
 import App from "./App";
-import reportWebVitals from "./reportWebVitals";
-import { store } from "./redux/store";
 import Project from "./Project";
+import ExperimentProjects from "./experiment/Projects";
+import LoopSequencer from "./experiment/project/LoopSequencer";
+import { store } from "./redux/store";
+import reportWebVitals from "./reportWebVitals";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Project />,
+  },
+  {
+    path: "App",
+    element: (
+      <Provider store={store}>
+        <App />
+      </Provider>
+    ),
+  },
+  {
+    path: "/experiment",
+    element: <ExperimentProjects />,
+  },
+  {
+    path: "/experiment/:projectId",
+    element: (
+      <Provider store={store}>
+        <LoopSequencer />
+      </Provider>
+    ),
+  },
+]);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Project />} />
-        <Route
-          path="/App"
-          element={
-            <Provider store={store}>
-              <App />
-            </Provider>
-          }
-        />
-      </Routes>
-    </BrowserRouter>
+    <ChakraProvider>
+      <Box p={4}>
+        <RouterProvider router={router} />
+      </Box>
+    </ChakraProvider>
   </React.StrictMode>,
 );
 
