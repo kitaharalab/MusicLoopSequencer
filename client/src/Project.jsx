@@ -62,7 +62,7 @@ function Project() {
 
   return (
     <Box id="project">
-      {JSON.stringify(auth.currentUser.email)}
+      {JSON.stringify(auth.currentUser?.email)}
       <Flex>
         <Card bgColor="darkslategrey" align="center" width="30vw">
           <CardBody>
