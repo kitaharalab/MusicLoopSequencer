@@ -91,7 +91,9 @@ def get_loop_id(song_id: int, part_id: int, measure: int) -> int:
     return result["loop_id"]
 
 
-def update_song_details(song_id: int, part_id: int, measure: int, loop_id: int):
+def update_song_details(
+    song_id: int, part_id: int, measure: int, loop_id: int, user_id: str
+):
     """楽曲において，ある小節における音素材を変更する
 
     Args:
@@ -104,7 +106,9 @@ def update_song_details(song_id: int, part_id: int, measure: int, loop_id: int):
     project_id = get_project_id_from_song_id(song_id)
 
     # log
-    change_loop_log(project_id, song_id, part_id, measure, from_loop_id, loop_id)
+    change_loop_log(
+        project_id, song_id, part_id, measure, from_loop_id, loop_id, user_id
+    )
 
     # update
     with get_connection() as conn:

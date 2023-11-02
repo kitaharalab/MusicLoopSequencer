@@ -13,6 +13,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import * as d3 from "d3";
+import { onAuthStateChanged, getAuth } from "firebase/auth";
 import React, { useEffect, useRef, useState } from "react";
 // import onMusicLoop from "./onMusicLoop";
 import { flushSync } from "react-dom";
@@ -131,6 +132,15 @@ export default function LoopMaterialView({ projectId, songId }) {
   const partsRef = useRef();
   const dispatch = useDispatch();
 
+  const [user, setUser] = useState(null);
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return unsubscribe;
+  }, []);
+
   const getMusicParts = () => {
     if (songId === null || songId === undefined) {
       return;
@@ -163,6 +173,7 @@ export default function LoopMaterialView({ projectId, songId }) {
         measure,
         loopId,
         partsRef.current,
+        user.uid,
       );
 
       flushSync(() => {
@@ -178,7 +189,7 @@ export default function LoopMaterialView({ projectId, songId }) {
   function handlePlayAudio(id, part) {
     async function getAndPlayMusicLoop() {
       audio?.pause();
-      const loop = await onMusicLoop(projectId, songId, part, id);
+      const loop = await onMusicLoop(projectId, songId, part, id, user.uid);
       setAudio(loop);
       loop.play();
     }

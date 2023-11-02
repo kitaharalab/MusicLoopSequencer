@@ -21,15 +21,15 @@ class LogEvent(Enum):
 # loop_id INTEGER,
 # from_loop_id INTEGER,
 # to_loop_id INTEGER,
-def create_song_log(project_id: int, song_id: int):
+def create_song_log(project_id: int, song_id: int, user_id: str):
     sql = """
-    insert into operation_logs (event, project_id, song_id) values (%s, %s, %s);
+    insert into operation_logs (event, project_id, song_id, user_id) values (%s, %s, %s, %s);
     """
     with get_connection() as conn:
         with conn.cursor(cursor_factory=DictCursor) as cur:
             cur.execute(
                 sql,
-                (LogEvent.CREATE_SONG.name, project_id, song_id),
+                (LogEvent.CREATE_SONG.name, project_id, song_id, user_id),
             )
             conn.commit()
 
@@ -41,12 +41,13 @@ def change_loop_log(
     measure: int,
     from_loop_id: int,
     to_loop_id: int,
+    user_id: str,
 ):
     sql = """
     insert into
-        operation_logs (event, project_id, song_id, part_id, measure, from_loop_id, to_loop_id)
+        operation_logs (event, project_id, song_id, part_id, measure, from_loop_id, to_loop_id, user_id)
     values
-        (%s, %s, %s, %s, %s, %s, %s);
+        (%s, %s, %s, %s, %s, %s, %s, %s);
     """
 
     with get_connection() as conn:
@@ -61,30 +62,33 @@ def change_loop_log(
                     measure,
                     from_loop_id,
                     to_loop_id,
+                    user_id,
                 ),
             )
             conn.commit()
 
 
-def play_song_log(project_id: int, song_id: int):
+def play_song_log(project_id: int, song_id: int, user_id: str):
     sql = """
-    insert into operation_logs (event, project_id, song_id) values (%s, %s, %s);
+    insert into operation_logs (event, project_id, song_id, user_id) values (%s, %s, %s, %s);
     """
     with get_connection() as conn:
         with conn.cursor(cursor_factory=DictCursor) as cur:
             cur.execute(
                 sql,
-                (LogEvent.PLAY_SONG.name, project_id, song_id),
+                (LogEvent.PLAY_SONG.name, project_id, song_id, user_id),
             )
             conn.commit()
 
 
-def play_loop_log(project_id: int, song_id: int, part_id: int, loop_id: int):
+def play_loop_log(
+    project_id: int, song_id: int, part_id: int, loop_id: int, user_id: str
+):
     sql = """
     insert into
-        operation_logs (event, project_id, song_id, part_id, loop_id)
+        operation_logs (event, project_id, song_id, part_id, loop_id, user_id)
     values
-        (%s, %s, %s, %s, %s);
+        (%s, %s, %s, %s, %s, %s);
     """
 
     with get_connection() as conn:
@@ -97,6 +101,7 @@ def play_loop_log(project_id: int, song_id: int, part_id: int, loop_id: int):
                     song_id,
                     part_id,
                     loop_id,
+                    user_id,
                 ),
             )
             conn.commit()

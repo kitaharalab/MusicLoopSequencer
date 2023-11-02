@@ -1,3 +1,19 @@
+-- ユーザテーブル
+DROP TABLE IF EXISTS users CASCADE;
+
+CREATE TABLE
+    users (
+        id serial PRIMARY KEY,
+        user_id TEXT UNIQUE,
+        EMAIL TEXT NOT NULL
+    );
+
+INSERT INTO
+    users (user_id, EMAIL)
+VALUES
+    ('user_test', 'example@e.com'),
+    ('experiment_user', 'example2@e.com');
+
 -- 楽器テーブル
 DROP TABLE IF EXISTS parts CASCADE;
 
@@ -16,21 +32,26 @@ VALUES
 DROP TABLE IF EXISTS projects CASCADE;
 
 CREATE TABLE
-    projects (id serial PRIMARY KEY, NAME TEXT NOT NULL);
+    projects (
+        id serial PRIMARY KEY,
+        NAME TEXT NOT NULL,
+        user_id TEXT NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users (user_id)
+    );
 
 INSERT INTO
-    projects (NAME)
+    projects (NAME, user_id)
 VALUES
-    ('test'),
-    ('second');
+    ('test', 'user_test'),
+    ('second', 'user_test');
 
 -- 実験用プロジェクト
 INSERT INTO
-    projects (NAME)
+    projects (NAME, user_id)
 VALUES
-    ('ExperimentUserApplicable'),
-    ('ExperimentUserNotApplicable'),
-    ('ExperimentRandomApplicable');
+    ('ExperimentUserApplicable', 'experiment_user'),
+    ('ExperimentUserNotApplicable', 'experiment_user'),
+    ('ExperimentRandomApplicable', 'experiment_user');
 
 -- 楽曲テーブル
 -- projectが保有している楽曲
@@ -138,6 +159,7 @@ CREATE TABLE
         id serial PRIMARY KEY,
         TIME TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
         EVENT TEXT NOT NULL,
+        user_id TEXT NOT NULL,
         project_id INTEGER NOT NULL,
         song_id INTEGER NOT NULL,
         part_id INTEGER,
@@ -145,6 +167,7 @@ CREATE TABLE
         loop_id INTEGER,
         from_loop_id INTEGER,
         to_loop_id INTEGER,
+        FOREIGN KEY (user_id) REFERENCES users (user_id),
         FOREIGN KEY (project_id) REFERENCES projects (id),
         FOREIGN KEY (song_id) REFERENCES songs (id),
         FOREIGN KEY (part_id) REFERENCES parts (id),

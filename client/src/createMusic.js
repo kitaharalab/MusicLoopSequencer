@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export default function createMusic(projectid, linesY, max) {
+export default function createMusic(projectid, linesY, max, userId) {
   const excitementArray = new Array(32);
   const range = Math.floor(linesY.length / excitementArray.length);
   const excitementStep = 5;
@@ -19,6 +19,7 @@ export default function createMusic(projectid, linesY, max) {
     curves: excitementArray, // 盛り上がり度曲線のパラメーターを格納した配列をJSONデータにする
     rawCurve: linesY,
     curveMax: max,
+    userId,
   };
 
   return axios
