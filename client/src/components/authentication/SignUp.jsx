@@ -13,6 +13,7 @@ import {
   FormErrorMessage,
   Text,
 } from "@chakra-ui/react";
+import axios from "axios";
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
@@ -32,6 +33,10 @@ export default function SignUp() {
   useEffect(() => {
     onAuthStateChanged(auth, (authUser) => {
       setUser(authUser);
+      axios.post(`${import.meta.env.VITE_SERVER_URL}/users`, {
+        userId: auth.currentUser.uid,
+        email: auth.currentUser.email,
+      });
     });
   }, []);
 
