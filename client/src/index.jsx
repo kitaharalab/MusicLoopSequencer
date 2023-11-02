@@ -1,13 +1,14 @@
+import { ChakraProvider, Box } from "@chakra-ui/react";
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./index.css";
 import { Provider } from "react-redux";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { ChakraProvider, Box } from "@chakra-ui/react";
+import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 
 import App from "./App";
 import Project from "./Project";
+import SignIn from "./authentication/SignIn";
+import SignUp from "./authentication/SignUp";
+import Header from "./components/Header";
 import ExperimentProjects from "./experiment/Projects";
 import LoopSequencer from "./experiment/project/LoopSequencer";
 import { store } from "./redux/store";
@@ -16,7 +17,31 @@ import reportWebVitals from "./reportWebVitals";
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Project />,
+    element: (
+      <div>
+        <Header />
+        <Project />
+        <Outlet />
+      </div>
+    ),
+    children: [
+      {
+        path: "/test",
+        element: <div>test</div>,
+      },
+      {
+        path: "/:id",
+        element: <div>test id</div>,
+      },
+    ],
+  },
+  {
+    path: "/signin",
+    element: <SignIn />,
+  },
+  {
+    path: "/signup",
+    element: <SignUp />,
   },
   {
     path: "App",
