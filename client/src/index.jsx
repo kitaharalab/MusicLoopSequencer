@@ -18,20 +18,46 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: (
-      <div>
+      <>
         <Header />
-        <Project />
         <Outlet />
-      </div>
+      </>
     ),
     children: [
       {
-        path: "/test",
-        element: <div>test</div>,
+        path: "/",
+        element: <Project />,
       },
       {
-        path: "/:id",
-        element: <div>test id</div>,
+        path: "App",
+        element: (
+          <Provider store={store}>
+            <App />
+          </Provider>
+        ),
+      },
+    ],
+  },
+  {
+    path: "/experiment",
+    element: (
+      <>
+        <Header />
+        <Outlet />
+      </>
+    ),
+    children: [
+      {
+        path: "/experiment",
+        element: <ExperimentProjects />,
+      },
+      {
+        path: ":projectId",
+        element: (
+          <Provider store={store}>
+            <LoopSequencer />
+          </Provider>
+        ),
       },
     ],
   },
@@ -42,26 +68,6 @@ const router = createBrowserRouter([
   {
     path: "/signup",
     element: <SignUp />,
-  },
-  {
-    path: "App",
-    element: (
-      <Provider store={store}>
-        <App />
-      </Provider>
-    ),
-  },
-  {
-    path: "/experiment",
-    element: <ExperimentProjects />,
-  },
-  {
-    path: "/experiment/:projectId",
-    element: (
-      <Provider store={store}>
-        <LoopSequencer />
-      </Provider>
-    ),
   },
 ]);
 
