@@ -14,7 +14,6 @@ import {
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
-  signInWithEmailAndPassword,
   getAuth,
 } from "firebase/auth";
 import React, { useEffect, useState } from "react";
@@ -23,7 +22,7 @@ import { Navigate } from "react-router-dom";
 
 export default function SignUp() {
   const auth = getAuth();
-  const [user, setUser] = useState();
+  const [user, setUser] = useState(null);
   const [creating, setCreating] = useState(false);
 
   useEffect(() => {
@@ -42,37 +41,14 @@ export default function SignUp() {
       await createUserWithEmailAndPassword(auth, email.value, password.value);
     } catch (error) {
       console.log(error);
-      signInWithEmailAndPassword(auth, email.value, password.value).then(
-        (userCredential) => {
-          const { user } = userCredential;
-          setUser(user);
-        },
-      );
+      setUser(undefined);
     }
 
     setCreating(false);
   }
 
   if (user !== null) {
-    return (
-      // <div>
-      //   {user !== null && <Navigate to="/" />}
-      //   already sign in
-      //   <div>
-      //     <button
-      //       type="button"
-      //       onClick={() => {
-      //         signOut(auth).then(() => {
-      //           console.log("sign out");
-      //         });
-      //       }}
-      //     >
-      //       sign out
-      //     </button>
-      //   </div>
-      // </div>
-      <Navigate to="/test" />
-    );
+    return <Navigate to="/test" />;
   }
 
   return (
