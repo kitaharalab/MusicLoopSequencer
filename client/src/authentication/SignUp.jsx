@@ -10,6 +10,8 @@ import {
   Card,
   CardBody,
   CardHeader,
+  FormErrorMessage,
+  Text,
 } from "@chakra-ui/react";
 import {
   createUserWithEmailAndPassword,
@@ -19,6 +21,8 @@ import {
 import React, { useEffect, useState } from "react";
 import { flushSync } from "react-dom";
 import { Navigate } from "react-router-dom";
+
+import Link from "../../components/Link/Link";
 
 export default function SignUp() {
   const auth = getAuth();
@@ -47,7 +51,7 @@ export default function SignUp() {
     setCreating(false);
   }
 
-  if (user !== null) {
+  if (user !== null && user !== undefined) {
     return <Navigate to="/test" />;
   }
 
@@ -64,7 +68,7 @@ export default function SignUp() {
         </CardHeader>
         <CardBody>
           <form onSubmit={handleSubmit}>
-            <FormControl isRequired>
+            <FormControl isRequired isInvalid={user === undefined}>
               <FormLabel htmlFor="signup-email">email</FormLabel>
               <Input
                 id="signup-email"
@@ -79,6 +83,10 @@ export default function SignUp() {
                 type="password"
                 autoComplete="new-password"
               />
+              <FormErrorMessage>
+                <Text>既に登録されているかもしれません．</Text>
+                <Link to="/signin">ログインはこちら</Link>
+              </FormErrorMessage>
             </FormControl>
             <Box marginTop={3}>
               <Button type="submit" isLoading={creating} width="100%">
