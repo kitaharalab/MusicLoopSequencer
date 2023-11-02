@@ -10,6 +10,17 @@
     "editor.defaultFormatter": "ms-python.black-formatter",
     "editor.codeActionsOnSave": { "source.organizeImports": true }
   },
-  "flake8.args": ["--max-line-length=88", "--max-complexity=10"],
-  "black-formatter.args": ["--line-length=88"]
+  "flake8.args": [
+    "--max-line-length=88",
+    "--max-complexity=100",
+    "--extend-ignore=E203"
+  ],
+  "black-formatter.args": ["--line-length=88"],
+  "[sql]": {
+    "editor.defaultFormatter": "inferrinizzard.prettier-sql-vscode"
+  },
+  "Prettier-SQL.keywordCase": "upper",
+  "Prettier-SQL.SQLFlavourOverride": "postgresql",
+  "python.analysis.autoImportCompletions": true,
+  "python.analysis.typeCheckingMode": "basic"
 }

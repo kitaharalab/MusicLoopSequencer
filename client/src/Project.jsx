@@ -8,6 +8,8 @@ import {
   CardHeader,
   IconButton,
   Text,
+  Flex,
+  Spacer,
 } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
@@ -26,10 +28,9 @@ function Project() {
     axios
       .post(url) // サーバーから音素材の配列を受け取った後，then部分を実行する．
       .then((response) => {
-        const { projectid } = response.data;
-        setProjects([...projects, projectid]);
+        const { data } = response;
+        setProjects([...projects, data]);
       });
-    console.log("OK");
   };
 
   useEffect(() => {
@@ -42,8 +43,8 @@ function Project() {
       axios
         .get(`${import.meta.env.VITE_SERVER_URL}/projects`)
         .then((response) => {
-          const resProjects = response.data.projects_list;
-          setProjects(resProjects);
+          const { data } = response;
+          setProjects(data);
           setDone(true);
         });
     }
@@ -57,25 +58,39 @@ function Project() {
 
   return (
     <Box id="project">
-      <Card bgColor="darkslategrey" align="center" width="30vw">
-        <CardBody>
-          <Box>
-            <IconButton
-              type="button"
-              onClick={() => createNewProject()}
-              icon={<AddIcon />}
-              width="25%"
-              alignSelf="center"
-            />
-          </Box>
-          <Text color="white">create new project</Text>
-        </CardBody>
-      </Card>
+      <Flex>
+        <Card bgColor="darkslategrey" align="center" width="30vw">
+          <CardBody>
+            <Box>
+              <IconButton
+                type="button"
+                onClick={() => createNewProject()}
+                icon={<AddIcon />}
+                width="25%"
+                alignSelf="center"
+              />
+            </Box>
+            <Text color="white">create new project</Text>
+          </CardBody>
+        </Card>
+        <Spacer />
+        <Card bgColor="darkslategrey" align="center" width="30vw">
+          <Link to="/experiment">
+            <CardBody>
+              <CardHeader>
+                <Text color="white">experiment</Text>
+              </CardHeader>
+            </CardBody>
+          </Link>
+        </Card>
+      </Flex>
+
       <SimpleGrid minChildWidth="30vw" spacing={4} marginTop={2}>
-        {projects.map((project, i) => (
-          <Card key={project} width="30vw">
-            <Link to={`App?projectid=${i}`}>
-              <CardHeader>{project}</CardHeader>
+        {projects?.map(({ id, name }) => (
+          <Card key={id} width="30vw">
+            {/* TODO: idに対応したプロジェクトの値 */}
+            <Link to={`App?projectid=${id}`}>
+              <CardHeader>{name}</CardHeader>
             </Link>
           </Card>
         ))}

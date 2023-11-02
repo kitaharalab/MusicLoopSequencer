@@ -15,6 +15,7 @@ import axios from "axios";
 import * as d3 from "d3";
 import React, { useEffect, useRef, useState } from "react";
 // import onMusicLoop from "./onMusicLoop";
+import { flushSync } from "react-dom";
 import { BiVolumeFull, BiSolidVolumeMute, BiRefresh } from "react-icons/bi";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -130,22 +131,26 @@ export default function LoopMaterialView({ projectId, songId }) {
   const partsRef = useRef();
   const dispatch = useDispatch();
 
+  const getMusicParts = () => {
+    if (songId === null || songId === undefined) {
+      return;
+    }
+
+    const url = `${
+      import.meta.env.VITE_SERVER_URL
+    }/projects/${projectId}/songs/${songId}`;
+    axios.get(url).then((response) => {
+      const { data } = response;
+      partsRef.current = data.parts;
+    });
+  };
+
   useEffect(() => {
     setWidth(wrapperRef?.current?.clientWidth);
-
-    const getMusicParts = () => {
-      const url = `${
-        import.meta.env.VITE_SERVER_URL
-      }/projects/${projectId}/songs/${songId}`;
-      axios.get(url).then((response) => {
-        const { data } = response;
-        partsRef.current = data.parts;
-      });
-    };
     getMusicParts();
   }, [songId]);
 
-  function handleInsertLoopMaterial(loopId) {
+  function handleInsertLoopMaterial(loopId, songId) {
     if (part === null || measure === null || partsRef === null) {
       return;
     }
@@ -153,21 +158,27 @@ export default function LoopMaterialView({ projectId, songId }) {
     const insertLoop = async () => {
       const music = await insertSound(
         projectId,
+        songId,
         part,
         measure,
         loopId,
         partsRef.current,
       );
-      dispatch(setSongId(music.songid));
+
+      flushSync(() => {
+        dispatch(setSongId(undefined));
+      });
+      dispatch(setSongId(music.songId));
+      getMusicParts();
     };
 
     insertLoop();
   }
 
-  function handlePlayAudio(id) {
+  function handlePlayAudio(id, part) {
     async function getAndPlayMusicLoop() {
       audio?.pause();
-      const loop = await onMusicLoop(part, id);
+      const loop = await onMusicLoop(projectId, songId, part, id);
       setAudio(loop);
       loop.play();
     }
@@ -181,8 +192,12 @@ export default function LoopMaterialView({ projectId, songId }) {
           <Content
             width={width}
             height={width}
-            handleInsertLoopMaterial={handleInsertLoopMaterial}
-            handlePlayAudio={handlePlayAudio}
+            handleInsertLoopMaterial={(id) => {
+              handleInsertLoopMaterial(id, songId);
+            }}
+            handlePlayAudio={(id) => {
+              handlePlayAudio(id, part);
+            }}
           />
         </Box>
       </CardBody>

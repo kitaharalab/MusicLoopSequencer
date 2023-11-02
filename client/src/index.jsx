@@ -5,10 +5,13 @@ import { Provider } from "react-redux";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { ChakraProvider, Box } from "@chakra-ui/react";
+
 import App from "./App";
-import reportWebVitals from "./reportWebVitals";
-import { store } from "./redux/store";
 import Project from "./Project";
+import ExperimentProjects from "./experiment/Projects";
+import LoopSequencer from "./experiment/project/LoopSequencer";
+import { store } from "./redux/store";
+import reportWebVitals from "./reportWebVitals";
 
 const router = createBrowserRouter([
   {
@@ -20,6 +23,18 @@ const router = createBrowserRouter([
     element: (
       <Provider store={store}>
         <App />
+      </Provider>
+    ),
+  },
+  {
+    path: "/experiment",
+    element: <ExperimentProjects />,
+  },
+  {
+    path: "/experiment/:projectId",
+    element: (
+      <Provider store={store}>
+        <LoopSequencer />
       </Provider>
     ),
   },

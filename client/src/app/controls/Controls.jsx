@@ -9,6 +9,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { flushSync } from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import createMusic from "../../createMusic";
@@ -23,12 +24,14 @@ export default function Controls({ projectId }) {
   const songId = useSelector((state) => state.songId.songId);
   const [songHistory, setSongHistory] = useState([]);
   const [_asdf, setasdf] = useState([0]);
+  // TODO: projectIdの対応関係
   const baseUrl = `${import.meta.env.VITE_SERVER_URL}/projects/${projectId}`;
   const songCreatedToast = useToast();
+  const [creating, setCreating] = useState(false);
 
   const handleSelectedSongChange = (e) => {
     setasdf(e.target.value);
-    const selectSongId = e.target.value;
+    const selectSongId = parseInt(e.target.value, 10);
     dispatch(setSongId(selectSongId));
   };
 
@@ -37,15 +40,33 @@ export default function Controls({ projectId }) {
     const songHistoryURL = `${baseUrl}/songs`;
     axios.get(songHistoryURL).then((response) => {
       // setasdf(1234);
-      const savedSongIds = response.data.songids;
-      setSongHistory(savedSongIds.map((id) => ({ name: id, id })));
+      const { data } = response;
+      setSongHistory(data.map(({ id }) => ({ name: id, id })));
     });
   }, []);
 
   useEffect(() => {
-    const historySet = new Set([...songHistory, { name: songId, id: songId }]);
-    setSongHistory([...historySet]);
+    const historySet = new Set([
+      ...songHistory.map((h) => JSON.stringify(h)),
+      JSON.stringify({ name: songId, id: songId }),
+    ]);
+    setSongHistory([...historySet].map((h) => JSON.parse(h)));
   }, [songId]);
+
+  async function handleCreateMusic() {
+    flushSync(() => setCreating(true));
+    const music = await createMusic(projectId, lines, max);
+    const { songId: newSongId } = music;
+    dispatch(setSongId(newSongId));
+    setSongHistory([...songHistory, { name: newSongId, id: newSongId }]);
+    songCreatedToast({
+      title: "created song",
+      status: "success",
+      position: "bottom-left",
+      isClosable: true,
+    });
+    setCreating(false);
+  }
 
   return (
     <FormControl>
@@ -54,20 +75,8 @@ export default function Controls({ projectId }) {
           <Flex>
             <Button
               type="button"
-              onClick={async () => {
-                const music = await createMusic(projectId, lines, max);
-                dispatch(setSongId(music.songid));
-                setSongHistory([
-                  ...songHistory,
-                  { name: music.songid, id: music.songid },
-                ]);
-                songCreatedToast({
-                  title: "created song",
-                  status: "success",
-                  position: "bottom-left",
-                  isClosable: true,
-                });
-              }}
+              isDisabled={creating}
+              onClick={async () => handleCreateMusic()}
             >
               create
             </Button>
@@ -80,7 +89,7 @@ export default function Controls({ projectId }) {
                 value={songId}
               >
                 {songHistory.map(({ name, id }) => (
-                  <option key={`${name}${id}`} value={id}>
+                  <option key={`${id}`} value={id}>
                     {name}
                   </option>
                 ))}
