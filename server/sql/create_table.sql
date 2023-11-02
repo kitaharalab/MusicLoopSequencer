@@ -4,7 +4,7 @@ DROP TABLE IF EXISTS users CASCADE;
 CREATE TABLE
     users (
         id serial PRIMARY KEY,
-        user_id TEXT NOT NULL,
+        user_id TEXT UNIQUE,
         EMAIL TEXT NOT NULL,
     );
 
