@@ -47,7 +47,7 @@ def change_loop_log(
     insert into
         operation_logs (event, project_id, song_id, part_id, measure, from_loop_id, to_loop_id, user_id)
     values
-        (%s, %s, %s, %s, %s, %s, %s. %s);
+        (%s, %s, %s, %s, %s, %s, %s, %s);
     """
 
     with get_connection() as conn:

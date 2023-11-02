@@ -13,7 +13,7 @@ from hmmlearn import hmm
 from psycopg2.extras import DictCursor
 from pydub import AudioSegment
 from readFiles import readFile, readLoopsPath, readPartCoordinates
-from sqls import add_excitement_curve, add_project
+from sqls import add_excitement_curve, add_project, add_user
 from sqls import create_song as add_song
 from sqls import (
     get_connection,
@@ -42,6 +42,18 @@ PARTS = ["Drums", "Bass", "Synth", "Sequence"]
 
 app = Flask(__name__)
 CORS(app)
+
+
+@app.route("/users", methods=["POST"])
+def create_user():
+    req_data = None if request.data == b"" else request.data.decode("utf-8")
+
+    data_json = json.loads(req_data) if req_data is not None else {}
+    user_id = data_json.get("userId", None)
+    email = data_json.get("email", None)
+    add_user(user_id, email)
+
+    return make_response({"message": "success"}, 200)
 
 
 @app.route("/parts", methods=["GET"])
@@ -147,7 +159,8 @@ def get_infomation_of_project(projectid):
 def create_song(projectid):
     data = request.get_json()  # WebページからのJSONデータを受け取る．
     curves = data["curves"]
-    user_id = data.get("userId", None)
+    user_id = data["userId"]
+    print(f"{user_id}=")
     array, songid, section_array = createMusic(curves, projectid)
 
     array = name_to_id(array)

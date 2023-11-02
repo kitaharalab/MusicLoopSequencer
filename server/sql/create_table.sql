@@ -5,8 +5,14 @@ CREATE TABLE
     users (
         id serial PRIMARY KEY,
         user_id TEXT UNIQUE,
-        EMAIL TEXT NOT NULL,
+        EMAIL TEXT NOT NULL
     );
+
+INSERT INTO
+    users (user_id, EMAIL)
+VALUES
+    ('user_test', 'example@e.com'),
+    ('experiment_user', 'example2@e.com');
 
 -- 楽器テーブル
 DROP TABLE IF EXISTS parts CASCADE;
@@ -34,18 +40,18 @@ CREATE TABLE
     );
 
 INSERT INTO
-    projects (NAME)
+    projects (NAME, user_id)
 VALUES
-    ('test'),
-    ('second');
+    ('test', 'user_test'),
+    ('second', 'user_test');
 
 -- 実験用プロジェクト
 INSERT INTO
-    projects (NAME)
+    projects (NAME, user_id)
 VALUES
-    ('ExperimentUserApplicable'),
-    ('ExperimentUserNotApplicable'),
-    ('ExperimentRandomApplicable');
+    ('ExperimentUserApplicable', 'experiment_user'),
+    ('ExperimentUserNotApplicable', 'experiment_user'),
+    ('ExperimentRandomApplicable', 'experiment_user');
 
 -- 楽曲テーブル
 -- projectが保有している楽曲
