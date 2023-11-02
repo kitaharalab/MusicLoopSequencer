@@ -6,6 +6,7 @@ import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 
 import App from "./App";
 import Project from "./Project";
+import SignIn from "./authentication/SignIn";
 import SignUp from "./authentication/SignUp";
 import Header from "./components/Header";
 import ExperimentProjects from "./experiment/Projects";
@@ -36,7 +37,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/signin",
-    element: <div>sign in</div>,
+    element: <SignIn />,
   },
   {
     path: "/signup",

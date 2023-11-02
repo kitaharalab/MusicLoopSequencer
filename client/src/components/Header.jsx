@@ -36,7 +36,7 @@ export default function Header() {
               signOut(auth);
             }}
           >
-            signout
+            Sign Out
           </Button>
         )}
       </Flex>
