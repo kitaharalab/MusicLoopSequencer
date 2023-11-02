@@ -17,7 +17,7 @@ import React, { useEffect, useState } from "react";
 
 import Link from "../components/Link/Link";
 
-import initializeFirebase from "./authentication/firebase";
+import initializeFirebase from "./components/authentication/firebase";
 
 initializeFirebase();
 
@@ -59,6 +59,8 @@ function Project() {
       ignore = true;
     };
   }, [sample]);
+
+  console.log(auth.currentUser);
 
   return (
     <Box id="project">

@@ -48,7 +48,7 @@ export default function SignIn() {
   }
 
   if (user !== null) {
-    return <Navigate to="/test" />;
+    return <Navigate to="/" />;
   }
 
   return (

@@ -22,7 +22,7 @@ import React, { useEffect, useState } from "react";
 import { flushSync } from "react-dom";
 import { Navigate } from "react-router-dom";
 
-import Link from "../../components/Link/Link";
+import Link from "../../../components/Link/Link";
 
 export default function SignUp() {
   const auth = getAuth();
@@ -52,7 +52,7 @@ export default function SignUp() {
   }
 
   if (user !== null && user !== undefined) {
-    return <Navigate to="/test" />;
+    return <Navigate to="/" />;
   }
 
   return (

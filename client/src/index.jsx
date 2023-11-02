@@ -6,9 +6,9 @@ import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 
 import App from "./App";
 import Project from "./Project";
-import SignIn from "./authentication/SignIn";
-import SignUp from "./authentication/SignUp";
 import Header from "./components/Header";
+import SignIn from "./components/authentication/SignIn";
+import SignUp from "./components/authentication/SignUp";
 import ExperimentProjects from "./experiment/Projects";
 import LoopSequencer from "./experiment/project/LoopSequencer";
 import { store } from "./redux/store";
