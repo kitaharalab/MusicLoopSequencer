@@ -49,7 +49,7 @@ function App() {
       .then((response) => {
         // setDone(true);
         const { data } = response;
-        const lastSongId = data[data.length - 1].id;
+        const lastSongId = data[data.length - 1]?.id;
         dispatch(setSongId(lastSongId));
       });
   }, []);
