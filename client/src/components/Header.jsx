@@ -1,5 +1,5 @@
-import { Box, Divider, Flex, Heading, Spacer } from "@chakra-ui/react";
-import { onAuthStateChanged, getAuth } from "firebase/auth";
+import { Box, Button, Divider, Flex, Heading, Spacer } from "@chakra-ui/react";
+import { onAuthStateChanged, getAuth, signOut } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 
 import Link from "../../components/Link/Link";
@@ -31,7 +31,13 @@ export default function Header() {
             </Link>
           </Box>
         ) : (
-          <div>signout</div>
+          <Button
+            onClick={() => {
+              signOut(auth);
+            }}
+          >
+            signout
+          </Button>
         )}
       </Flex>
       <Divider />
