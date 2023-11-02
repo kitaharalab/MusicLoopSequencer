@@ -5,7 +5,7 @@ from .log import create_song_log
 from .part import get_parts
 
 
-def create_song(song_loop_id_by_part, project_id):
+def create_song(song_loop_id_by_part, project_id, user_id):
     song_id = 0
     with get_connection() as conn:
         with conn.cursor(cursor_factory=DictCursor) as cur:
@@ -15,7 +15,7 @@ def create_song(song_loop_id_by_part, project_id):
             song_id = cur.fetchone()[0]
             conn.commit()
 
-    create_song_log(project_id, song_id)
+    create_song_log(project_id, song_id, user_id)
 
     with get_connection() as conn:
         with conn.cursor(cursor_factory=DictCursor) as cur:

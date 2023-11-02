@@ -10,21 +10,17 @@ import {
   Card,
   CardBody,
   CardHeader,
-  FormErrorMessage,
-  Text,
 } from "@chakra-ui/react";
 import {
-  createUserWithEmailAndPassword,
   onAuthStateChanged,
   getAuth,
+  signInWithEmailAndPassword,
 } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 import { flushSync } from "react-dom";
 import { Navigate } from "react-router-dom";
 
-import Link from "../../components/Link/Link";
-
-export default function SignUp() {
+export default function SignIn() {
   const auth = getAuth();
   const [user, setUser] = useState(null);
   const [creating, setCreating] = useState(false);
@@ -42,7 +38,7 @@ export default function SignUp() {
     });
     const { email, password } = event.target.elements;
     try {
-      await createUserWithEmailAndPassword(auth, email.value, password.value);
+      await signInWithEmailAndPassword(auth, email.value, password.value);
     } catch (error) {
       console.log(error);
       setUser(undefined);
@@ -51,8 +47,8 @@ export default function SignUp() {
     setCreating(false);
   }
 
-  if (user !== null && user !== undefined) {
-    return <Navigate to="/test" />;
+  if (user !== null) {
+    return <Navigate to="/" />;
   }
 
   return (
@@ -64,33 +60,29 @@ export default function SignUp() {
     >
       <Card width="100%">
         <CardHeader>
-          <Heading textAlign="center">ユーザー登録</Heading>
+          <Heading textAlign="center">ログイン</Heading>
         </CardHeader>
         <CardBody>
           <form onSubmit={handleSubmit}>
-            <FormControl isRequired isInvalid={user === undefined}>
-              <FormLabel htmlFor="signup-email">email</FormLabel>
+            <FormControl isRequired>
+              <FormLabel htmlFor="signin-email">email</FormLabel>
               <Input
-                id="signup-email"
+                id="signin-email"
                 name="email"
                 type="email"
                 autoComplete="username"
               />
-              <FormLabel htmlFor="signup-password">password</FormLabel>
+              <FormLabel htmlFor="signin-password">password</FormLabel>
               <Input
-                id="signup-password"
+                id="signin-password"
                 name="password"
                 type="password"
-                autoComplete="new-password"
+                autoComplete="current-password"
               />
-              <FormErrorMessage>
-                <Text>既に登録されているかもしれません．</Text>
-                <Link to="/signin">ログインはこちら</Link>
-              </FormErrorMessage>
             </FormControl>
             <Box marginTop={3}>
               <Button type="submit" isLoading={creating} width="100%">
-                create
+                ログイン
               </Button>
             </Box>
           </form>

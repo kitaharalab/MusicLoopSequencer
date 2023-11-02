@@ -17,7 +17,7 @@ export default function Header() {
   }, []);
 
   return (
-    <Heading>
+    <Heading marginBottom={3}>
       <Flex>
         Music Loop Sequencer
         <Spacer />

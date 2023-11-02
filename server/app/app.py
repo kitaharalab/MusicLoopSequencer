@@ -13,7 +13,7 @@ from hmmlearn import hmm
 from psycopg2.extras import DictCursor
 from pydub import AudioSegment
 from readFiles import readFile, readLoopsPath, readPartCoordinates
-from sqls import add_excitement_curve, add_project
+from sqls import add_excitement_curve, add_project, add_user
 from sqls import create_song as add_song
 from sqls import (
     get_connection,
@@ -42,6 +42,18 @@ PARTS = ["Drums", "Bass", "Synth", "Sequence"]
 
 app = Flask(__name__)
 CORS(app)
+
+
+@app.route("/users", methods=["POST"])
+def create_user():
+    req_data = None if request.data == b"" else request.data.decode("utf-8")
+
+    data_json = json.loads(req_data) if req_data is not None else {}
+    user_id = data_json.get("userId", None)
+    email = data_json.get("email", None)
+    add_user(user_id, email)
+
+    return make_response({"message": "success"}, 200)
 
 
 @app.route("/parts", methods=["GET"])
@@ -104,8 +116,9 @@ def create_project():
 
     data_json = json.loads(req_data) if req_data is not None else {}
     title = data_json.get("title", None)
+    user_id = data_json.get("userId", None)
     title = title if title is not None else "Untitled"
-    new_project_id = add_project(title)
+    new_project_id = add_project(title, user_id)
 
     return make_response(jsonify(new_project_id))
 
@@ -146,11 +159,13 @@ def get_infomation_of_project(projectid):
 def create_song(projectid):
     data = request.get_json()  # WebページからのJSONデータを受け取る．
     curves = data["curves"]
+    user_id = data["userId"]
+    print(f"{user_id}=")
     array, songid, section_array = createMusic(curves, projectid)
 
     array = name_to_id(array)
 
-    song_id = add_song(sound_array_wrap(array), projectid)
+    song_id = add_song(sound_array_wrap(array), projectid, user_id)
 
     raw_curve = data["rawCurve"]
     curve_max = data["curveMax"]
@@ -387,8 +402,10 @@ def insert_sound(projectid, songid, partid, measureid, musicloopid):
     parts = get_parts()
     # part_name2index = {"Drums": 0, "Bass": 1, "Synth": 2, "Sequence": 3}
     parts = sorted(parts, key=lambda x: x["id"])
+    data = request.get_json()
+    user_id = data.get("userId", None)
 
-    update_song_details(songid, partid, int(measureid) + 1, musicloopid)
+    update_song_details(songid, partid, int(measureid) + 1, musicloopid, user_id)
     song_details = get_song_loop_ids(song_id=songid)
 
     # 0:drums
@@ -571,9 +588,9 @@ def delete_sound(projectid, songid, partid, measureid):
     # view = View(master=root)
     songid = connect_sound(sound_array, projectid, "delete", songid)
 
-    save_music_data(
-        projectid, songid, sound_array, drums_list, bass_list, synth_list, sequence_list
-    )
+    # save_music_data(
+    #     projectid, songid, sound_array, drums_list, bass_list, synth_list, sequence_list, user_id
+    # )
 
     drums_list, bass_list, synth_list, sequence_list = format_list(sound_array)
 
@@ -632,7 +649,14 @@ def delete_music_loop(
 
 
 def save_music_data(
-    projectid, songid, sound_array, drums_list, bass_list, synth_list, sequence_list
+    projectid,
+    songid,
+    sound_array,
+    drums_list,
+    bass_list,
+    synth_list,
+    sequence_list,
+    user_id,
 ):
     for i in range(len(sound_array)):
         for j in range(len(sound_array[0])):
@@ -653,7 +677,7 @@ def save_music_data(
                     if sound_array[i][j] == sequence_list[k]:
                         sound_array[i][j] = str(k)
 
-    add_song(sound_array_wrap(sound_array), songid)
+    add_song(sound_array_wrap(sound_array), songid, user_id)
 
 
 """@app.route("/projects/<projectid>/songs/<songid>/<filename>", methods=['GET'])
@@ -680,11 +704,13 @@ def download_song(projectid, songid):
 def log_play_song(projectid, songid):
     file_name = f"./project/{projectid}/songs/{songid}/song{songid}.wav"
     exist_file = os.path.isfile(file_name)
+    data = request.get_json()
+    user_id = data.get("userId", None)
 
     if not exist_file:
         return make_response(jsonify({"message": "指定された楽曲ファイルは存在しません"})), 204
 
-    play_song_log(projectid, songid)
+    play_song_log(projectid, songid, user_id)
     return make_response(jsonify({"message": "操作がログに書き込まれました"})), 200
 
 
@@ -714,8 +740,12 @@ def download_musicloop(partid, musicloopid):
 @app.route("/parts/<int:partid>/musicloops/<musicloopid>/wav", methods=["POST"])
 def log_loop_play(partid, musicloopid):
     data = ast.literal_eval(request.get_data().decode("utf-8"))
+    # data = request.get_json()
+    # user_id = data.get("userId", None)
     print(data)
-    play_loop_log(data["projectId"], data["songId"], partid, musicloopid)
+    play_loop_log(
+        data["projectId"], data["songId"], partid, musicloopid, data["userId"]
+    )
 
     return make_response(jsonify({"message": "操作がログに書き込まれました"})), 200
 

@@ -7,6 +7,7 @@ export default function insertSound(
   measureId,
   musicLoopId,
   parts,
+  userId,
 ) {
   // TODO: partIdはindexが入ってるので，idに変換する必要がある．
   const url = new URL(
@@ -23,6 +24,7 @@ export default function insertSound(
     synthList,
     bassList,
     drumsList, // 盛り上がり度曲線のパラメーターを格納した配列をJSONデータにする
+    userId,
   };
 
   return axios

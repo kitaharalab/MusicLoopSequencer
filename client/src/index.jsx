@@ -6,9 +6,9 @@ import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 
 import App from "./App";
 import Project from "./Project";
-import SignIn from "./authentication/SignIn";
-import SignUp from "./authentication/SignUp";
 import Header from "./components/Header";
+import SignIn from "./components/authentication/SignIn";
+import SignUp from "./components/authentication/SignUp";
 import ExperimentProjects from "./experiment/Projects";
 import LoopSequencer from "./experiment/project/LoopSequencer";
 import { store } from "./redux/store";
@@ -18,20 +18,46 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: (
-      <div>
+      <>
         <Header />
-        <Project />
         <Outlet />
-      </div>
+      </>
     ),
     children: [
       {
-        path: "/test",
-        element: <div>test</div>,
+        path: "/",
+        element: <Project />,
       },
       {
-        path: "/:id",
-        element: <div>test id</div>,
+        path: "App",
+        element: (
+          <Provider store={store}>
+            <App />
+          </Provider>
+        ),
+      },
+    ],
+  },
+  {
+    path: "/experiment",
+    element: (
+      <>
+        <Header />
+        <Outlet />
+      </>
+    ),
+    children: [
+      {
+        path: "/experiment",
+        element: <ExperimentProjects />,
+      },
+      {
+        path: ":projectId",
+        element: (
+          <Provider store={store}>
+            <LoopSequencer />
+          </Provider>
+        ),
       },
     ],
   },
@@ -42,26 +68,6 @@ const router = createBrowserRouter([
   {
     path: "/signup",
     element: <SignUp />,
-  },
-  {
-    path: "App",
-    element: (
-      <Provider store={store}>
-        <App />
-      </Provider>
-    ),
-  },
-  {
-    path: "/experiment",
-    element: <ExperimentProjects />,
-  },
-  {
-    path: "/experiment/:projectId",
-    element: (
-      <Provider store={store}>
-        <LoopSequencer />
-      </Provider>
-    ),
   },
 ]);
 

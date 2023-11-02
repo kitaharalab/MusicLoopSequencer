@@ -1,5 +1,6 @@
 import { Button, ButtonGroup } from "@chakra-ui/react";
 import axios from "axios";
+import { onAuthStateChanged, getAuth } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
@@ -7,6 +8,14 @@ export default function AudioControls({ projectId }) {
   const [audio, setAudio] = useState();
   const [audioUrl, setAudioUrl] = useState();
   const songId = useSelector((state) => state.songId.songId);
+  const [user, setUser] = useState(null);
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return unsubscribe;
+  }, []);
 
   useEffect(() => {
     audio?.pause();
@@ -54,7 +63,7 @@ export default function AudioControls({ projectId }) {
           const url = `${
             import.meta.env.VITE_SERVER_URL
           }/projects/${projectId}/songs/${songId}/wav`;
-          axios.post(url);
+          axios.post(url, { userId: user.uid });
           audio?.play();
         }}
       >
