@@ -6,6 +6,7 @@ import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 
 import App from "./App";
 import Project from "./Project";
+import SignUp from "./authentication/SignUp";
 import Header from "./components/Header";
 import ExperimentProjects from "./experiment/Projects";
 import LoopSequencer from "./experiment/project/LoopSequencer";
@@ -39,7 +40,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/signup",
-    element: <div>sign up</div>,
+    element: <SignUp />,
   },
   {
     path: "App",
