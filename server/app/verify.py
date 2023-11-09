@@ -1,5 +1,6 @@
 from firebase_admin import auth
 from flask import request
+from sqls import add_user, get_user
 
 
 class AuthError(Exception):
@@ -41,6 +42,10 @@ def require_auth(f):
             return {"message": "Internal server error"}, 500
 
         uid = decoded_token.get("uid")
+        exist_user = get_user(uid) is not None
+        if not exist_user:
+            add_user(uid)
+
         return f(uid, *args, **kwargs)
 
     return wrapper
