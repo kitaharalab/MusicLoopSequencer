@@ -1,3 +1,4 @@
+from firebase_admin import auth
 from flask import request
 
 
@@ -19,3 +20,11 @@ def get_token_auth_header():
 
     token = auth_parts[1]
     return token
+
+
+def verify_token(token):
+    try:
+        decoded_token = auth.verify_id_token(token)
+        return decoded_token
+    except Exception:
+        raise AuthError("Invalid token")
