@@ -23,24 +23,21 @@ function Project() {
   const [sample, _setSample] = useState(null);
   const [projects, setProjects] = useState([]);
 
-  const createNewProject = () => {
+  async function createNewProject() {
     const url = `${import.meta.env.VITE_SERVER_URL}/projects`;
-    const idToken = auth.currentUser?.getIdToken();
-    axios
-      .post(
-        url,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${idToken}`,
-          },
+    const idToken = await auth.currentUser?.getIdToken();
+    const response = await axios.post(
+      url,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${idToken}`,
         },
-      ) // サーバーから音素材の配列を受け取った後，then部分を実行する．
-      .then((response) => {
-        const { data } = response;
-        setProjects([...projects, data]);
-      });
-  };
+      },
+    );
+    const { data } = response;
+    setProjects([...projects, data]);
+  }
 
   useEffect(() => {
     let ignore = false;
