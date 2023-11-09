@@ -1,5 +1,7 @@
 import axios from "axios";
 
+import { auth } from "../../../components/authentication/firebase";
+
 export default function onMusicLoop(
   projectId,
   songId,
@@ -20,6 +22,16 @@ export default function onMusicLoop(
       const test1 = new Audio(FILE);
       return test1;
     });
-  axios.post(url, { projectId, songId, partId, musicLoopId, userId });
+
+  const idToken = auth.currentUser?.getIdToken();
+  axios.post(
+    url,
+    { projectId, songId, partId, musicLoopId, userId },
+    {
+      headers: {
+        Authorization: `Bearer ${idToken}`,
+      },
+    },
+  );
   return data;
 }

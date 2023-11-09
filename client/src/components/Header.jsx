@@ -1,12 +1,26 @@
 import { Box, Button, Divider, Flex, Heading, Spacer } from "@chakra-ui/react";
-import { onAuthStateChanged, getAuth, signOut } from "firebase/auth";
+import {
+  onAuthStateChanged,
+  signOut,
+  signInWithPopup,
+  GoogleAuthProvider,
+} from "firebase/auth";
 import React, { useEffect, useState } from "react";
 
-import Link from "../../components/Link/Link";
+import { auth } from "./authentication/firebase";
 
 export default function Header() {
-  const auth = getAuth();
   const [user, setUser] = useState(null);
+
+  function handleClick() {
+    signInWithPopup(auth, new GoogleAuthProvider())
+      .then((result) => {
+        console.log(result);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (authUser) => {
@@ -23,12 +37,7 @@ export default function Header() {
         <Spacer />
         {user === null || user === undefined ? (
           <Box>
-            <Link to="/signin" padding={3}>
-              Sign in
-            </Link>
-            <Link to="/signup" padding={3}>
-              Sign up
-            </Link>
+            <Button onClick={handleClick}>sign in</Button>
           </Box>
         ) : (
           <Button
