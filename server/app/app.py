@@ -32,7 +32,7 @@ from sqls import (
     sound_array_wrap,
     update_song_details,
 )
-from verify import get_token_auth_header, require_auth, verify_token
+from verify import require_auth
 
 fix_len = 4
 topic_n = 4
