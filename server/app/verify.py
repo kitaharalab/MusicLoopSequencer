@@ -28,3 +28,19 @@ def verify_token(token):
         return decoded_token
     except Exception:
         raise AuthError("Invalid token")
+
+
+def require_auth(f):
+    def wrapper(*args, **kwargs):
+        try:
+            token = get_token_auth_header()
+            decoded_token = verify_token(token)
+        except AuthError as e:
+            return {"message": str(e)}, 401
+        except Exception:
+            return {"message": "Internal server error"}, 500
+
+        uid = decoded_token.get("uid")
+        return f(uid, *args, **kwargs)
+
+    return wrapper
