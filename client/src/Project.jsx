@@ -12,25 +12,21 @@ import {
   Spacer,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { getAuth } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 
 import Link from "../components/Link/Link";
 
-import initializeFirebase from "./components/authentication/firebase";
-
-initializeFirebase();
+import { auth } from "./components/authentication/firebase";
 
 function Project() {
   const [done, setDone] = useState(false);
   const [sample, _setSample] = useState(null);
   const [projects, setProjects] = useState([]);
-  const auth = getAuth();
 
   const createNewProject = () => {
     const url = `${import.meta.env.VITE_SERVER_URL}/projects`;
     axios
-      .post(url) // サーバーから音素材の配列を受け取った後，then部分を実行する．
+      .post(url, { userId: auth.currentUser?.uid }) // サーバーから音素材の配列を受け取った後，then部分を実行する．
       .then((response) => {
         const { data } = response;
         setProjects([...projects, data]);
@@ -59,8 +55,6 @@ function Project() {
       ignore = true;
     };
   }, [sample]);
-
-  console.log(auth.currentUser);
 
   return (
     <Box id="project">
