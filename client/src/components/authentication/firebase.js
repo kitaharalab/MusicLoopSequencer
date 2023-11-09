@@ -1,4 +1,3 @@
-import { getAnalytics } from "firebase/analytics";
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
@@ -12,12 +11,8 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_DEV_MEASUREMENT_ID,
 };
 
-function initializeFirebase() {
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  // eslint-disable-next-line no-unused-vars
-  const analytics = getAnalytics(app);
-  const auth = getAuth(app);
-}
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 
-export default initializeFirebase;
+export { auth, app };
