@@ -17,7 +17,6 @@ import axios from "axios";
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
-  getAuth,
 } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 import { flushSync } from "react-dom";
@@ -25,8 +24,9 @@ import { Navigate } from "react-router-dom";
 
 import Link from "../../../components/Link/Link";
 
+import { auth } from "./firebase";
+
 export default function SignUp() {
-  const auth = getAuth();
   const [user, setUser] = useState(null);
   const [creating, setCreating] = useState(false);
 
