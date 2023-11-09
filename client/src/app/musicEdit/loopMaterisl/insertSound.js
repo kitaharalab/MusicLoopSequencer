@@ -1,13 +1,14 @@
 import axios from "axios";
 
-export default function insertSound(
+import { auth } from "../../../components/authentication/firebase";
+
+export default async function insertSound(
   projectId,
   songId,
   partId,
   measureId,
   musicLoopId,
   parts,
-  userId,
 ) {
   // TODO: partIdはindexが入ってるので，idに変換する必要がある．
   const url = new URL(
@@ -24,10 +25,15 @@ export default function insertSound(
     synthList,
     bassList,
     drumsList, // 盛り上がり度曲線のパラメーターを格納した配列をJSONデータにする
-    userId,
   };
 
-  return axios
-    .post(url, data) // サーバーから音素材の配列を受け取った後，then部分を実行する．
-    .then((response) => response.data);
+  const idToken = await auth.currentUser?.getIdToken();
+  const response = await axios.post(url, data, {
+    headers: {
+      Authorization: `Bearer ${idToken}`,
+    },
+  });
+  const { data: responseData } = response;
+
+  return responseData;
 }

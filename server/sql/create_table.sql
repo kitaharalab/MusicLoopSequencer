@@ -4,15 +4,14 @@ DROP TABLE IF EXISTS users CASCADE;
 CREATE TABLE
     users (
         id serial PRIMARY KEY,
-        user_id TEXT UNIQUE,
-        EMAIL TEXT NOT NULL
+        user_id TEXT UNIQUE NOT NULL
     );
 
 INSERT INTO
-    users (user_id, EMAIL)
+    users (user_id)
 VALUES
-    ('user_test', 'example@e.com'),
-    ('experiment_user', 'example2@e.com');
+    ('user_test'),
+    ('experiment_user');
 
 -- 楽器テーブル
 DROP TABLE IF EXISTS parts CASCADE;

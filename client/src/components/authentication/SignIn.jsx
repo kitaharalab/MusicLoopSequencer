@@ -11,17 +11,14 @@ import {
   CardBody,
   CardHeader,
 } from "@chakra-ui/react";
-import {
-  onAuthStateChanged,
-  getAuth,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
+import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 import { flushSync } from "react-dom";
 import { Navigate } from "react-router-dom";
 
+import { auth } from "./firebase";
+
 export default function SignIn() {
-  const auth = getAuth();
   const [user, setUser] = useState(null);
   const [creating, setCreating] = useState(false);
 

@@ -12,30 +12,32 @@ import {
   Spacer,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { getAuth } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 
 import Link from "../components/Link/Link";
 
-import initializeFirebase from "./components/authentication/firebase";
-
-initializeFirebase();
+import { auth } from "./components/authentication/firebase";
 
 function Project() {
   const [done, setDone] = useState(false);
   const [sample, _setSample] = useState(null);
   const [projects, setProjects] = useState([]);
-  const auth = getAuth();
 
-  const createNewProject = () => {
+  async function createNewProject() {
     const url = `${import.meta.env.VITE_SERVER_URL}/projects`;
-    axios
-      .post(url) // サーバーから音素材の配列を受け取った後，then部分を実行する．
-      .then((response) => {
-        const { data } = response;
-        setProjects([...projects, data]);
-      });
-  };
+    const idToken = await auth.currentUser?.getIdToken();
+    const response = await axios.post(
+      url,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+        },
+      },
+    );
+    const { data } = response;
+    setProjects([...projects, data]);
+  }
 
   useEffect(() => {
     let ignore = false;
@@ -60,11 +62,8 @@ function Project() {
     };
   }, [sample]);
 
-  console.log(auth.currentUser);
-
   return (
     <Box id="project">
-      {JSON.stringify(auth.currentUser?.email)}
       <Flex>
         <Card bgColor="darkslategrey" align="center" width="30vw">
           <CardBody>

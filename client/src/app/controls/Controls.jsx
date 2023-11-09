@@ -13,6 +13,7 @@ import React, { useEffect, useState } from "react";
 import { flushSync } from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
 
+import { auth } from "../../components/authentication/firebase";
 import createMusic from "../../createMusic";
 import { setSongId } from "../../redux/songIdSlice";
 
@@ -29,7 +30,6 @@ export default function Controls({ projectId }) {
   const baseUrl = `${import.meta.env.VITE_SERVER_URL}/projects/${projectId}`;
   const songCreatedToast = useToast();
   const [creating, setCreating] = useState(false);
-  const [user, setUser] = useState(null);
 
   const handleSelectedSongChange = (e) => {
     setasdf(e.target.value);
@@ -45,13 +45,6 @@ export default function Controls({ projectId }) {
       const { data } = response;
       setSongHistory(data.map(({ id }) => ({ name: id, id })));
     });
-    const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-    });
-    return () => {
-      unsubscribe();
-    };
   }, []);
 
   useEffect(() => {
@@ -64,7 +57,12 @@ export default function Controls({ projectId }) {
 
   async function handleCreateMusic() {
     flushSync(() => setCreating(true));
-    const music = await createMusic(projectId, lines, max, user.uid);
+    const music = await createMusic(
+      projectId,
+      lines,
+      max,
+      auth.currentUser?.uid,
+    );
     const { songId: newSongId } = music;
     dispatch(setSongId(newSongId));
     setSongHistory([...songHistory, { name: newSongId, id: newSongId }]);
