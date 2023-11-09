@@ -5,8 +5,10 @@ import random
 import re
 from pydoc import getpager
 
+import firebase_admin
 import numpy as np
 import pandas as pd
+from firebase_admin import credentials
 from flask import Flask, jsonify, make_response, request, send_file
 from flask_cors import CORS
 from hmmlearn import hmm
@@ -30,6 +32,7 @@ from sqls import (
     sound_array_wrap,
     update_song_details,
 )
+from verify import get_token_auth_header, require_auth, verify_token
 
 fix_len = 4
 topic_n = 4
@@ -39,7 +42,8 @@ selected_fix_determine = 0
 
 PARTS = ["Drums", "Bass", "Synth", "Sequence"]
 
-
+cred = credentials.Certificate(os.getenv("GOOGLE_APPLICATION_CREDENTIALS"))
+firebase_app = firebase_admin.initialize_app(cred)
 app = Flask(__name__)
 CORS(app)
 
@@ -111,14 +115,14 @@ def get_infomation_sound(partid, soundid):
 
 
 @app.route("/projects", methods=["POST"])
-def create_project():
+@require_auth
+def create_project(uid):
     req_data = None if request.data == b"" else request.data.decode("utf-8")
 
     data_json = json.loads(req_data) if req_data is not None else {}
     title = data_json.get("title", None)
-    user_id = data_json.get("userId", None)
     title = title if title is not None else "Untitled"
-    new_project_id = add_project(title, user_id)
+    new_project_id = add_project(title, uid)
 
     return make_response(jsonify(new_project_id))
 
