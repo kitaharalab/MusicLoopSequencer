@@ -25,8 +25,17 @@ function Project() {
 
   const createNewProject = () => {
     const url = `${import.meta.env.VITE_SERVER_URL}/projects`;
+    const idToken = auth.currentUser?.getIdToken();
     axios
-      .post(url, { userId: auth.currentUser?.uid }) // サーバーから音素材の配列を受け取った後，then部分を実行する．
+      .post(
+        url,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        },
+      ) // サーバーから音素材の配列を受け取った後，then部分を実行する．
       .then((response) => {
         const { data } = response;
         setProjects([...projects, data]);

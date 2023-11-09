@@ -56,7 +56,12 @@ export default function AudioControls({ projectId }) {
           const url = `${
             import.meta.env.VITE_SERVER_URL
           }/projects/${projectId}/songs/${songId}/wav`;
-          axios.post(url, { userId: auth.currentUser?.uid });
+          const idToken = auth.currentUser?.getIdToken();
+          axios.post(
+            url,
+            {},
+            { headers: { Authorization: `Bearer ${idToken}` } },
+          );
           audio?.play();
         }}
       >
