@@ -42,8 +42,7 @@ selected_fix_determine = 0
 
 PARTS = ["Drums", "Bass", "Synth", "Sequence"]
 
-cred = credentials.Certificate(os.getenv("GOOGLE_APPLICATION_CREDENTIALS"))
-firebase_app = firebase_admin.initialize_app(cred)
+firebase_app = firebase_admin.initialize_app()
 app = Flask(__name__)
 CORS(app)
 
