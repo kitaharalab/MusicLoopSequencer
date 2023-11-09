@@ -1,3 +1,5 @@
+from functools import wraps
+
 from firebase_admin import auth
 from flask import request
 from sqls import add_user, get_user
@@ -32,6 +34,7 @@ def verify_token(token):
 
 
 def require_auth(f):
+    @wraps(f)
     def wrapper(*args, **kwargs):
         try:
             token = get_token_auth_header()
