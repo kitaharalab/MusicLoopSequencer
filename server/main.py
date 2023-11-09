@@ -18,7 +18,7 @@ fix_len = 4
 topic_n = 4
 excitement_len = 32
 selected_constitution_determine = 1
-selected_fix_determine = 0
+selected_fix_determine = 1
 app = Flask(__name__)
 CORS(app)
 @app.route("/parts", methods=['GET'])
@@ -193,10 +193,13 @@ def get_infomation_of_project(projectid):
 def create_song(projectid):
     data = request.get_json()      #WebページからのJSONデータを受け取る．
     curves = data['curves']
+    req = request.args
+    fix = req.get("fix")
+    structure = req.get("structure")
     #root = tk.Tk()                 
     #view = View(master=root)       #他のpyファイルのクラスを読み込む．
     #array, songid = view.createMusic(curves, projectid)
-    array, songid, section_array = createMusic(curves, projectid)
+    array, songid, section_array = createMusic(curves, projectid, fix, structure)
     drums_list, bass_list, synth_list, sequence_list, array = name_to_id(projectid,songid,array)
 
     drums_list, bass_list, synth_list, sequence_list = format_list(array)
@@ -461,13 +464,14 @@ def get_infomation_of_inserted_sound(projectid,songid,partid, measureid):
     return make_response(jsonify(response))
 @app.route("/projects/<projectid>/songs/<songid>/parts/<partid>/measures/<measureid>/musicloops/<musicloopid>", methods=['POST'])
 def insert_sound(projectid, songid, partid, measureid, musicloopid):
-    #data = request.get_json()      #WebページからのJSONデータを受け取る．
-    #sound_array = get_music_data(data)
+    req = request.args
+    fix = req.get("fix")
+    adapt = req.get("adapt")
     sound_array = load_music_data("./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt")
     
     drums_list, bass_list, synth_list, sequence_list = get_sound_data()
     
-    sound_array = rewrite_music_data(measureid, partid, musicloopid, sound_array, drums_list, bass_list, synth_list, sequence_list)
+    sound_array = rewrite_music_data(measureid, partid, musicloopid, sound_array, drums_list, bass_list, synth_list, sequence_list, fix, adapt)
     #root = tk.Tk()                 
     #view = View(master=root)
     songid = connect_sound(sound_array, projectid, "insert", songid)
@@ -529,15 +533,12 @@ def get_sound_data():
     
     return drums_list, bass_list, synth_list, sequence_list
 
-def rewrite_music_data(measureid, partid, musicloopid, sound_array, drums_list, bass_list, synth_list, sequence_list):
-    if int(partid) == 0:
-        sound_array[int(measureid)][3-int(partid)] = int(musicloopid)
-    elif int(partid) == 1:
-        sound_array[int(measureid)][3-int(partid)] = int(musicloopid)
-    elif int(partid) == 2:
+def rewrite_music_data(measureid, partid, musicloopid, sound_array, drums_list, bass_list, synth_list, sequence_list, fix, adapt):
+    if fix == 0:
         sound_array[int(measureid)][3-int(partid)] = int(musicloopid)
     else:
-        sound_array[int(measureid)][3-int(partid)] = int(musicloopid)
+        for i in range(4):
+            sound_array[int(int(measureid)/4) *4+ i][3-int(partid)] = int(musicloopid)
         
     for i in range(len(sound_array)):
         for j in range(len(sound_array[0])):
@@ -565,7 +566,8 @@ def rewrite_music_data(measureid, partid, musicloopid, sound_array, drums_list, 
                         sound_array[i][j] = sequence_list[k]
                     elif sound_array[i][j] == None:
                         sound_array[i][j] = 'null'
-    update_topic_ratio(sound_array, measureid, partid)
+    if adapt == 1:
+        update_topic_ratio(sound_array, measureid, partid)
     return sound_array
 
 def save_music_data(projectid, songid, sound_array, drums_list, bass_list, synth_list, sequence_list):
@@ -635,13 +637,13 @@ def read_file(path):
 
 @app.route("/projects/<projectid>/songs/<songid>/parts/<partid>/measures/<measureid>", methods=['DELETE'])
 def delete_sound(projectid, songid, partid, measureid):
-    #data = request.get_json()      #WebページからのJSONデータを受け取る．
-    #sound_array = get_music_data(data)
+    req = request.args
+    fix = req.get("fix")
     sound_array = load_music_data("./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt")
     
     drums_list, bass_list, synth_list, sequence_list = get_sound_data()
     
-    sound_array = delete_music_loop(measureid, partid, sound_array, drums_list, bass_list, synth_list, sequence_list)
+    sound_array = delete_music_loop(measureid, partid, sound_array, drums_list, bass_list, synth_list, sequence_list, fix)
     #root = tk.Tk()                 
     #view = View(master=root)
     songid = connect_sound(sound_array, projectid, "delete", songid)
@@ -671,15 +673,12 @@ def delete_sound(projectid, songid, partid, measureid):
                          }
     return make_response(jsonify(response))
 
-def delete_music_loop(measureid, partid, sound_array, drums_list, bass_list, synth_list, sequence_list):
-    if int(partid) == 0:
-        sound_array[int(measureid)][3-int(partid)] = None
-    elif int(partid) == 1:
-        sound_array[int(measureid)][3-int(partid)] = None
-    elif int(partid) == 2:
+def delete_music_loop(measureid, partid, sound_array, drums_list, bass_list, synth_list, sequence_list, fix):
+    if fix == 0:
         sound_array[int(measureid)][3-int(partid)] = None
     else:
-        sound_array[int(measureid)][3-int(partid)] = None
+        for i in range(4):
+            sound_array[int(int(measureid)/4) *4+ i][3-int(partid)] = None
         
     for i in range(len(sound_array)):
         for j in range(len(sound_array[0])):
@@ -803,7 +802,7 @@ def load_topic_preference():
 
     return ratio_topic
     
-def createMusic(array, projectid):
+def createMusic(array, projectid, fix, structure):
     """楽曲の生成"""
     #盛り上がり度を求める
     #self.excitement_array = self.model.chengeExcitement(array)
@@ -811,12 +810,12 @@ def createMusic(array, projectid):
     no_part_hmm_model, intro_hmm_model, breakdown_hmm_model, buildup_hmm_model, drop_hmm_model, outro_hmm_model = initialize_Hmm()
     hmm_array = ""
     section_array = ""
-    if selected_constitution_determine == 0:
+    if structure == 0:
         hmm_array = use_HMM(array, no_part_hmm_model)
     else:
         hmm_array, section_array = use_Auto_HMM(array, intro_hmm_model, breakdown_hmm_model, buildup_hmm_model, drop_hmm_model, outro_hmm_model)
-    if selected_fix_determine == 1:
-        if selected_constitution_determine == 0:
+    if fix == 1:
+        if structure == 0:
             hmm_array,array = fix_Hmm(hmm_array,array)
         else:
             section_array = dtw(array)
