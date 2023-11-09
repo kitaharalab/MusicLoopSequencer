@@ -52,11 +52,11 @@ export default function AudioControls({ projectId }) {
     <ButtonGroup>
       <Button
         type="button"
-        onClick={() => {
+        onClick={async () => {
           const url = `${
             import.meta.env.VITE_SERVER_URL
           }/projects/${projectId}/songs/${songId}/wav`;
-          const idToken = auth.currentUser?.getIdToken();
+          const idToken = await auth.currentUser?.getIdToken();
           axios.post(
             url,
             {},

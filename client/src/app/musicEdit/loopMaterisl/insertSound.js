@@ -2,7 +2,7 @@ import axios from "axios";
 
 import { auth } from "../../../components/authentication/firebase";
 
-export default function insertSound(
+export default async function insertSound(
   projectId,
   songId,
   partId,
@@ -27,13 +27,13 @@ export default function insertSound(
     drumsList, // 盛り上がり度曲線のパラメーターを格納した配列をJSONデータにする
   };
 
-  const idToken = auth.currentUser?.getIdToken();
+  const idToken = await auth.currentUser?.getIdToken();
+  const response = await axios.post(url, data, {
+    headers: {
+      Authorization: `Bearer ${idToken}`,
+    },
+  });
+  const { data: responseData } = response;
 
-  return axios
-    .post(url, data, {
-      headers: {
-        Authorization: `Bearer ${idToken}`,
-      },
-    }) // サーバーから音素材の配列を受け取った後，then部分を実行する．
-    .then((response) => response.data);
+  return responseData;
 }

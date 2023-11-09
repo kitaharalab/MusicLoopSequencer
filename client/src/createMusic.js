@@ -2,7 +2,7 @@ import axios from "axios";
 
 import { auth } from "./components/authentication/firebase";
 
-export default function createMusic(projectid, linesY, max) {
+export default async function createMusic(projectid, linesY, max) {
   const excitementArray = new Array(32);
   const range = Math.floor(linesY.length / excitementArray.length);
   const excitementStep = 5;
@@ -22,13 +22,13 @@ export default function createMusic(projectid, linesY, max) {
     rawCurve: linesY,
     curveMax: max,
   };
-  const idToken = auth.currentUser?.getIdToken();
+  const idToken = await auth.currentUser?.getIdToken();
+  const response = await axios.post(url, data, {
+    headers: {
+      Authorization: `Bearer ${idToken}`,
+    },
+  });
+  const { data: responseData } = response;
 
-  return axios
-    .post(url, data, {
-      headers: {
-        Authorization: `Bearer ${idToken}`,
-      },
-    }) // サーバーから音素材の配列を受け取った後，then部分を実行する．
-    .then((response) => response.data);
+  return responseData;
 }
