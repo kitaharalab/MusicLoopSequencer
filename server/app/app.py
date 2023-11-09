@@ -160,16 +160,15 @@ def get_infomation_of_project(projectid):
 
 
 @app.route("/projects/<int:projectid>/songs", methods=["POST"])
-def create_song(projectid):
+@require_auth
+def create_song(uid, projectid):
     data = request.get_json()  # WebページからのJSONデータを受け取る．
     curves = data["curves"]
-    user_id = data["userId"]
-    print(f"{user_id}=")
     array, songid, section_array = createMusic(curves, projectid)
 
     array = name_to_id(array)
 
-    song_id = add_song(sound_array_wrap(array), projectid, user_id)
+    song_id = add_song(sound_array_wrap(array), projectid, uid)
 
     raw_curve = data["rawCurve"]
     curve_max = data["curveMax"]
@@ -402,14 +401,15 @@ def get_infomation_of_inserted_sound(projectid, songid, partid, measureid):
     "/projects/<int:projectid>/songs/<int:songid>/parts/<int:partid>/measures/<int:measureid>/musicloops/<int:musicloopid>",
     methods=["POST"],
 )
-def insert_sound(projectid, songid, partid, measureid, musicloopid):
+@require_auth
+def insert_sound(uid, projectid, songid, partid, measureid, musicloopid):
     parts = get_parts()
     # part_name2index = {"Drums": 0, "Bass": 1, "Synth": 2, "Sequence": 3}
     parts = sorted(parts, key=lambda x: x["id"])
-    data = request.get_json()
-    user_id = data.get("userId", None)
+    # data = request.get_json()
+    # user_id = data.get("userId", None)
 
-    update_song_details(songid, partid, int(measureid) + 1, musicloopid, user_id)
+    update_song_details(songid, partid, int(measureid) + 1, musicloopid, uid)
     song_details = get_song_loop_ids(song_id=songid)
 
     # 0:drums
@@ -576,7 +576,8 @@ def update_topic_ratio(sound_array, measureid, partid):
     "/projects/<projectid>/songs/<songid>/parts/<partid>/measures/<measureid>",
     methods=["DELETE"],
 )
-def delete_sound(projectid, songid, partid, measureid):
+@require_auth
+def delete_sound(uid, projectid, songid, partid, measureid):
     # data = request.get_json()      #WebページからのJSONデータを受け取る．
     # sound_array = get_music_data(data)
     sound_array = load_music_data(
@@ -705,16 +706,17 @@ def download_song(projectid, songid):
 
 
 @app.route("/projects/<projectid>/songs/<songid>/wav", methods=["POST"])
-def log_play_song(projectid, songid):
+@require_auth
+def log_play_song(uid, projectid, songid):
     file_name = f"./project/{projectid}/songs/{songid}/song{songid}.wav"
     exist_file = os.path.isfile(file_name)
-    data = request.get_json()
-    user_id = data.get("userId", None)
+    # data = request.get_json()
+    # user_id = data.get("userId", None)
 
     if not exist_file:
         return make_response(jsonify({"message": "指定された楽曲ファイルは存在しません"})), 204
 
-    play_song_log(projectid, songid, user_id)
+    play_song_log(projectid, songid, uid)
     return make_response(jsonify({"message": "操作がログに書き込まれました"})), 200
 
 
@@ -742,14 +744,13 @@ def download_musicloop(partid, musicloopid):
 
 
 @app.route("/parts/<int:partid>/musicloops/<musicloopid>/wav", methods=["POST"])
-def log_loop_play(partid, musicloopid):
+@require_auth
+def log_loop_play(uid, partid, musicloopid):
     data = ast.literal_eval(request.get_data().decode("utf-8"))
     # data = request.get_json()
     # user_id = data.get("userId", None)
     print(data)
-    play_loop_log(
-        data["projectId"], data["songId"], partid, musicloopid, data["userId"]
-    )
+    play_loop_log(data["projectId"], data["songId"], partid, musicloopid, uid)
 
     return make_response(jsonify({"message": "操作がログに書き込まれました"})), 200
 
