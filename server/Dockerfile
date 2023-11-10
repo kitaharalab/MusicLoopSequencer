@@ -9,4 +9,6 @@ COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 EXPOSE 8080
 COPY app .
-CMD ["flask", "run"]
+COPY startup.sh startup.sh
+RUN chmod +x startup.sh
+CMD ["./startup.sh"]

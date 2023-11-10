@@ -42,7 +42,10 @@ selected_fix_determine = 0
 
 PARTS = ["Drums", "Bass", "Synth", "Sequence"]
 
-firebase_app = firebase_admin.initialize_app()
+
+cred = credentials.Certificate("./credentials.json")
+firebase_app = firebase_admin.initialize_app(cred)
+
 app = Flask(__name__)
 CORS(app)
 
