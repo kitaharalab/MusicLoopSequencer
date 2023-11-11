@@ -1,1 +1,1 @@
-pg_dump -U music_loop_sequencer -h 35.187.197.185 music_loop_sequencer > dump.sql
+pg_dump -t loops -t loops_id_seq -t parts -t parts_id_seq > dump.sql
