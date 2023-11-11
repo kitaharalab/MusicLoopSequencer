@@ -1,1 +1,1 @@
-pg_dump -t loops -t loops_id_seq -t parts -t parts_id_seq > dump.sql
+pg_dump -t parts -t loops > dump.sql
