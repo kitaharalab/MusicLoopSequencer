@@ -19,6 +19,7 @@ from sqls import create_song as add_song
 from sqls import (
     get_connection,
     get_excitement_curve,
+    get_loop_positions_by_part,
     get_part_name,
     get_parts,
     get_project,
@@ -56,23 +57,7 @@ def get_infomation_of_parts():
 
 @app.route("/parts/<int:partid>/sounds", methods=["GET"])
 def get_infomation_of_sounds(partid):
-    partid = int(partid)
-    parts = get_parts()
-    partName = list(filter(lambda x: x["id"] == partid, parts))[0]["name"]
-
-    # sounds = readLoopsPath(partName)
-    # soundIds = []
-    # for i in range(len(sounds)):
-    #     soundIds.append(i)
-
-    x_coordinate, y_coordinate, range_lists = readPartCoordinates(partName)
-
-    response = {
-        # "sound-ids": soundIds,
-        "x_coordinate": x_coordinate,
-        "y_coordinate": y_coordinate,
-        "range_lists": range_lists,
-    }
+    response = get_loop_positions_by_part(partid)
     return make_response(jsonify(response))
 
 
