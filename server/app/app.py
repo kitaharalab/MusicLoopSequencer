@@ -1,4 +1,3 @@
-import ast
 import json
 import os
 import random
@@ -19,6 +18,7 @@ from sqls import create_song as add_song
 from sqls import (
     get_connection,
     get_excitement_curve,
+    get_loop_music_by_id,
     get_loop_positions_by_part,
     get_part_name,
     get_parts,
@@ -695,25 +695,11 @@ def log_play_song(uid, projectid, songid):
 
 @app.route("/parts/<int:partid>/musicloops/<musicloopid>/wav", methods=["GET"])
 def download_musicloop(partid, musicloopid):
-    part_name = get_part_name(partid)
-    musicLoop_list = readLoopsPath(part_name)
+    data = get_loop_music_by_id(musicloopid)
+    response = make_response(data)
+    response.headers.set("Content-Type", request.content_type)
 
-    musicLoopName = "null"
-    for i in range(len(musicLoop_list)):
-        if i == int(musicloopid):
-            musicLoopName = musicLoop_list[i]
-    split_name = re.split("/|\.", musicLoopName)
-
-    return send_file(
-        "./TechnoTrance/"
-        + split_name[3]
-        + "/"
-        + split_name[4]
-        + "/"
-        + split_name[5]
-        + ".wav",
-        as_attachment=True,
-    )
+    return response
 
 
 @app.route("/parts/<int:partid>/musicloops/<musicloopid>/wav", methods=["POST"])
