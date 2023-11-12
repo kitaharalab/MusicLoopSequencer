@@ -17,3 +17,19 @@ def get_loop_positions_by_part(part_id: int):
             response = [dict(row) for row in result]
 
     return response
+
+
+def get_loop_music_by_id(loop_id: int):
+    sql = """
+    SELECT data
+    FROM loops
+    where id=%s
+    """
+    response = None
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute(sql, (loop_id,))
+            result = cur.fetchone()
+            response = dict(result)["data"].tobytes() if result is not None else None
+
+    return response
