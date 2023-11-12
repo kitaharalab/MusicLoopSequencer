@@ -136,17 +136,6 @@ INSERT INTO
 VALUES
     (1, 10, 100);
 
--- 音素材パステーブル
-DROP TABLE IF EXISTS loop_paths CASCADE;
-
-CREATE TABLE
-    loop_paths (
-        id serial PRIMARY KEY,
-        PATH TEXT NOT NULL,
-        part_id INTEGER NOT NULL,
-        FOREIGN KEY (part_id) REFERENCES parts (id)
-    );
-
 -- 操作ログテーブル
 DROP TABLE IF EXISTS operation_logs CASCADE;
 
@@ -170,7 +159,7 @@ CREATE TABLE
         FOREIGN KEY (project_id) REFERENCES projects (id),
         FOREIGN KEY (song_id) REFERENCES songs (id),
         FOREIGN KEY (part_id) REFERENCES parts (id),
-        FOREIGN KEY (loop_id) REFERENCES loop_paths (id),
-        FOREIGN KEY (from_loop_id) REFERENCES loop_paths (id),
-        FOREIGN KEY (to_loop_id) REFERENCES loop_paths (id)
+        FOREIGN KEY (loop_id) REFERENCES loops (id),
+        FOREIGN KEY (from_loop_id) REFERENCES loops (id),
+        FOREIGN KEY (to_loop_id) REFERENCES loops (id)
     );
