@@ -719,10 +719,7 @@ def download_musicloop(partid, musicloopid):
 @app.route("/parts/<int:partid>/musicloops/<musicloopid>/wav", methods=["POST"])
 @require_auth
 def log_loop_play(uid, partid, musicloopid):
-    data = ast.literal_eval(request.get_data().decode("utf-8"))
-    # data = request.get_json()
-    # user_id = data.get("userId", None)
-    print(data)
+    data = request.get_json()
     play_loop_log(data["projectId"], data["songId"], partid, musicloopid, uid)
 
     return make_response(jsonify({"message": "操作がログに書き込まれました"})), 200
