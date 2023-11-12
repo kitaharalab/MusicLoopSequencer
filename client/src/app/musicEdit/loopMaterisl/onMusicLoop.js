@@ -22,7 +22,7 @@ export default async function onMusicLoop(
   const idToken = await auth.currentUser?.getIdToken();
   axios.post(
     url,
-    { projectId, songId, partId, musicLoopId },
+    { projectId, songId },
     {
       headers: {
         Authorization: `Bearer ${idToken}`,
