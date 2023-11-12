@@ -50,18 +50,6 @@ app = Flask(__name__)
 CORS(app)
 
 
-@app.route("/users", methods=["POST"])
-def create_user():
-    req_data = None if request.data == b"" else request.data.decode("utf-8")
-
-    data_json = json.loads(req_data) if req_data is not None else {}
-    user_id = data_json.get("userId", None)
-    email = data_json.get("email", None)
-    add_user(user_id, email)
-
-    return make_response({"message": "success"}, 200)
-
-
 @app.route("/parts", methods=["GET"])
 def get_infomation_of_parts():
     parts = get_parts()
