@@ -7,7 +7,6 @@ export default async function onMusicLoop(
   songId,
   partId,
   musicLoopId,
-  userId,
 ) {
   const url = `${import.meta.env.VITE_SERVER_URL}/parts/${String(
     partId,
@@ -23,7 +22,7 @@ export default async function onMusicLoop(
   const idToken = await auth.currentUser?.getIdToken();
   axios.post(
     url,
-    { projectId, songId, partId, musicLoopId, userId },
+    { projectId, songId, partId, musicLoopId },
     {
       headers: {
         Authorization: `Bearer ${idToken}`,
