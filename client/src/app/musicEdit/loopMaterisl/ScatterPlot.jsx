@@ -45,7 +45,7 @@ export default function ScatterPlot({
             strokeWidth={1}
             fill={fillColor}
             fillOpacity={selectId === undefined || selectId === id ? 1 : 0.5}
-            onClick={(e) => {
+            onClick={() => {
               const reSelect = selectId === id;
               setSelectId(reSelect ? undefined : id);
               if (!reSelect) {
