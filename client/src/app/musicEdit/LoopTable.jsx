@@ -12,7 +12,7 @@ import * as d3 from "d3";
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
-import { setMusicData } from "../../redux/musicDataSlice";
+import { setLoopPositions } from "../../redux/musicDataSlice";
 import { setSelectedLoop } from "../../redux/soundsSlice";
 
 import selectBlock from "./selectBlock";
@@ -32,9 +32,7 @@ export default function LoopTable({ projectId, measure }) {
   useEffect(() => {
     if (songId === null || songId === undefined) {
       return () => {
-        dispatch(
-          setMusicData({ xCoordinate: [], yCoordinate: [], rangeList: [] }),
-        );
+        dispatch(setLoopPositions([]));
       };
     }
 
@@ -49,9 +47,7 @@ export default function LoopTable({ projectId, measure }) {
       });
 
     return () => {
-      dispatch(
-        setMusicData({ xCoordinate: [], yCoordinate: [], rangeList: [] }),
-      );
+      dispatch(setLoopPositions([]));
     };
   }, [songId]);
 
@@ -75,11 +71,10 @@ export default function LoopTable({ projectId, measure }) {
   async function handleOnClickMeasurePart(event) {
     const { dataset } = event.target;
     const part = JSON.parse(dataset.part);
-    const measure = JSON.parse(dataset.measure) - 1;
-    const exist = JSON.parse(dataset.exist);
+    const measureId = JSON.parse(dataset.measure) - 1;
 
     const newSelectMeasurePart = {
-      measure,
+      measure: measureId,
       part,
     };
     const selectSame =
@@ -102,10 +97,7 @@ export default function LoopTable({ projectId, measure }) {
     }
 
     const musicData = await selectBlock(part);
-    const xCoordinate = musicData.x_coordinate;
-    const yCoordinate = musicData.y_coordinate;
-    const rangeList = musicData.range_lists;
-    dispatch(setMusicData({ xCoordinate, yCoordinate, rangeList }));
+    dispatch(setLoopPositions(musicData));
   }
 
   return (

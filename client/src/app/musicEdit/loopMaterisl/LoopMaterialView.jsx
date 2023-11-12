@@ -189,7 +189,7 @@ export default function LoopMaterialView({ projectId, songId }) {
   function handlePlayAudio(id, part) {
     async function getAndPlayMusicLoop() {
       audio?.pause();
-      const loop = await onMusicLoop(projectId, songId, part, id, user.uid);
+      const loop = await onMusicLoop(projectId, songId, part, id);
       setAudio(loop);
       loop.play();
     }

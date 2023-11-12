@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS
         excitement INTEGER NOT NULL,
         DATA bytea NOT NULL,
         x DOUBLE PRECISION,
-        y DOUBLE PRECISION FOREIGN KEY (part_id) REFERENCES parts (id)
+        y DOUBLE PRECISION,
+        FOREIGN KEY (part_id) REFERENCES parts (id)
     );
 
 -- ALTER TABLE loops

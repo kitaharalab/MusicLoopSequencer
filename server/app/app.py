@@ -1,9 +1,7 @@
-import ast
 import json
 import os
 import random
 import re
-from pydoc import getpager
 
 import firebase_admin
 import numpy as np
@@ -14,18 +12,19 @@ from flask_cors import CORS
 from hmmlearn import hmm
 from psycopg2.extras import DictCursor
 from pydub import AudioSegment
-from readFiles import readFile, readLoopsPath, readPartCoordinates
-from sqls import add_excitement_curve, add_project, add_user
+from readFiles import readLoopsPath, readPartCoordinates
+from sqls import add_excitement_curve, add_project
 from sqls import create_song as add_song
 from sqls import (
     get_connection,
     get_excitement_curve,
+    get_loop_music_by_id,
+    get_loop_positions_by_part,
     get_part_name,
     get_parts,
     get_project,
     get_project_song_ids,
     get_projects,
-    get_song_details,
     get_song_loop_ids,
     play_loop_log,
     play_song_log,
@@ -50,18 +49,6 @@ app = Flask(__name__)
 CORS(app)
 
 
-@app.route("/users", methods=["POST"])
-def create_user():
-    req_data = None if request.data == b"" else request.data.decode("utf-8")
-
-    data_json = json.loads(req_data) if req_data is not None else {}
-    user_id = data_json.get("userId", None)
-    email = data_json.get("email", None)
-    add_user(user_id, email)
-
-    return make_response({"message": "success"}, 200)
-
-
 @app.route("/parts", methods=["GET"])
 def get_infomation_of_parts():
     parts = get_parts()
@@ -70,23 +57,7 @@ def get_infomation_of_parts():
 
 @app.route("/parts/<int:partid>/sounds", methods=["GET"])
 def get_infomation_of_sounds(partid):
-    partid = int(partid)
-    parts = get_parts()
-    partName = list(filter(lambda x: x["id"] == partid, parts))[0]["name"]
-
-    # sounds = readLoopsPath(partName)
-    # soundIds = []
-    # for i in range(len(sounds)):
-    #     soundIds.append(i)
-
-    x_coordinate, y_coordinate, range_lists = readPartCoordinates(partName)
-
-    response = {
-        # "sound-ids": soundIds,
-        "x_coordinate": x_coordinate,
-        "y_coordinate": y_coordinate,
-        "range_lists": range_lists,
-    }
+    response = get_loop_positions_by_part(partid)
     return make_response(jsonify(response))
 
 
@@ -724,34 +695,17 @@ def log_play_song(uid, projectid, songid):
 
 @app.route("/parts/<int:partid>/musicloops/<musicloopid>/wav", methods=["GET"])
 def download_musicloop(partid, musicloopid):
-    part_name = get_part_name(partid)
-    musicLoop_list = readLoopsPath(part_name)
+    data = get_loop_music_by_id(musicloopid)
+    response = make_response(data)
+    response.headers.set("Content-Type", request.content_type)
 
-    musicLoopName = "null"
-    for i in range(len(musicLoop_list)):
-        if i == int(musicloopid):
-            musicLoopName = musicLoop_list[i]
-    split_name = re.split("/|\.", musicLoopName)
-
-    return send_file(
-        "./TechnoTrance/"
-        + split_name[3]
-        + "/"
-        + split_name[4]
-        + "/"
-        + split_name[5]
-        + ".wav",
-        as_attachment=True,
-    )
+    return response
 
 
 @app.route("/parts/<int:partid>/musicloops/<musicloopid>/wav", methods=["POST"])
 @require_auth
 def log_loop_play(uid, partid, musicloopid):
-    data = ast.literal_eval(request.get_data().decode("utf-8"))
-    # data = request.get_json()
-    # user_id = data.get("userId", None)
-    print(data)
+    data = request.get_json()
     play_loop_log(data["projectId"], data["songId"], partid, musicloopid, uid)
 
     return make_response(jsonify({"message": "操作がログに書き込まれました"})), 200

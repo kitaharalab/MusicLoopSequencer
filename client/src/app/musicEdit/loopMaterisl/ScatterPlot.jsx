@@ -8,46 +8,44 @@ export default function ScatterPlot({
   handleInsertLoopMaterial,
   handleOnClick,
 }) {
-  const xCoordinate = useSelector((state) => state.musicData.xCoordinate);
-  const yCoordinate = useSelector((state) => state.musicData.yCoordinate);
-  const rangeList = useSelector((state) => state.musicData.rangeList);
   const [selectId, setSelectId] = useState();
-
-  if (!xCoordinate || !yCoordinate || !rangeList || !width || !height) {
+  const loopPositions = useSelector((state) => state.musicData.loopPositions);
+  if (
+    loopPositions.length === 0 ||
+    loopPositions === undefined ||
+    loopPositions === null ||
+    !width ||
+    !height
+  ) {
     return <g />;
   }
 
-  const loopMaterials = xCoordinate.map((x, i) => ({
-    x,
-    y: yCoordinate[i],
-    id: i,
-  }));
   const xScale = d3
     .scaleLinear()
-    .domain(d3.extent(loopMaterials, ({ x }) => x))
+    .domain(d3.extent(loopPositions, ({ x }) => x))
     .range([0, width])
     .nice();
   const yScale = d3
     .scaleLinear()
-    .domain(d3.extent(loopMaterials, ({ y }) => y))
+    .domain(d3.extent(loopPositions, ({ y }) => y))
     .range([height, 0])
     .nice();
   const colorScale = d3.scaleOrdinal(d3.schemeDark2);
 
   return (
     <g>
-      {loopMaterials.map(({ x, y, id }, i) => {
-        const fillColor = colorScale(
-          rangeList.findLastIndex((range) => i > range),
-        );
+      {loopPositions.map(({ x, y, id, excitement }) => {
+        const fillColor = colorScale(excitement);
         return (
           <circle
             key={id}
             transform={`translate(${xScale(x)} ${yScale(y)})`}
             r={selectId === id ? 4 : 3}
+            stroke="white"
+            strokeWidth={1}
             fill={fillColor}
             fillOpacity={selectId === undefined || selectId === id ? 1 : 0.5}
-            onClick={(e) => {
+            onClick={() => {
               const reSelect = selectId === id;
               setSelectId(reSelect ? undefined : id);
               if (!reSelect) {
