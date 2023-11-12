@@ -3,7 +3,6 @@ import json
 import os
 import random
 import re
-from pydoc import getpager
 
 import firebase_admin
 import numpy as np
@@ -14,8 +13,8 @@ from flask_cors import CORS
 from hmmlearn import hmm
 from psycopg2.extras import DictCursor
 from pydub import AudioSegment
-from readFiles import readFile, readLoopsPath, readPartCoordinates
-from sqls import add_excitement_curve, add_project, add_user
+from readFiles import readLoopsPath, readPartCoordinates
+from sqls import add_excitement_curve, add_project
 from sqls import create_song as add_song
 from sqls import (
     get_connection,
@@ -25,7 +24,6 @@ from sqls import (
     get_project,
     get_project_song_ids,
     get_projects,
-    get_song_details,
     get_song_loop_ids,
     play_loop_log,
     play_song_log,
