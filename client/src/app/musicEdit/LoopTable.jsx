@@ -71,11 +71,10 @@ export default function LoopTable({ projectId, measure }) {
   async function handleOnClickMeasurePart(event) {
     const { dataset } = event.target;
     const part = JSON.parse(dataset.part);
-    const measure = JSON.parse(dataset.measure) - 1;
-    const exist = JSON.parse(dataset.exist);
+    const measureId = JSON.parse(dataset.measure) - 1;
 
     const newSelectMeasurePart = {
-      measure,
+      measure: measureId,
       part,
     };
     const selectSame =
