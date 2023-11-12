@@ -19,6 +19,7 @@ export default async function onMusicLoop(
   );
   const data = new Audio(FILE);
 
+  // ログをとるためのPOSTリクエスト
   const idToken = await auth.currentUser?.getIdToken();
   axios.post(
     url,
