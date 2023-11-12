@@ -83,6 +83,7 @@ CREATE TABLE
         loop_id INTEGER,
         FOREIGN KEY (song_id) REFERENCES songs (id),
         FOREIGN KEY (part_id) REFERENCES parts (id),
+        FOREIGN KEY (loop_id) REFERENCES loops (id),
         PRIMARY KEY (song_id, part_id, measure)
     );
 
