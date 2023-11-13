@@ -62,6 +62,7 @@ def get_infomation_of_sounds(partid):
     return make_response(jsonify(response))
 
 
+# INFO: 現状使っていない
 @app.route("/parts/<int:partid>/sounds/<int:soundid>", methods=["GET"])
 def get_infomation_sound(partid, soundid):
     part_name = get_part_name(partid)
@@ -273,6 +274,7 @@ def create_response(
 
 
 # TODO: 多分array[i][j]にidを追加しそうなのでいらなくなる？
+# TODO: 名前の部分から修正する必要がある
 def name_to_id(array):
     part_list = [readLoopsPath(part) for part in PARTS]
     for i in range(len(array)):
