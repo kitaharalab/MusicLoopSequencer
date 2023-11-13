@@ -33,3 +33,19 @@ def get_loop_music_by_id(loop_id: int):
             response = dict(result)["data"].tobytes() if result is not None else None
 
     return response
+
+
+def get_loop_topic_by_id(loop_id: int):
+    sql = """
+    SELECT value
+    FROM loop_topics
+    where loop_id=%s
+    """
+    response = None
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute(sql, (loop_id,))
+            result = cur.fetchone()
+            response = dict(result) if result is not None else None
+
+    return response
