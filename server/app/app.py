@@ -178,6 +178,7 @@ def create_song(uid, projectid):
     return make_response(jsonify(response))
 
 
+# TODO: returnしてるsongIdは使ってないので修正
 def createMusic(array, projectid, fix=0, structure=1):
     """楽曲の生成"""
     # 盛り上がり度を求める
@@ -1110,7 +1111,7 @@ def choose_sound(excitement_array, hmm_array):
     return sound_list
 
 
-# TODO: トピックをデータベースから取得
+# TODO: ファイル名とwavデータをデータベースから取得したい
 def choose_sound_randomly():
     """音素材をランダムに選択する"""
     random_sound_list = list()
@@ -1263,6 +1264,7 @@ def connect_sound(sound_list, projectid, mode, songid):
         for s in sound:
             if s != "null":
                 if block_sound_exist:
+                    # TODO: AudioSegment.from_wav(io.BytesIO(data))
                     block_sound = block_sound.overlay(AudioSegment.from_file(s))
                 else:
                     block_sound = AudioSegment.from_file(s)
@@ -1284,7 +1286,7 @@ def connect_sound(sound_list, projectid, mode, songid):
     return songid
 
 
-# DBに移行したい
+# TODO: DBに移行したい
 def connect_new_song(projectid, output_sound, mode, songid):
     if mode == "create":
         songid = 0
@@ -1302,6 +1304,7 @@ def connect_new_song(projectid, output_sound, mode, songid):
             else:
                 songid = songid + 1
     else:
+        # TODO: insert(update)した後の音声データの書き込みがこれ
         os.makedirs(f"./project/{projectid }/songs/{songid}", exist_ok=True)
         output_sound.export(
             f"./project/{projectid}/songs/{songid}/song{songid}.wav",
