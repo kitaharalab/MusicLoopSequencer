@@ -90,6 +90,7 @@ def get_infomation_sound(partid, soundid):
 @app.route("/projects", methods=["POST"])
 @require_auth
 def create_project(uid):
+    # TODO: パラメータの取り方．request.get_json()
     req_data = None if request.data == b"" else request.data.decode("utf-8")
 
     data_json = json.loads(req_data) if req_data is not None else {}
@@ -100,6 +101,7 @@ def create_project(uid):
     return make_response(jsonify(new_project_id))
 
 
+# TODO: ユーザーの認証でそのユーザーのプロジェクトだけ取る
 @app.route("/projects", methods=["GET"])
 def get_infomation_of_projects():
     isExperimentParam = request.args.get("experiment")
@@ -137,7 +139,13 @@ def get_infomation_of_project(projectid):
 def create_song(uid, projectid):
     data = request.get_json()  # WebページからのJSONデータを受け取る．
     curves = data["curves"]
+
+    # req = request.args
+    # fix = req.get("fix")
+    # structure = req.get("structure")
+
     array, songid, section_array = createMusic(curves, projectid)
+    # array, songid, section_array = createMusic(curves, projectid, fix, structure)
 
     array = name_to_id(array)
 
@@ -168,6 +176,52 @@ def create_song(uid, projectid):
         response["parts"].append({"id": id, "sounds": song_list[name]})
 
     return make_response(jsonify(response))
+
+
+# def createMusic(array, projectid, fix, structure):
+#     """楽曲の生成"""
+#     # 盛り上がり度を求める
+#     # self.excitement_array = self.model.chengeExcitement(array)
+#     # 状態を求める
+#     (
+#         no_part_hmm_model,
+#         intro_hmm_model,
+#         breakdown_hmm_model,
+#         buildup_hmm_model,
+#         drop_hmm_model,
+#         outro_hmm_model,
+#     ) = initialize_Hmm()
+#     hmm_array = ""
+#     section_array = ""
+#     if structure == 0:
+#         hmm_array = use_HMM(array, no_part_hmm_model)
+#     else:
+#         hmm_array, section_array = use_Auto_HMM(
+#             array,
+#             intro_hmm_model,
+#             breakdown_hmm_model,
+#             buildup_hmm_model,
+#             drop_hmm_model,
+#             outro_hmm_model,
+#         )
+#     if fix == 1:
+#         if structure == 0:
+#             hmm_array, array = fix_Hmm(hmm_array, array)
+#         else:
+#             section_array = dtw(array)
+#             hmm_array, array = fix_Auto_Hmm(hmm_array, array, section_array)
+#     print("Section array↓")
+#     print(hmm_array, section_array)
+#     print("Section array↑")
+
+#     # 音素材を繋げる
+#     sound_list = choose_sound(array, hmm_array)
+#     # コードを付与する
+#     sound_list = give_chord(sound_list)
+#     # 音素材を繋げる
+#     songid = connect_sound(sound_list, projectid, "create", None)
+
+#     return sound_list, songid, section_array
 
 
 def create_response(
@@ -220,6 +274,7 @@ def create_response(
     return response
 
 
+# TODO: ここをDBに変更する
 def name_to_id(array):
     part_list = [readLoopsPath(part) for part in PARTS]
     for i in range(len(array)):
@@ -275,6 +330,7 @@ def get_infomation_songs(projectid):
     return make_response(jsonify(response))
 
 
+# TODO: 誤字の修正
 @app.route("/projects/<int:projectid>/songs/<int:songid>", methods=["GET"])
 def get_infomation_song(projectid, songid):
     part_name2index = {"Drums": 0, "Bass": 1, "Synth": 2, "Sequence": 3}
@@ -297,6 +353,7 @@ def get_infomation_song(projectid, songid):
     return make_response(jsonify(response))
 
 
+# TODO: どこで使ってるか不明
 @app.route("/projects/<projectid>/songs/<songid>/parts/<partid>", methods=["GET"])
 def get_infomation_of_inserted_sounds_in_selected_part(projectid, songid, partid):
     sounds_ids = [["null" for i in range(4)] for j in range(32)]
@@ -382,6 +439,11 @@ def insert_sound(uid, projectid, songid, partid, measureid, musicloopid):
     # data = request.get_json()
     # user_id = data.get("userId", None)
 
+    # TODO: パラメータの取得
+    # req = request.args
+    # fix = req.get("fix")
+    # adapt = req.get("adapt")
+
     update_song_details(songid, partid, int(measureid) + 1, musicloopid, uid)
     song_details = get_song_loop_ids(song_id=songid)
 
@@ -396,8 +458,23 @@ def insert_sound(uid, projectid, songid, partid, measureid, musicloopid):
     print(partid, measureid, musicloopid)
     print(sound_array[measureid][partid - 1])
 
+    # TODO: topicのアップデートをここでしてる
     sound_array = rewrite_music_data(measureid, partid, musicloopid, sound_array)
     connect_sound(sound_array, projectid, "insert", songid)
+
+    # TODO:
+    #     sound_array = rewrite_music_data(
+    #     measureid,
+    #     partid,
+    #     musicloopid,
+    #     sound_array,
+    #     drums_list,
+    #     bass_list,
+    #     synth_list,
+    #     sequence_list,
+    #     fix,
+    #     adapt,
+    # )
 
     response = {"songId": int(songid), "parts": []}
     for part in parts:
@@ -410,6 +487,58 @@ def insert_sound(uid, projectid, songid, partid, measureid, musicloopid):
         )
 
     return make_response(jsonify(response))
+
+
+# TODO
+# def rewrite_music_data(
+#     measureid,
+#     partid,
+#     musicloopid,
+#     sound_array,
+#     drums_list,
+#     bass_list,
+#     synth_list,
+#     sequence_list,
+#     fix,
+#     adapt,
+# ):
+#     if fix == 0:
+#         sound_array[int(measureid)][3 - int(partid)] = int(musicloopid)
+#     else:
+#         for i in range(4):
+#             sound_array[int(int(measureid) / 4) * 4 + i][3 - int(partid)] = int(
+#                 musicloopid
+#             )
+
+#     for i in range(len(sound_array)):
+#         for j in range(len(sound_array[0])):
+#             if j == 0:
+#                 for k in range(len(drums_list)):
+#                     if sound_array[i][j] == k:
+#                         sound_array[i][j] = drums_list[k]
+#                     elif sound_array[i][j] == None:
+#                         sound_array[i][j] = "null"
+#             elif j == 1:
+#                 for k in range(len(bass_list)):
+#                     if sound_array[i][j] == k:
+#                         sound_array[i][j] = bass_list[k]
+#                     elif sound_array[i][j] == None:
+#                         sound_array[i][j] = "null"
+#             elif j == 2:
+#                 for k in range(len(synth_list)):
+#                     if sound_array[i][j] == k:
+#                         sound_array[i][j] = synth_list[k]
+#                     elif sound_array[i][j] == None:
+#                         sound_array[i][j] = "null"
+#             else:
+#                 for k in range(len(sequence_list)):
+#                     if sound_array[i][j] == k:
+#                         sound_array[i][j] = sequence_list[k]
+#                     elif sound_array[i][j] == None:
+#                         sound_array[i][j] = "null"
+#     if adapt == 1:
+#         update_topic_ratio(sound_array, measureid, partid)
+#     return sound_array
 
 
 def read_file(path):
@@ -508,6 +637,9 @@ def rewrite_music_data(
                     elif sound_array[i][j] is None:
                         sound_array[i][j] = "null"
     update_topic_ratio(sound_array, measureid, partid)
+    # TODO
+    # if adapt == 1:
+    #     update_topic_ratio(sound_array, measureid, partid)
     return sound_array
 
 
@@ -536,6 +668,7 @@ def update_topic_ratio(sound_array, measureid, partid):
     for i in range(topic_n):
         ratio_topic[i] += topic_array[i]
 
+    # TODO: topic選好度をデータベースに入れる
     with open(pass_ratio_topic, mode="w") as f:
         for k in range(4):
             # print(k)
@@ -545,85 +678,96 @@ def update_topic_ratio(sound_array, measureid, partid):
                 f.write("\n" + str(ratio_topic[k]))
 
 
-@app.route(
-    "/projects/<projectid>/songs/<songid>/parts/<partid>/measures/<measureid>",
-    methods=["DELETE"],
-)
-@require_auth
-def delete_sound(uid, projectid, songid, partid, measureid):
-    # data = request.get_json()      #WebページからのJSONデータを受け取る．
-    # sound_array = get_music_data(data)
-    sound_array = load_music_data(
-        "./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt"
-    )
+# TODO: デリートの実装
+# @app.route(
+#     "/projects/<projectid>/songs/<songid>/parts/<partid>/measures/<measureid>",
+#     methods=["DELETE"],
+# )
+# @require_auth
+# def delete_sound(projectid, songid, partid, measureid):
+#     req = request.args
+#     fix = req.get("fix")
+#     sound_array = load_music_data(
+#         "./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt"
+#     )
 
-    drums_list, bass_list, synth_list, sequence_list = get_sound_data()
+#     drums_list, bass_list, synth_list, sequence_list = get_sound_data()
 
-    sound_array = delete_music_loop(
-        measureid, partid, sound_array, drums_list, bass_list, synth_list, sequence_list
-    )
-    # root = tk.Tk()
-    # view = View(master=root)
-    songid = connect_sound(sound_array, projectid, "delete", songid)
+#     sound_array = delete_music_loop(
+#         measureid,
+#         partid,
+#         sound_array,
+#         drums_list,
+#         bass_list,
+#         synth_list,
+#         sequence_list,
+#         fix,
+#     )
+#     # root = tk.Tk()
+#     # view = View(master=root)
+#     songid = connect_sound(sound_array, projectid, "delete", songid)
 
-    # save_music_data(
-    #     projectid, songid, sound_array, drums_list, bass_list, synth_list, sequence_list, user_id
-    # )
+#     save_music_data(
+#         projectid, songid, sound_array, drums_list, bass_list, synth_list, sequence_list
+#     )
 
-    drums_list, bass_list, synth_list, sequence_list = format_list(sound_array)
+#     drums_list, bass_list, synth_list, sequence_list = format_list(sound_array)
 
-    response = {
-        "songid": int(songid),
-        "parts": [
-            {"partid": 0, "sounds": sequence_list},
-            {"partid": 1, "sounds": synth_list},
-            {"partid": 2, "sounds": bass_list},
-            {"partid": 3, "sounds": drums_list},
-        ],
-    }
-    return make_response(jsonify(response))
+#     response = {
+#         "songid": int(songid),
+#         "parts": [
+#             {"partid": 0, "sounds": sequence_list},
+#             {"partid": 1, "sounds": synth_list},
+#             {"partid": 2, "sounds": bass_list},
+#             {"partid": 3, "sounds": drums_list},
+#         ],
+#     }
+#     return make_response(jsonify(response))
 
 
-def delete_music_loop(
-    measureid, partid, sound_array, drums_list, bass_list, synth_list, sequence_list
-):
-    if int(partid) == 0:
-        sound_array[int(measureid)][3 - int(partid)] = None
-    elif int(partid) == 1:
-        sound_array[int(measureid)][3 - int(partid)] = None
-    elif int(partid) == 2:
-        sound_array[int(measureid)][3 - int(partid)] = None
-    else:
-        sound_array[int(measureid)][3 - int(partid)] = None
+# def delete_music_loop(
+#     measureid,
+#     partid,
+#     sound_array,
+#     drums_list,
+#     bass_list,
+#     synth_list,
+#     sequence_list,
+#     fix,
+# ):
+#     if fix == 0:
+#         sound_array[int(measureid)][3 - int(partid)] = None
+#     else:
+#         for i in range(4):
+#             sound_array[int(int(measureid) / 4) * 4 + i][3 - int(partid)] = None
 
-    for i in range(len(sound_array)):
-        for j in range(len(sound_array[0])):
-            if j == 0:
-                for k in range(len(drums_list)):
-                    if sound_array[i][j] == k:
-                        sound_array[i][j] = drums_list[k]
-                    elif sound_array[i][j] is None:
-                        sound_array[i][j] = "null"
-            elif j == 1:
-                for k in range(len(bass_list)):
-                    if sound_array[i][j] == k:
-                        sound_array[i][j] = bass_list[k]
-                    elif sound_array[i][j] is None:
-                        sound_array[i][j] = "null"
-            elif j == 2:
-                for k in range(len(synth_list)):
-                    if sound_array[i][j] == k:
-                        sound_array[i][j] = synth_list[k]
-                    elif sound_array[i][j] is None:
-                        sound_array[i][j] = "null"
-            else:
-                for k in range(len(sequence_list)):
-                    if sound_array[i][j] == k:
-                        sound_array[i][j] = sequence_list[k]
-                    elif sound_array[i][j] is None:
-                        sound_array[i][j] = "null"
-
-    return sound_array
+#     for i in range(len(sound_array)):
+#         for j in range(len(sound_array[0])):
+#             if j == 0:
+#                 for k in range(len(drums_list)):
+#                     if sound_array[i][j] == k:
+#                         sound_array[i][j] = drums_list[k]
+#                     elif sound_array[i][j] == None:
+#                         sound_array[i][j] = "null"
+#             elif j == 1:
+#                 for k in range(len(bass_list)):
+#                     if sound_array[i][j] == k:
+#                         sound_array[i][j] = bass_list[k]
+#                     elif sound_array[i][j] == None:
+#                         sound_array[i][j] = "null"
+#             elif j == 2:
+#                 for k in range(len(synth_list)):
+#                     if sound_array[i][j] == k:
+#                         sound_array[i][j] = synth_list[k]
+#                     elif sound_array[i][j] == None:
+#                         sound_array[i][j] = "null"
+#             else:
+#                 for k in range(len(sequence_list)):
+#                     if sound_array[i][j] == k:
+#                         sound_array[i][j] = sequence_list[k]
+#                     elif sound_array[i][j] == None:
+#                         sound_array[i][j] = "null"
+#     return sound_array
 
 
 def save_music_data(
@@ -667,6 +811,7 @@ def downloadSong(projectid,songid,filename):
     return response"""
 
 
+# TODO: DBに変更
 @app.route("/projects/<projectid>/songs/<songid>/wav", methods=["GET"])
 def download_song(projectid, songid):
     file_name = f"./project/{projectid}/songs/{songid}/song{songid}.wav"
@@ -711,6 +856,7 @@ def log_loop_play(uid, partid, musicloopid):
     return make_response(jsonify({"message": "操作がログに書き込まれました"})), 200
 
 
+# TODO: トピックをDBに変更
 @app.route("/parts/<partid>/musicloops/<musicloopid>/topic", methods=["GET"])
 def get_topic_ratio(partid, musicloopid):
     part = "null"
@@ -767,6 +913,7 @@ def get_topic_preference():
     return make_response(jsonify(response))
 
 
+# TODO: トピックをデータベースから取得
 def load_topic_preference():
     ratio_topic = [[[1.0 for i in range(topic_n)] for j in range(5)] for k in range(4)]
     part_list = ["Drums", "Bass", "Synth", "Sequence"]
@@ -784,6 +931,7 @@ def load_topic_preference():
     return ratio_topic
 
 
+# TODO: これは上の方の使うところ付近で修正先をコメントアウトしてる
 def createMusic(array, projectid):
     """楽曲の生成"""
     # 盛り上がり度を求める
@@ -1009,6 +1157,7 @@ def choose_sound(excitement_array, hmm_array):
     return sound_list
 
 
+# TODO: トピックをデータベースから取得
 def choose_sound_randomly():
     """音素材をランダムに選択する"""
     random_sound_list = list()
@@ -1046,6 +1195,46 @@ def choose_sound_randomly():
     return random_sound_list
 
 
+# def choose_sound_randomly():
+#     """音素材をランダムに選択する"""
+#     random_sound_list = list()
+#     drums_list = list()
+#     bass_list = list()
+#     synth_list = list()
+#     sequence_list = list()
+
+#     ratio_topic = load_topic_preference()
+#     part_name_list = ["Drums", "Bass", "Synth", "Sequence"]
+
+#     # drums_part
+#     drums_list = choose_sound_randomly_with_using_ratio_topic(
+#         part_name_list[0], 0, drums_list, ratio_topic
+#     )
+
+#     # bass_part
+#     bass_list = choose_sound_randomly_with_using_ratio_topic(
+#         part_name_list[1], 1, bass_list, ratio_topic
+#     )
+
+#     # synth_part
+#     synth_list = choose_sound_randomly_with_using_ratio_topic(
+#         part_name_list[2], 2, synth_list, ratio_topic
+#     )
+
+#     # sequence_part
+#     sequence_list = choose_sound_randomly_with_using_ratio_topic(
+#         part_name_list[3], 3, sequence_list, ratio_topic
+#     )
+
+#     random_sound_list.append(drums_list)
+#     random_sound_list.append(bass_list)
+#     random_sound_list.append(synth_list)
+#     random_sound_list.append(sequence_list)
+
+#     return random_sound_list
+
+
+# TODO: DB
 def choose_sound_randomly_with_using_ratio_topic(
     part_name, part_id, part_sound_list, ratio_topic
 ):
@@ -1141,7 +1330,7 @@ def connect_sound(sound_list, projectid, mode, songid):
     # print(song_id)
     return songid
 
-
+# DBに移行したい
 def connect_new_song(projectid, output_sound, mode, songid):
     if mode == "create":
         songid = 0
