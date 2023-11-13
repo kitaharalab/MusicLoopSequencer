@@ -271,7 +271,7 @@ def create_response(
     return response
 
 
-# TODO: ここをDBに変更する
+# TODO: 多分array[i][j]にidを追加しそうなのでいらなくなる？
 def name_to_id(array):
     part_list = [readLoopsPath(part) for part in PARTS]
     for i in range(len(array)):
@@ -604,6 +604,7 @@ def rewrite_music_data(
     musicloopid,
     sound_array,
 ):
+    # TODO: IDから音素材へのパスへと変換
     # 各音素材へのパス
     drums_list, bass_list, synth_list, sequence_list = get_sound_data()
 
@@ -650,6 +651,7 @@ def update_topic_ratio(sound_array, measureid, partid):
 
     for i in range(len(ratio_topic)):
         ratio_topic[i] = float(ratio_topic[i])
+    # TODO: 音素材のpart name, その盛り上がり度
     df = pd.read_csv(
         "./lda/" + split_name[3] + "/lda" + split_name[4] + ".csv",
         header=0,
@@ -808,7 +810,7 @@ def downloadSong(projectid,songid,filename):
     return response"""
 
 
-# TODO: DBに変更
+# TODO: 作成された曲なのでDBに変更したい
 @app.route("/projects/<projectid>/songs/<songid>/wav", methods=["GET"])
 def download_song(projectid, songid):
     file_name = f"./project/{projectid}/songs/{songid}/song{songid}.wav"
@@ -910,7 +912,7 @@ def get_topic_preference():
     return make_response(jsonify(response))
 
 
-# TODO: トピックをデータベースから取得
+# TODO: パートごと，盛り上がり度ごとのトピック選好度をデータベースから取得
 def load_topic_preference():
     ratio_topic = [[[1.0 for i in range(topic_n)] for j in range(5)] for k in range(4)]
     part_list = ["Drums", "Bass", "Synth", "Sequence"]
@@ -1111,7 +1113,7 @@ def choose_sound(excitement_array, hmm_array):
     return sound_list
 
 
-# TODO: ファイル名とwavデータをデータベースから取得したい
+# TODO: 音素材のファイル名とwavデータとidをデータベースから取得したい
 def choose_sound_randomly():
     """音素材をランダムに選択する"""
     random_sound_list = list()
@@ -1120,26 +1122,28 @@ def choose_sound_randomly():
     synth_list = list()
     sequence_list = list()
 
-    for i in range(5):
-        drums_file = os.listdir("./TechnoTrance/Drums/" + str(i))
-        drums_list.append(
-            "./TechnoTrance/Drums/" + str(i) + "/" + random.choice(drums_file)
-        )
+    ratio_topic = load_topic_preference()
+    part_name_list = ["Drums", "Bass", "Synth", "Sequence"]
 
-        bass_file = os.listdir("./TechnoTrance/Bass/" + str(i))
-        bass_list.append(
-            "./TechnoTrance/Bass/" + str(i) + "/" + random.choice(bass_file)
-        )
+    # drums_part
+    drums_list = choose_sound_randomly_with_using_ratio_topic(
+        part_name_list[0], 0, drums_list, ratio_topic
+    )
 
-        synth_file = os.listdir("./TechnoTrance/Synth/" + str(i))
-        synth_list.append(
-            "./TechnoTrance/Synth/" + str(i) + "/" + random.choice(synth_file)
-        )
+    # bass_part
+    bass_list = choose_sound_randomly_with_using_ratio_topic(
+        part_name_list[1], 1, bass_list, ratio_topic
+    )
 
-        sequence_file = os.listdir("./TechnoTrance/Sequence/" + str(i))
-        sequence_list.append(
-            "./TechnoTrance/Sequence/" + str(i) + "/" + random.choice(sequence_file)
-        )
+    # synth_part
+    synth_list = choose_sound_randomly_with_using_ratio_topic(
+        part_name_list[2], 2, synth_list, ratio_topic
+    )
+
+    # sequence_part
+    sequence_list = choose_sound_randomly_with_using_ratio_topic(
+        part_name_list[3], 3, sequence_list, ratio_topic
+    )
 
     random_sound_list.append(drums_list)
     random_sound_list.append(bass_list)
@@ -1149,46 +1153,7 @@ def choose_sound_randomly():
     return random_sound_list
 
 
-# def choose_sound_randomly():
-#     """音素材をランダムに選択する"""
-#     random_sound_list = list()
-#     drums_list = list()
-#     bass_list = list()
-#     synth_list = list()
-#     sequence_list = list()
-
-#     ratio_topic = load_topic_preference()
-#     part_name_list = ["Drums", "Bass", "Synth", "Sequence"]
-
-#     # drums_part
-#     drums_list = choose_sound_randomly_with_using_ratio_topic(
-#         part_name_list[0], 0, drums_list, ratio_topic
-#     )
-
-#     # bass_part
-#     bass_list = choose_sound_randomly_with_using_ratio_topic(
-#         part_name_list[1], 1, bass_list, ratio_topic
-#     )
-
-#     # synth_part
-#     synth_list = choose_sound_randomly_with_using_ratio_topic(
-#         part_name_list[2], 2, synth_list, ratio_topic
-#     )
-
-#     # sequence_part
-#     sequence_list = choose_sound_randomly_with_using_ratio_topic(
-#         part_name_list[3], 3, sequence_list, ratio_topic
-#     )
-
-#     random_sound_list.append(drums_list)
-#     random_sound_list.append(bass_list)
-#     random_sound_list.append(synth_list)
-#     random_sound_list.append(sequence_list)
-
-#     return random_sound_list
-
-
-# TODO: DB
+# TODO: 音素材のトピックと，トピック選好度を使ってるらしい
 def choose_sound_randomly_with_using_ratio_topic(
     part_name, part_id, part_sound_list, ratio_topic
 ):
@@ -1212,6 +1177,8 @@ def choose_sound_randomly_with_using_ratio_topic(
         # print(feature_names)
         calcs1 = []
         sum1 = 0
+        # topic0とかの各トピックで，その値とトピック選好度をかけてる
+        # TODO: csvの最初が音素材の名前かと思ったけどちょっと違うっぽいから
         for j in range(len(feature_names)):
             topics = np.array(df[j : j + 1])[0][0:]
             calc = 0
