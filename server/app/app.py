@@ -809,7 +809,7 @@ def get_topic_ratio(partid: int, musicloopid: int):
     return make_response(jsonify(loop_topic))
 
 
-# INFO: 以下の処理は元々のデータからトピックを持ってくるための処理
+# INFO: 以下の処理は元々のデータからトピック選好度を持ってくるための処理
 # part = "null"
 # if partid == "0":
 #     part = "sequence"
