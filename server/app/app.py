@@ -178,50 +178,46 @@ def create_song(uid, projectid):
     return make_response(jsonify(response))
 
 
-# def createMusic(array, projectid, fix, structure):
-#     """楽曲の生成"""
-#     # 盛り上がり度を求める
-#     # self.excitement_array = self.model.chengeExcitement(array)
-#     # 状態を求める
-#     (
-#         no_part_hmm_model,
-#         intro_hmm_model,
-#         breakdown_hmm_model,
-#         buildup_hmm_model,
-#         drop_hmm_model,
-#         outro_hmm_model,
-#     ) = initialize_Hmm()
-#     hmm_array = ""
-#     section_array = ""
-#     if structure == 0:
-#         hmm_array = use_HMM(array, no_part_hmm_model)
-#     else:
-#         hmm_array, section_array = use_Auto_HMM(
-#             array,
-#             intro_hmm_model,
-#             breakdown_hmm_model,
-#             buildup_hmm_model,
-#             drop_hmm_model,
-#             outro_hmm_model,
-#         )
-#     if fix == 1:
-#         if structure == 0:
-#             hmm_array, array = fix_Hmm(hmm_array, array)
-#         else:
-#             section_array = dtw(array)
-#             hmm_array, array = fix_Auto_Hmm(hmm_array, array, section_array)
-#     print("Section array↓")
-#     print(hmm_array, section_array)
-#     print("Section array↑")
+def createMusic(array, projectid, fix=0, structure=1):
+    """楽曲の生成"""
+    # 盛り上がり度を求める
+    # self.excitement_array = self.model.chengeExcitement(array)
+    # 状態を求める
+    (
+        no_part_hmm_model,
+        intro_hmm_model,
+        breakdown_hmm_model,
+        buildup_hmm_model,
+        drop_hmm_model,
+        outro_hmm_model,
+    ) = initialize_Hmm()
+    hmm_array = ""
+    section_array = ""
+    if structure == 0:
+        hmm_array = use_HMM(array, no_part_hmm_model)
+    else:
+        hmm_array, section_array = use_Auto_HMM(
+            array,
+            intro_hmm_model,
+            breakdown_hmm_model,
+            buildup_hmm_model,
+            drop_hmm_model,
+            outro_hmm_model,
+        )
+    if fix == 1:
+        if structure == 0:
+            hmm_array, array = fix_Hmm(hmm_array, array)
+        else:
+            section_array = dtw(array)
+            hmm_array, array = fix_Auto_Hmm(hmm_array, array, section_array)
+    # 音素材を繋げる
+    sound_list = choose_sound(array, hmm_array)
+    # コードを付与する
+    sound_list = give_chord(sound_list)
+    # 音素材を繋げる
+    songid = connect_sound(sound_list, projectid, "create", None)
 
-#     # 音素材を繋げる
-#     sound_list = choose_sound(array, hmm_array)
-#     # コードを付与する
-#     sound_list = give_chord(sound_list)
-#     # 音素材を繋げる
-#     songid = connect_sound(sound_list, projectid, "create", None)
-
-#     return sound_list, songid, section_array
+    return sound_list, songid, section_array
 
 
 def create_response(
@@ -931,49 +927,6 @@ def load_topic_preference():
     return ratio_topic
 
 
-# TODO: これは上の方の使うところ付近で修正先をコメントアウトしてる
-def createMusic(array, projectid):
-    """楽曲の生成"""
-    # 盛り上がり度を求める
-    # self.excitement_array = self.model.chengeExcitement(array)
-    # 状態を求める
-    (
-        no_part_hmm_model,
-        intro_hmm_model,
-        breakdown_hmm_model,
-        buildup_hmm_model,
-        drop_hmm_model,
-        outro_hmm_model,
-    ) = initialize_Hmm()
-    hmm_array = ""
-    section_array = ""
-    if selected_constitution_determine == 0:
-        hmm_array = use_HMM(array, no_part_hmm_model)
-    else:
-        hmm_array, section_array = use_Auto_HMM(
-            array,
-            intro_hmm_model,
-            breakdown_hmm_model,
-            buildup_hmm_model,
-            drop_hmm_model,
-            outro_hmm_model,
-        )
-    if selected_fix_determine == 1:
-        if selected_constitution_determine == 0:
-            hmm_array, array = fix_Hmm(hmm_array, array)
-        else:
-            section_array = dtw(array)
-            hmm_array, array = fix_Auto_Hmm(hmm_array, array, section_array)
-    # 音素材を繋げる
-    sound_list = choose_sound(array, hmm_array)
-    # コードを付与する
-    sound_list = give_chord(sound_list)
-    # 音素材を繋げる
-    songid = connect_sound(sound_list, projectid, "create", None)
-
-    return sound_list, songid, section_array
-
-
 def use_HMM(excitement_array, no_part_hmm_model):
     """HMMを使用する"""
     observation_data = np.atleast_2d(excitement_array).T
@@ -1329,6 +1282,7 @@ def connect_sound(sound_list, projectid, mode, songid):
     #         conn.commit()
     # print(song_id)
     return songid
+
 
 # DBに移行したい
 def connect_new_song(projectid, output_sound, mode, songid):
