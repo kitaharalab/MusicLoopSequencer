@@ -20,6 +20,7 @@ from sqls import (
     get_excitement_curve,
     get_loop_music_by_id,
     get_loop_positions_by_part,
+    get_loop_topic_by_id,
     get_part_name,
     get_parts,
     get_project,
@@ -802,54 +803,58 @@ def log_loop_play(uid, partid, musicloopid):
     return make_response(jsonify({"message": "操作がログに書き込まれました"})), 200
 
 
-# MAIN!!!!!!
-# TODO: 音素材のトピックをDBから取得するように変更したい
-@app.route("/parts/<partid>/musicloops/<musicloopid>/topic", methods=["GET"])
-def get_topic_ratio(partid, musicloopid):
-    part = "null"
-    if partid == "0":
-        part = "sequence"
-    elif partid == "1":
-        part = "synth"
-    elif partid == "2":
-        part = "bass"
-    else:
-        part = "drums"
+@app.route("/parts/<int:partid>/musicloops/<int:musicloopid>/topic", methods=["GET"])
+def get_topic_ratio(partid: int, musicloopid: int):
+    loop_topic = get_loop_topic_by_id(musicloopid)
+    return make_response(jsonify(loop_topic))
 
-    musicLoop_list = read_file("./text/" + part + "_word_list.txt")
-    """bass_word_list.txt"""
-    if musicLoop_list[len(musicLoop_list) - 1] == "":
-        musicLoop_list.pop()
-    musicLoopName = "null"
-    for i in range(len(musicLoop_list)):
-        if i == int(musicloopid):
-            musicLoopName = musicLoop_list[i]
-    split_name = re.split("/|\.", musicLoopName)
-    # print(split_name)
-    # print(split_name[3], split_name[4], split_name[5])
-    df = pd.read_csv(
-        "./lda/" + split_name[3] + "/lda" + split_name[4] + ".csv",
-        header=0,
-        index_col=0,
-    )
-    feature_names = df.index.values
-    n = 0
-    # print(split_name[3], split_name[4], split_name[5])
-    for i in range(len(feature_names)):
-        if feature_names[i] == split_name[5]:
-            n = i
-    topic_array = np.array(df[n : n + 1])[0][0:]
 
-    return send_file(
-        "./TechnoTrance/"
-        + split_name[3]
-        + "/"
-        + split_name[4]
-        + "/"
-        + split_name[5]
-        + ".wav",
-        as_attachment=True,
-    )
+# INFO: 以下の処理は元々のデータからトピックを持ってくるための処理
+# part = "null"
+# if partid == "0":
+#     part = "sequence"
+# elif partid == "1":
+#     part = "synth"
+# elif partid == "2":
+#     part = "bass"
+# else:
+#     part = "drums"
+
+# musicLoop_list = read_file("./text/" + part + "_word_list.txt")
+# """bass_word_list.txt"""
+# if musicLoop_list[len(musicLoop_list) - 1] == "":
+#     musicLoop_list.pop()
+# musicLoopName = "null"
+# for i in range(len(musicLoop_list)):
+#     if i == int(musicloopid):
+#         musicLoopName = musicLoop_list[i]
+# split_name = re.split("/|\.", musicLoopName)
+# # print(split_name)
+# # print(split_name[3], split_name[4], split_name[5])
+# df = pd.read_csv(
+#     "./lda/" + split_name[3] + "/lda" + split_name[4] + ".csv",
+#     header=0,
+#     index_col=0,
+# )
+# feature_names = df.index.values
+# n = 0
+# # print(split_name[3], split_name[4], split_name[5])
+# for i in range(len(feature_names)):
+#     if feature_names[i] == split_name[5]:
+#         n = i
+# topic_array = np.array(df[n : n + 1])[0][0:]
+
+# # return send_file(
+# #     "./TechnoTrance/"
+# #     + split_name[3]
+# #     + "/"
+# #     + split_name[4]
+# #     + "/"
+# #     + split_name[5]
+# #     + ".wav",
+# #     as_attachment=True,
+# # )
+# return make_response(jsonify(list(topic_array)))
 
 
 @app.route("/topic", methods=["GET"])
