@@ -441,6 +441,12 @@ def insert_sound(uid, projectid, songid, partid, measureid, musicloopid):
     # fix = req.get("fix")
     # adapt = req.get("adapt")
 
+    # TODO: fixが1のときは4小節ごとに音素材を入れる
+    #         for i in range(4):
+    #             sound_array[int(int(measureid) / 4) * 4 + i][3 - int(partid)] = int(
+    #                 musicloopid
+    #             )
+    #
     update_song_details(songid, partid, int(measureid) + 1, musicloopid, uid)
     song_details = get_song_loop_ids(song_id=songid)
 
@@ -486,56 +492,40 @@ def insert_sound(uid, projectid, songid, partid, measureid, musicloopid):
     return make_response(jsonify(response))
 
 
-# TODO
-# def rewrite_music_data(
-#     measureid,
-#     partid,
-#     musicloopid,
-#     sound_array,
-#     drums_list,
-#     bass_list,
-#     synth_list,
-#     sequence_list,
-#     fix,
-#     adapt,
-# ):
-#     if fix == 0:
-#         sound_array[int(measureid)][3 - int(partid)] = int(musicloopid)
-#     else:
-#         for i in range(4):
-#             sound_array[int(int(measureid) / 4) * 4 + i][3 - int(partid)] = int(
-#                 musicloopid
-#             )
+def rewrite_music_data(measureid, partid, musicloopid, sound_array, adapt=0):
+    # TODO: IDから音素材へのパスへと変換
+    # 各音素材へのパス
+    drums_list, bass_list, synth_list, sequence_list = get_sound_data()
 
-#     for i in range(len(sound_array)):
-#         for j in range(len(sound_array[0])):
-#             if j == 0:
-#                 for k in range(len(drums_list)):
-#                     if sound_array[i][j] == k:
-#                         sound_array[i][j] = drums_list[k]
-#                     elif sound_array[i][j] == None:
-#                         sound_array[i][j] = "null"
-#             elif j == 1:
-#                 for k in range(len(bass_list)):
-#                     if sound_array[i][j] == k:
-#                         sound_array[i][j] = bass_list[k]
-#                     elif sound_array[i][j] == None:
-#                         sound_array[i][j] = "null"
-#             elif j == 2:
-#                 for k in range(len(synth_list)):
-#                     if sound_array[i][j] == k:
-#                         sound_array[i][j] = synth_list[k]
-#                     elif sound_array[i][j] == None:
-#                         sound_array[i][j] = "null"
-#             else:
-#                 for k in range(len(sequence_list)):
-#                     if sound_array[i][j] == k:
-#                         sound_array[i][j] = sequence_list[k]
-#                     elif sound_array[i][j] == None:
-#                         sound_array[i][j] = "null"
-#     if adapt == 1:
-#         update_topic_ratio(sound_array, measureid, partid)
-#     return sound_array
+    for i in range(len(sound_array)):
+        for j in range(len(sound_array[0])):
+            if j == 0:
+                for k in range(len(drums_list)):
+                    if sound_array[i][j] == k:
+                        sound_array[i][j] = drums_list[k]
+                    elif sound_array[i][j] is None:
+                        sound_array[i][j] = "null"
+            elif j == 1:
+                for k in range(len(bass_list)):
+                    if sound_array[i][j] == k:
+                        sound_array[i][j] = bass_list[k]
+                    elif sound_array[i][j] is None:
+                        sound_array[i][j] = "null"
+            elif j == 2:
+                for k in range(len(synth_list)):
+                    if sound_array[i][j] == k:
+                        sound_array[i][j] = synth_list[k]
+                    elif sound_array[i][j] is None:
+                        sound_array[i][j] = "null"
+            else:
+                for k in range(len(sequence_list)):
+                    if sound_array[i][j] == k:
+                        sound_array[i][j] = sequence_list[k]
+                    elif sound_array[i][j] is None:
+                        sound_array[i][j] = "null"
+    if adapt == 1:
+        update_topic_ratio(sound_array, measureid, partid)
+    return sound_array
 
 
 def read_file(path):
@@ -596,49 +586,6 @@ def get_sound_data():
     with open("./text/sequence_word_list.txt") as f:
         sequence_list = f.read().split("\n")
     return drums_list, bass_list, synth_list, sequence_list
-
-
-def rewrite_music_data(
-    measureid,
-    partid,
-    musicloopid,
-    sound_array,
-):
-    # TODO: IDから音素材へのパスへと変換
-    # 各音素材へのパス
-    drums_list, bass_list, synth_list, sequence_list = get_sound_data()
-
-    for i in range(len(sound_array)):
-        for j in range(len(sound_array[0])):
-            if j == 0:
-                for k in range(len(drums_list)):
-                    if sound_array[i][j] == k:
-                        sound_array[i][j] = drums_list[k]
-                    elif sound_array[i][j] is None:
-                        sound_array[i][j] = "null"
-            elif j == 1:
-                for k in range(len(bass_list)):
-                    if sound_array[i][j] == k:
-                        sound_array[i][j] = bass_list[k]
-                    elif sound_array[i][j] is None:
-                        sound_array[i][j] = "null"
-            elif j == 2:
-                for k in range(len(synth_list)):
-                    if sound_array[i][j] == k:
-                        sound_array[i][j] = synth_list[k]
-                    elif sound_array[i][j] is None:
-                        sound_array[i][j] = "null"
-            else:
-                for k in range(len(sequence_list)):
-                    if sound_array[i][j] == k:
-                        sound_array[i][j] = sequence_list[k]
-                    elif sound_array[i][j] is None:
-                        sound_array[i][j] = "null"
-    update_topic_ratio(sound_array, measureid, partid)
-    # TODO
-    # if adapt == 1:
-    #     update_topic_ratio(sound_array, measureid, partid)
-    return sound_array
 
 
 def update_topic_ratio(sound_array, measureid, partid):
