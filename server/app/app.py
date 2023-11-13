@@ -802,7 +802,8 @@ def log_loop_play(uid, partid, musicloopid):
     return make_response(jsonify({"message": "操作がログに書き込まれました"})), 200
 
 
-# TODO: トピックをDBに変更
+# MAIN!!!!!!
+# TODO: 音素材のトピックをDBから取得するように変更したい
 @app.route("/parts/<partid>/musicloops/<musicloopid>/topic", methods=["GET"])
 def get_topic_ratio(partid, musicloopid):
     part = "null"
@@ -1218,7 +1219,7 @@ def connect_new_song(projectid, output_sound, mode, songid):
             else:
                 songid = songid + 1
     else:
-        # TODO: insert(update)した後の音声データの書き込みがこれ
+        # TODO: insert(update)した後の音声データの書き込みがこれ．byteデータみたいなのだけ欲しい
         os.makedirs(f"./project/{projectid }/songs/{songid}", exist_ok=True)
         output_sound.export(
             f"./project/{projectid}/songs/{songid}/song{songid}.wav",
