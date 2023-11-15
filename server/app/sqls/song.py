@@ -5,12 +5,13 @@ from .log import create_song_log
 from .part import get_parts
 
 
-def create_song(song_loop_id_by_part, project_id, user_id):
+def create_song(song_loop_id_by_part, project_id, user_id, wav_data_bytes):
     song_id = 0
     with get_connection() as conn:
         with conn.cursor(cursor_factory=DictCursor) as cur:
             cur.execute(
-                "INSERT INTO songs (project_id) VALUES (%s) RETURNING id", (project_id,)
+                "INSERT INTO songs (project_id, wave_data) VALUES (%s, %s) RETURNING id",
+                (project_id, wav_data_bytes),
             )
             song_id = cur.fetchone()[0]
             conn.commit()
@@ -51,7 +52,7 @@ def sound_array_wrap(sound_array):
         part_name = part["name"]
         song_loop_id_by_part[part_id] = list(
             map(
-                lambda x: int(x) if x != "null" else None,
+                lambda x: int(x) if x != "null" and x is not None else None,
                 sound_array[name2index[part_name]],
             )
         )
@@ -72,3 +73,18 @@ def get_project_id_from_song_id(song_id: int) -> int:
             )
             result = dict(cur.fetchone())
             return result["project_id"]
+
+
+def get_wav_data_from_song_id(song_id: int) -> bytes:
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute(
+                """
+                SELECT wave_data
+                FROM songs
+                WHERE id = %s
+                """,
+                (song_id,),
+            )
+            result = cur.fetchone()
+            return result["wave_data"].tobytes() if result is not None else None
