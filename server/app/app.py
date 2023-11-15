@@ -2,6 +2,7 @@ import json
 import os
 import random
 import re
+from asyncore import loop
 
 import firebase_admin
 import numpy as np
@@ -18,6 +19,7 @@ from sqls import create_song as add_song
 from sqls import (
     get_connection,
     get_excitement_curve,
+    get_loop_and_topics_from_part,
     get_loop_music_by_id,
     get_loop_positions_by_part,
     get_loop_topic_by_id,
@@ -27,7 +29,9 @@ from sqls import (
     get_project_song_ids,
     get_projects,
     get_song_loop_ids,
+    get_topic_id_ns,
     get_topic_preferences,
+    get_topic_preferences_by_part_topic_id,
     play_loop_log,
     play_song_log,
     sound_array_wrap,
@@ -1074,14 +1078,34 @@ def choose_sound_randomly(user_id):
     """音素材をランダムに選択する"""
     random_sound_list = list()
 
+    topic_id_ns = get_topic_id_ns(user_id)
+    topic_n_ids = list(
+        map(lambda x: x["id"], filter(lambda x: x["number"] == topic_n, topic_id_ns))
+    )
     topic_preferences = get_topic_preferences(user_id)
+    topic_n_preferences = list(
+        filter(lambda x: x["topic_id"] in topic_n_ids, topic_preferences)
+    )
+
+    topic_n_preferences_by_part_topic = dict()
+    for topic_n_preference in topic_n_preferences:
+        part_id = topic_n_preference["part_id"]
+        topic_id = topic_preferences["topic_id"]
+        value = topic_preferences["value"]
+        if part_id not in topic_n_preferences_by_part_topic:
+            topic_n_preferences_by_part_topic[part_id] = dict()
+        topic_n_preferences_by_part_topic[part_id][topic_id] = value
+
     parts = get_parts()
     ratio_topic = load_topic_preference()
 
     random_sound_list = []
     for part in parts:
         sound_list = choose_sound_randomly_with_using_ratio_topic(
-            part["name"], int(part["id"]) - 1, ratio_topic
+            part["name"],
+            int(part["id"]) - 1,
+            ratio_topic,
+            topic_n_preferences_by_part_topic[part["id"]],
         )
         random_sound_list.append(sound_list)
 
@@ -1089,9 +1113,48 @@ def choose_sound_randomly(user_id):
 
 
 # TODO: 音素材のトピックと，トピック選好度を使ってるらしい
-def choose_sound_randomly_with_using_ratio_topic(part_name, part_id, ratio_topic):
-    part_sound_list = []
+def choose_sound_randomly_with_using_ratio_topic(
+    part_name, part_id, ratio_topic, topic_n_preferences_by_topic
+):
+    # このパートの盛り上がり度ごとの音素材のIDとトピックが欲しい
+    all_loop_and_topics = get_loop_and_topics_from_part(part_id + 1)
+    topic_value_by_excitement_loop_topic: dict[int, dict[int, dict]] = dict()
+
+    for topic_value_by_topic in all_loop_and_topics:
+        excitement = topic_value_by_topic["excitement"]
+        loop_id = topic_value_by_topic["id"]
+        topic_id = topic_value_by_topic["topic_id"]
+        value = topic_value_by_topic["value"]
+        if excitement not in topic_value_by_excitement_loop_topic:
+            topic_value_by_excitement_loop_topic[excitement] = dict()
+        if loop_id not in topic_value_by_excitement_loop_topic[excitement]:
+            topic_value_by_excitement_loop_topic[excitement][loop_id] = dict()
+        topic_value_by_excitement_loop_topic[excitement][loop_id][topic_id] = value
+
+    random_loop_by_excitement = []
+    for (
+        excitement_value,
+        topic_value_by_loop_topic,
+    ) in topic_value_by_excitement_loop_topic.items():
+        loops_order = []
+        loop_topics_sums = []
+        for loop_id, topic_value_by_topic in topic_value_by_loop_topic:
+            loops_order.append(loop_id)
+            loop_topics_sum = 0
+            for topic_id, value in topic_value_by_topic:
+                loop_topics_sum += topic_n_preferences_by_topic[topic_id] * value
+            loop_topics_sums.append(loop_topics_sum)
+
+        topics_sum = sum(loop_topics_sums)
+        loop_topics_probability = [
+            loop_topics_sum / topics_sum for loop_topics_sum in loop_topics_sums
+        ]
+        random_loop_id = np.random.choice(loops_order, p=loop_topics_probability)
+        random_loop_by_excitement.append(random_loop_id)
+
+    random_loop_by_excitement = []
     for excitement_value in range(5):
+        # ある盛り上がり度の音素材（名前とトピックの値）.
         df = read_from_csv(
             "./lda/" + part_name + "/lda" + str(excitement_value) + ".csv"
         )
@@ -1108,19 +1171,21 @@ def choose_sound_randomly_with_using_ratio_topic(part_name, part_id, ratio_topic
         # 音素材のトピックと選好度
         for j in range(len(loop_names)):
             topics = np.array(df[j : j + 1])[0][0:]
-            calc = 0
+            loop_topics_sum = 0
             for k in range(len(topics) - 1):
-                calc += ratio_topic[part_id][excitement_value][k] * topics[k]
-            calcs1.append(calc)
-            sum1 += calc
+                loop_topics_sum += ratio_topic[part_id][excitement_value][k] * topics[k]
+            calcs1.append(loop_topics_sum)
+            sum1 += loop_topics_sum
         # sumex = 0
         for j in range(len(loop_names)):
             calcs1[j] = calcs1[j] / sum1
             # sumex += calcs1[j]
 
+        # 一個だけ選択する
         selected_word = np.random.choice(part_sound_name_list, p=calcs1)
-        part_sound_list.append(selected_word)
-    return part_sound_list
+        random_loop_by_excitement.append(selected_word)
+
+    return random_loop_by_excitement
 
 
 def read_from_csv(path):
