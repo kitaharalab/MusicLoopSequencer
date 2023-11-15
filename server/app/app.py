@@ -1077,8 +1077,6 @@ def choose_sound_randomly(user_id):
     topic_preferences = get_topic_preferences(user_id)
     parts = get_parts()
     ratio_topic = load_topic_preference()
-    part_name2index = {"Drums": 0, "Bass": 1, "Synth": 2, "Sequence": 3}
-    parts = sorted(parts, key=lambda x: part_name2index[x["name"]])
 
     random_sound_list = []
     for part in parts:
