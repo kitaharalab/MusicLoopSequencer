@@ -1072,32 +1072,28 @@ def choose_sound(excitement_array, hmm_array):
 def choose_sound_randomly():
     """音素材をランダムに選択する"""
     random_sound_list = list()
-    drums_list = list()
-    bass_list = list()
-    synth_list = list()
-    sequence_list = list()
 
     ratio_topic = load_topic_preference()
     part_name_list = ["Drums", "Bass", "Synth", "Sequence"]
 
     # drums_part
     drums_list = choose_sound_randomly_with_using_ratio_topic(
-        part_name_list[0], 0, drums_list, ratio_topic
+        part_name_list[0], 0, ratio_topic
     )
 
     # bass_part
     bass_list = choose_sound_randomly_with_using_ratio_topic(
-        part_name_list[1], 1, bass_list, ratio_topic
+        part_name_list[1], 1, ratio_topic
     )
 
     # synth_part
     synth_list = choose_sound_randomly_with_using_ratio_topic(
-        part_name_list[2], 2, synth_list, ratio_topic
+        part_name_list[2], 2, ratio_topic
     )
 
     # sequence_part
     sequence_list = choose_sound_randomly_with_using_ratio_topic(
-        part_name_list[3], 3, sequence_list, ratio_topic
+        part_name_list[3], 3, ratio_topic
     )
 
     random_sound_list.append(drums_list)
@@ -1109,54 +1105,51 @@ def choose_sound_randomly():
 
 
 # TODO: 音素材のトピックと，トピック選好度を使ってるらしい
-def choose_sound_randomly_with_using_ratio_topic(
-    part_name, part_id, part_sound_list, ratio_topic
-):
-    for i in range(5):
-        df = read_from_csv("./lda/" + part_name + "/lda" + str(i) + ".csv")
+def choose_sound_randomly_with_using_ratio_topic(part_name, part_id, ratio_topic):
+    part_sound_list = []
+    for excitement_value in range(5):
+        df = read_from_csv(
+            "./lda/" + part_name + "/lda" + str(excitement_value) + ".csv"
+        )
 
-        feature_names = df.index.values
-        part_sound_name_list = []
-        for j in range(len(feature_names)):
-            part_name_list = (
-                "./TechnoTrance/"
-                + part_name
-                + "/"
-                + str(i)
-                + "/"
-                + feature_names[j]
-                + ".wav"
-            )
-            part_sound_name_list.append(part_name_list)
-        # print(part_name_list)
-        # print(feature_names)
+        # partの曲たち
+        # loop_names = df.index.values
+        # part_sound_name_list = []
+        # for loop_name in loop_names:
+        #     part_name_list = (
+        #         "./TechnoTrance/"
+        #         + part_name
+        #         + "/"
+        #         + str(excitement_value)
+        #         + "/"
+        #         + loop_name
+        #         + ".wav"
+        #     )
+        #     part_sound_name_list.append(part_name_list)
+
+        loop_names = df.index.values
+        part_sound_name_list = [
+            f"./TechnoTrance/{part_name}/{excitement_value}/{loop_name}.wav"
+            for loop_name in loop_names
+        ]
         calcs1 = []
         sum1 = 0
         # topic0とかの各トピックで，その値とトピック選好度をかけてる
         # TODO: csvの最初が音素材の名前かと思ったけどちょっと違うっぽいから
-        for j in range(len(feature_names)):
+        # 音素材のトピックと選好度
+        for j in range(len(loop_names)):
             topics = np.array(df[j : j + 1])[0][0:]
             calc = 0
             for k in range(len(topics) - 1):
-                calc += ratio_topic[part_id][i][k] * topics[k]
+                calc += ratio_topic[part_id][excitement_value][k] * topics[k]
             calcs1.append(calc)
             sum1 += calc
-        # print(sum1)
         sumex = 0
-        # print(calcs1)
-        for j in range(len(feature_names)):
+        for j in range(len(loop_names)):
             calcs1[j] = calcs1[j] / sum1
             sumex += calcs1[j]
-        # print(calcs1)
-        # print(sumex)
-
-        # print(part_name_list)
-        print("OK")
-        # print(calcs1)
 
         selected_word = np.random.choice(part_sound_name_list, p=calcs1)
-        # print(selected_word)
-        print("OKOKOKOKOKOKOKOKOKOKOKOKOKOKOKOKOKOKOKOK")
         part_sound_list.append(selected_word)
     return part_sound_list
 
