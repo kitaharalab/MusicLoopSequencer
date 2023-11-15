@@ -4,10 +4,11 @@ from .connection import get_connection
 from .part import get_parts
 
 
-def get_topic_ids():
+def get_topic_id_ns():
     select_sql = """
         SELECT
-            id
+            id,
+            number
         FROM
             topics
     """
@@ -16,7 +17,7 @@ def get_topic_ids():
         with conn.cursor(cursor_factory=DictCursor) as cur:
             cur.execute(select_sql)
             result = cur.fetchall()
-            response = [dict(row)["id"] for row in result]
+            response = [dict(row) for row in result]
 
     return response
 
@@ -25,7 +26,6 @@ def get_topic_preferences(user_id: str):
     select_sql = """
         SELECT
             topic_id,
-            part_id,
             value
         FROM
             topic_preferences
@@ -36,15 +36,23 @@ def get_topic_preferences(user_id: str):
     with get_connection() as conn:
         with conn.cursor(cursor_factory=DictCursor) as cur:
             cur.execute(select_sql, (user_id,))
-            result = [dict(row) for row in cur.fetchall()]
-            response = dict()
-            for row in result:
-                topic_id = row["topic_id"]
-                part_id = row["part_id"]
-                value = row["value"]
-                if part_id not in response:
-                    response[part_id] = dict()
-                response[part_id][topic_id] = value
+            result = cur.fetchall()
+            response = [dict(row) for row in result]
+
+    return response
+
+
+def get_topic_preferences_by_part_topic_id(user_id: str):
+    topic_preferences = get_topic_preferences(user_id)
+    response = dict()
+
+    for topic_preferences in topic_preferences:
+        topic_id = topic_preferences["topic_id"]
+        part_id = topic_preferences["part_id"]
+        value = topic_preferences["value"]
+        if part_id not in response:
+            response[part_id] = dict()
+        response[part_id][topic_id] = value
 
     return response
 
@@ -55,10 +63,10 @@ def add_topic_preferences(user_id: str):
         values (%s, %s, %s, %s)
     """
     parts = get_parts()
-    topic_ids = get_topic_ids()
+    topic_id_ns = get_topic_id_ns()
     with get_connection() as conn:
         with conn.cursor(cursor_factory=DictCursor) as cur:
             for part in parts:
-                for topic_id in topic_ids:
-                    cur.execute(insert_sql, (user_id, topic_id, part["id"], 1))
+                for topic_id_n in topic_id_ns:
+                    cur.execute(insert_sql, (user_id, topic_id_n["id"], part["id"], 1))
             conn.commit()
