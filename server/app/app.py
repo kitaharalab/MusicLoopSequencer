@@ -1,8 +1,8 @@
+import io
 import json
 import os
 import random
 import re
-from asyncore import loop
 
 import firebase_admin
 import numpy as np
@@ -23,6 +23,7 @@ from sqls import (
     get_loop_music_by_id,
     get_loop_positions_by_part,
     get_loop_topic_by_id,
+    get_loop_wav_from_loop_ids_by_mesure_part,
     get_part_name,
     get_parts,
     get_project,
@@ -46,6 +47,7 @@ selected_constitution_determine = 1
 selected_fix_determine = 0
 
 PARTS = ["Drums", "Bass", "Synth", "Sequence"]
+part_name2index = {"Drums": 0, "Bass": 1, "Synth": 2, "Sequence": 3}
 
 
 cred = credentials.Certificate("./credentials.json")
@@ -151,12 +153,12 @@ def create_song(uid, projectid):
     # fix = req.get("fix")
     # structure = req.get("structure")
 
-    array, songid, section_array = createMusic(curves, projectid, uid)
+    array, songid, section_array, wav_data_bytes = createMusic(curves, projectid, uid)
     # array, songid, section_array = createMusic(curves, projectid, fix, structure)
 
     array = name_to_id(array)
 
-    song_id = add_song(sound_array_wrap(array), projectid, uid)
+    song_id = add_song(sound_array_wrap(array), projectid, uid, wav_data_bytes)
 
     raw_curve = data["rawCurve"]
     curve_max = data["curveMax"]
@@ -219,13 +221,15 @@ def createMusic(array, projectid, user_id, fix=0, structure=1):
             section_array = dtw(array)
             hmm_array, array = fix_Auto_Hmm(hmm_array, array, section_array)
     # 音素材を繋げる
-    sound_list = choose_sound(array, hmm_array, user_id)
+    sound_list_by_mesure_part = choose_sound(array, hmm_array, user_id)
     # コードを付与する
-    sound_list = give_chord(sound_list)
+    # sound_list = give_chord(sound_list)
     # 音素材を繋げる
-    songid = connect_sound(sound_list, projectid, "create", None)
+    songid, wav_data_bytes = connect_sound(
+        sound_list_by_mesure_part, projectid, "create", None
+    )
 
-    return sound_list, songid, section_array
+    return sound_list_by_mesure_part, songid, section_array, wav_data_bytes
 
 
 def create_response(
@@ -1061,16 +1065,21 @@ def choose_sound(excitement_array, hmm_array, user_id):
         binary = binary[::-1]
         excitement = excitement_array[i]
         if i % fix_len == 0:
-            random_sound_list = choose_sound_randomly(user_id)
+            random_sound_list_by_part_excitement = choose_sound_randomly(user_id)
         block_sound = list()
         for part in range(4):
             if binary[part] == "1":
-                block_sound.append(random_sound_list[part][excitement])
+                block_sound.append(
+                    random_sound_list_by_part_excitement[part][excitement]
+                )
             else:
-                block_sound.append("null")
+                block_sound.append(None)
         sound_list.append(block_sound)
 
     return sound_list
+
+
+import pprint
 
 
 # TODO: 音素材のファイル名とwavデータとidをデータベースから取得したい
@@ -1078,34 +1087,37 @@ def choose_sound_randomly(user_id):
     """音素材をランダムに選択する"""
     random_sound_list = list()
 
-    topic_id_ns = get_topic_id_ns(user_id)
+    topic_id_ns = get_topic_id_ns()
     topic_n_ids = list(
         map(lambda x: x["id"], filter(lambda x: x["number"] == topic_n, topic_id_ns))
     )
+
     topic_preferences = get_topic_preferences(user_id)
     topic_n_preferences = list(
         filter(lambda x: x["topic_id"] in topic_n_ids, topic_preferences)
     )
 
     topic_n_preferences_by_part_topic = dict()
+
     for topic_n_preference in topic_n_preferences:
         part_id = topic_n_preference["part_id"]
-        topic_id = topic_preferences["topic_id"]
-        value = topic_preferences["value"]
+        topic_id = topic_n_preference["topic_id"]
+        value = topic_n_preference["value"]
         if part_id not in topic_n_preferences_by_part_topic:
             topic_n_preferences_by_part_topic[part_id] = dict()
         topic_n_preferences_by_part_topic[part_id][topic_id] = value
-
     parts = get_parts()
+    parts = sorted(parts, key=lambda x: part_name2index[x["name"]])
     ratio_topic = load_topic_preference()
 
     random_sound_list = []
     for part in parts:
         sound_list = choose_sound_randomly_with_using_ratio_topic(
             part["name"],
-            int(part["id"]) - 1,
+            part["id"] - 1,
             ratio_topic,
             topic_n_preferences_by_part_topic[part["id"]],
+            topic_n_ids,
         )
         random_sound_list.append(sound_list)
 
@@ -1114,13 +1126,17 @@ def choose_sound_randomly(user_id):
 
 # TODO: 音素材のトピックと，トピック選好度を使ってるらしい
 def choose_sound_randomly_with_using_ratio_topic(
-    part_name, part_id, ratio_topic, topic_n_preferences_by_topic
+    part_name, part_id, ratio_topic, topic_n_preferences_by_topic, topic_n_ids
 ):
     # このパートの盛り上がり度ごとの音素材のIDとトピックが欲しい
     all_loop_and_topics = get_loop_and_topics_from_part(part_id + 1)
+    all_n_loop_and_topics = list(
+        filter(lambda x: x["topic_id"] in topic_n_ids, all_loop_and_topics)
+    )
+    # pprint.pprint(all_loop_and_topics)
     topic_value_by_excitement_loop_topic: dict[int, dict[int, dict]] = dict()
 
-    for topic_value_by_topic in all_loop_and_topics:
+    for topic_value_by_topic in all_n_loop_and_topics:
         excitement = topic_value_by_topic["excitement"]
         loop_id = topic_value_by_topic["id"]
         topic_id = topic_value_by_topic["topic_id"]
@@ -1138,10 +1154,10 @@ def choose_sound_randomly_with_using_ratio_topic(
     ) in topic_value_by_excitement_loop_topic.items():
         loops_order = []
         loop_topics_sums = []
-        for loop_id, topic_value_by_topic in topic_value_by_loop_topic:
+        for loop_id, topic_value_by_topic in topic_value_by_loop_topic.items():
             loops_order.append(loop_id)
             loop_topics_sum = 0
-            for topic_id, value in topic_value_by_topic:
+            for topic_id, value in topic_value_by_topic.items():
                 loop_topics_sum += topic_n_preferences_by_topic[topic_id] * value
             loop_topics_sums.append(loop_topics_sum)
 
@@ -1151,39 +1167,6 @@ def choose_sound_randomly_with_using_ratio_topic(
         ]
         random_loop_id = np.random.choice(loops_order, p=loop_topics_probability)
         random_loop_by_excitement.append(random_loop_id)
-
-    random_loop_by_excitement = []
-    for excitement_value in range(5):
-        # ある盛り上がり度の音素材（名前とトピックの値）.
-        df = read_from_csv(
-            "./lda/" + part_name + "/lda" + str(excitement_value) + ".csv"
-        )
-
-        loop_names = df.index.values
-        part_sound_name_list = [
-            f"./TechnoTrance/{part_name}/{excitement_value}/{loop_name}.wav"
-            for loop_name in loop_names
-        ]
-        calcs1 = []
-        sum1 = 0
-        # topic0とかの各トピックで，その値とトピック選好度をかけてる
-        # TODO: csvの最初が音素材の名前かと思ったけどちょっと違うっぽいから
-        # 音素材のトピックと選好度
-        for j in range(len(loop_names)):
-            topics = np.array(df[j : j + 1])[0][0:]
-            loop_topics_sum = 0
-            for k in range(len(topics) - 1):
-                loop_topics_sum += ratio_topic[part_id][excitement_value][k] * topics[k]
-            calcs1.append(loop_topics_sum)
-            sum1 += loop_topics_sum
-        # sumex = 0
-        for j in range(len(loop_names)):
-            calcs1[j] = calcs1[j] / sum1
-            # sumex += calcs1[j]
-
-        # 一個だけ選択する
-        selected_word = np.random.choice(part_sound_name_list, p=calcs1)
-        random_loop_by_excitement.append(selected_word)
 
     return random_loop_by_excitement
 
@@ -1204,35 +1187,34 @@ def give_chord(sound_list):
     return sound_list
 
 
-def connect_sound(sound_list, projectid, mode, songid):
+def connect_sound(sound_list_by_mesure_part, projectid, mode, songid):
     """音素材を繋げる"""
+    loop_wavs_by_measure_part = get_loop_wav_from_loop_ids_by_mesure_part(
+        sound_list_by_mesure_part
+    )
     output_sound = AudioSegment.silent()
     output_sound = output_sound[0:0]
-    for sound in sound_list:
-        block_sound_exist = False
-        for s in sound:
-            if s != "null":
-                if block_sound_exist:
-                    # TODO: AudioSegment.from_wav(io.BytesIO(data))
-                    block_sound = block_sound.overlay(AudioSegment.from_file(s))
-                else:
-                    block_sound = AudioSegment.from_file(s)
-                    block_sound_exist = True
 
+    for loop_wavs_by_part in loop_wavs_by_measure_part:
+        block_sound = None
+        for loop_wav in loop_wavs_by_part:
+            if loop_wav is None:
+                continue
+
+            wav_data = io.BytesIO(loop_wav)
+            if block_sound is None:
+                block_sound = AudioSegment.from_file(wav_data, format="wav")
+            else:
+                block_sound = block_sound.overlay(
+                    AudioSegment.from_file(wav_data, format="wav")
+                )
         output_sound = output_sound + block_sound
-    connect_new_song(projectid, output_sound, mode, songid)
-    # print(songid)
-    # 楽曲を更新する
-    # song_id = 0
-    # with get_connection() as conn:
-    #     with conn.cursor(cursor_factory=DictCursor) as cur:
-    #         cur.execute(
-    #             "INSERT INTO songs (project_id) VALUES (%s) RETURNING id", (projectid,)
-    #         )
-    #         song_id = cur.fetchone()[0]
-    #         conn.commit()
-    # print(song_id)
-    return songid
+    # connect_new_song(projectid, output_sound, mode, songid)
+
+    wav_data = io.BytesIO()
+    output_sound.export(wav_data, format="wav")
+    wav_data_bytes = wav_data.getvalue()
+    return songid, wav_data_bytes
 
 
 # TODO: DBに移行したい
