@@ -33,6 +33,7 @@ from sqls import (
     get_topic_id_ns,
     get_topic_preferences,
     get_topic_preferences_by_part_topic_id,
+    get_wav_data_from_song_id,
     play_loop_log,
     play_song_log,
     sound_array_wrap,
@@ -772,13 +773,10 @@ def downloadSong(projectid,songid,filename):
 # TODO: 作成された曲なのでDBに変更したい
 @app.route("/projects/<projectid>/songs/<songid>/wav", methods=["GET"])
 def download_song(projectid, songid):
-    file_name = f"./project/{projectid}/songs/{songid}/song{songid}.wav"
-    exist_file = os.path.isfile(file_name)
-
-    if not exist_file:
-        return make_response(jsonify({"message": "指定された楽曲ファイルは存在しません"})), 204
-
-    return send_file(file_name, as_attachment=True)
+    data = get_wav_data_from_song_id(songid)
+    response = make_response(data)
+    response.headers.set("Content-Type", request.content_type)
+    return response
 
 
 @app.route("/projects/<projectid>/songs/<songid>/wav", methods=["POST"])
