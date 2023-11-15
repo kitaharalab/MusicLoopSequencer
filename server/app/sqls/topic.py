@@ -36,8 +36,15 @@ def get_topic_preferences(user_id: str):
     with get_connection() as conn:
         with conn.cursor(cursor_factory=DictCursor) as cur:
             cur.execute(select_sql, (user_id,))
-            result = cur.fetchone()
-            response = dict(result) if result is not None else None
+            result = [dict(row) for row in cur.fetchall()]
+            response = dict()
+            for row in result:
+                topic_id = row["topic_id"]
+                part_id = row["part_id"]
+                value = row["value"]
+                if part_id not in response:
+                    response[part_id] = dict()
+                response[part_id][topic_id] = value
 
     return response
 
