@@ -6,6 +6,7 @@ from .part import get_part_name, get_parts
 from .project import add_project, get_project, get_project_song_ids, get_projects
 from .song import create_song, sound_array_wrap
 from .song_details import get_song_details, get_song_loop_ids, update_song_details
+from .topic import add_topic_preferences, get_topic_preferences
 from .user import add_user, get_user
 
 __all__ = [
