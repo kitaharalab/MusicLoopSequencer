@@ -73,3 +73,18 @@ def get_project_id_from_song_id(song_id: int) -> int:
             )
             result = dict(cur.fetchone())
             return result["project_id"]
+
+
+def get_wav_data_from_song_id(song_id: int) -> bytes:
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute(
+                """
+                SELECT wave_data
+                FROM songs
+                WHERE id = %s
+                """,
+                (song_id,),
+            )
+            result = cur.fetchone()
+            return result["wave_data"].tobytes() if result is not None else None
