@@ -72,3 +72,28 @@ def get_loop_and_topics_from_part(part_id: int):
             response = [dict(row) for row in cur.fetchall()]
 
     return response
+
+
+def get_loop_wav_from_loop_ids_by_mesure_part(loop_ids_by_mesure_part: list):
+    sql = """
+    SELECT id, data
+    FROM loops
+    where id=%s
+    """
+    response = []
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            for loop_ids_by_part in loop_ids_by_mesure_part:
+                response.append([])
+                for loop_id in loop_ids_by_part:
+                    if loop_id is None:
+                        response[-1].append(None)
+                        continue
+                    cur.execute(sql, (int(loop_id),))
+                    result = cur.fetchone()
+                    if result is not None:
+                        response[-1].append(dict(result)["data"].tobytes())
+                    else:
+                        response[-1].append(None)
+
+    return response
