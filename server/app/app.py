@@ -27,6 +27,7 @@ from sqls import (
     get_project_song_ids,
     get_projects,
     get_song_loop_ids,
+    get_topic_preferences,
     play_loop_log,
     play_song_log,
     sound_array_wrap,
@@ -146,7 +147,7 @@ def create_song(uid, projectid):
     # fix = req.get("fix")
     # structure = req.get("structure")
 
-    array, songid, section_array = createMusic(curves, projectid)
+    array, songid, section_array = createMusic(curves, projectid, uid)
     # array, songid, section_array = createMusic(curves, projectid, fix, structure)
 
     array = name_to_id(array)
@@ -181,7 +182,7 @@ def create_song(uid, projectid):
 
 
 # TODO: returnしてるsongIdは使ってないので修正
-def createMusic(array, projectid, fix=0, structure=1):
+def createMusic(array, projectid, user_id, fix=0, structure=1):
     """楽曲の生成"""
     # 盛り上がり度を求める
     # self.excitement_array = self.model.chengeExcitement(array)
@@ -214,7 +215,7 @@ def createMusic(array, projectid, fix=0, structure=1):
             section_array = dtw(array)
             hmm_array, array = fix_Auto_Hmm(hmm_array, array, section_array)
     # 音素材を繋げる
-    sound_list = choose_sound(array, hmm_array)
+    sound_list = choose_sound(array, hmm_array, user_id)
     # コードを付与する
     sound_list = give_chord(sound_list)
     # 音素材を繋げる
@@ -1048,7 +1049,7 @@ def fix_Auto_Hmm(hmm_array, excitement_array, section_array):
     return hmm_array, excitement_array
 
 
-def choose_sound(excitement_array, hmm_array):
+def choose_sound(excitement_array, hmm_array, user_id):
     """使用する音素材を選択する"""
     sound_list = list()
     for i in range(excitement_len):
@@ -1056,7 +1057,7 @@ def choose_sound(excitement_array, hmm_array):
         binary = binary[::-1]
         excitement = excitement_array[i]
         if i % fix_len == 0:
-            random_sound_list = choose_sound_randomly()
+            random_sound_list = choose_sound_randomly(user_id)
         block_sound = list()
         for part in range(4):
             if binary[part] == "1":
@@ -1069,37 +1070,22 @@ def choose_sound(excitement_array, hmm_array):
 
 
 # TODO: 音素材のファイル名とwavデータとidをデータベースから取得したい
-def choose_sound_randomly():
+def choose_sound_randomly(user_id):
     """音素材をランダムに選択する"""
     random_sound_list = list()
 
+    topic_preferences = get_topic_preferences(user_id)
+    parts = get_parts()
     ratio_topic = load_topic_preference()
-    part_name_list = ["Drums", "Bass", "Synth", "Sequence"]
+    part_name2index = {"Drums": 0, "Bass": 1, "Synth": 2, "Sequence": 3}
+    parts = sorted(parts, key=lambda x: part_name2index[x["name"]])
 
-    # drums_part
-    drums_list = choose_sound_randomly_with_using_ratio_topic(
-        part_name_list[0], 0, ratio_topic
-    )
-
-    # bass_part
-    bass_list = choose_sound_randomly_with_using_ratio_topic(
-        part_name_list[1], 1, ratio_topic
-    )
-
-    # synth_part
-    synth_list = choose_sound_randomly_with_using_ratio_topic(
-        part_name_list[2], 2, ratio_topic
-    )
-
-    # sequence_part
-    sequence_list = choose_sound_randomly_with_using_ratio_topic(
-        part_name_list[3], 3, ratio_topic
-    )
-
-    random_sound_list.append(drums_list)
-    random_sound_list.append(bass_list)
-    random_sound_list.append(synth_list)
-    random_sound_list.append(sequence_list)
+    random_sound_list = []
+    for part in parts:
+        sound_list = choose_sound_randomly_with_using_ratio_topic(
+            part["name"], int(part["id"]) - 1, ratio_topic
+        )
+        random_sound_list.append(sound_list)
 
     return random_sound_list
 
@@ -1111,21 +1097,6 @@ def choose_sound_randomly_with_using_ratio_topic(part_name, part_id, ratio_topic
         df = read_from_csv(
             "./lda/" + part_name + "/lda" + str(excitement_value) + ".csv"
         )
-
-        # partの曲たち
-        # loop_names = df.index.values
-        # part_sound_name_list = []
-        # for loop_name in loop_names:
-        #     part_name_list = (
-        #         "./TechnoTrance/"
-        #         + part_name
-        #         + "/"
-        #         + str(excitement_value)
-        #         + "/"
-        #         + loop_name
-        #         + ".wav"
-        #     )
-        #     part_sound_name_list.append(part_name_list)
 
         loop_names = df.index.values
         part_sound_name_list = [
@@ -1144,10 +1115,10 @@ def choose_sound_randomly_with_using_ratio_topic(part_name, part_id, ratio_topic
                 calc += ratio_topic[part_id][excitement_value][k] * topics[k]
             calcs1.append(calc)
             sum1 += calc
-        sumex = 0
+        # sumex = 0
         for j in range(len(loop_names)):
             calcs1[j] = calcs1[j] / sum1
-            sumex += calcs1[j]
+            # sumex += calcs1[j]
 
         selected_word = np.random.choice(part_sound_name_list, p=calcs1)
         part_sound_list.append(selected_word)
