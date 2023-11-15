@@ -60,17 +60,9 @@ CREATE TABLE
     songs (
         id serial PRIMARY KEY,
         project_id INTEGER NOT NULL,
+        wave_data bytea NOT NULL,
         FOREIGN KEY (project_id) REFERENCES projects (id)
     );
-
-INSERT INTO
-    songs (project_id)
-VALUES
-    (1),
-    (1),
-    (1),
-    (2),
-    (1);
 
 -- 楽曲詳細テーブル
 DROP TABLE IF EXISTS song_details CASCADE;
@@ -87,15 +79,6 @@ CREATE TABLE
         PRIMARY KEY (song_id, part_id, measure)
     );
 
-INSERT INTO
-    song_details (song_id, part_id, measure, loop_id)
-VALUES
-    (1, 1, 1, 38),
-    (1, 2, 2, 91),
-    (1, 3, 3, 51),
-    (1, 4, 4, 128),
-    (1, 1, 5, 38);
-
 -- 盛り上がり度曲線テーブル
 DROP TABLE IF EXISTS excitement_curve CASCADE;
 
@@ -108,18 +91,6 @@ CREATE TABLE
         PRIMARY KEY (song_id, INDEX)
     );
 
-INSERT INTO
-    excitement_curve (song_id, INDEX, VALUE)
-VALUES
-    (1, 0, 10),
-    (1, 1, 15),
-    (1, 2, 20),
-    (1, 3, 5),
-    (1, 4, 89),
-    (1, 5, 27),
-    (1, 6, 99),
-    (1, 7, 76);
-
 -- 盛り上がり度曲線の詳細テーブル
 DROP TABLE IF EXISTS excitement_curve_info CASCADE;
 
@@ -131,11 +102,6 @@ CREATE TABLE
         FOREIGN KEY (song_id) REFERENCES songs (id),
         PRIMARY KEY (song_id)
     );
-
-INSERT INTO
-    excitement_curve_info (song_id, LENGTH, max_value)
-VALUES
-    (1, 10, 100);
 
 -- 操作ログテーブル
 DROP TABLE IF EXISTS operation_logs CASCADE;
