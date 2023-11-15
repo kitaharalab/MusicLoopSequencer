@@ -49,3 +49,26 @@ def get_loop_topic_by_id(loop_id: int):
             response = dict(result) if result is not None else None
 
     return response
+
+
+def get_loop_and_topics_from_part(part_id: int):
+    sql = """
+    SELECT
+        loops.id,
+        loops.name,
+        loops.excitement,
+        loop_topics.topic_id,
+        loop_topics.value
+    FROM loops
+    JOIN loop_topics
+    ON loops.id=loop_topics.loop_id
+    where
+        loops.part_id=%s
+    """
+    response = None
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute(sql, (part_id,))
+            response = [dict(row) for row in cur.fetchall()]
+
+    return response
