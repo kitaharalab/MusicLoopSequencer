@@ -1,10 +1,7 @@
-import io
-import re
-
 import firebase_admin
 import pandas as pd
 from firebase_admin import credentials
-from flask import Flask, jsonify, make_response
+from flask import Flask
 from flask_cors import CORS
 from route.music_parts import parts
 from route.music_parts.id.sounds import sounds
@@ -14,6 +11,7 @@ from route.projects.songs import songs
 from route.projects.songs.music_parts import song_parts
 from route.projects.songs.music_parts.measure import part_measure
 from route.projects.songs.music_parts.measure.music_loop import mesure_music_loop
+from route.topic import topic
 
 fix_len = 4
 topic_n = 4
@@ -39,7 +37,7 @@ app.register_blueprint(songs)
 app.register_blueprint(song_parts)
 app.register_blueprint(part_measure)
 app.register_blueprint(mesure_music_loop)
-
+app.register_blueprint(topic)
 
 # TODO: デリートの実装
 # @app.route(
@@ -234,32 +232,6 @@ def downloadSong(projectid,songid,filename):
 # #     as_attachment=True,
 # # )
 # return make_response(jsonify(list(topic_array)))
-
-
-@app.route("/topic", methods=["GET"])
-def get_topic_preference():
-    ratio_topic = load_topic_preference()
-    response = {"ratio-topic": ratio_topic}
-
-    return make_response(jsonify(response))
-
-
-# TODO: パートごと，盛り上がり度ごとのトピック選好度をデータベースから取得
-def load_topic_preference():
-    ratio_topic = [[[1.0 for i in range(topic_n)] for j in range(5)] for k in range(4)]
-    part_list = ["Drums", "Bass", "Synth", "Sequence"]
-    for i in range(4):
-        for j in range(5):
-            pass_ratio_topic = (
-                "./lda/" + part_list[i] + "/ratio_topic" + str(j) + ".txt"
-            )
-            topic = []
-            with open(pass_ratio_topic) as f:
-                topic = f.read().split("\n")
-            for k in range(4):
-                ratio_topic[i][j][k] = float(topic[k])
-
-    return ratio_topic
 
 
 def read_from_csv(path):
