@@ -15,6 +15,7 @@ from psycopg2.extras import DictCursor
 from pydub import AudioSegment
 from readFiles import readLoopsPath, readPartCoordinates
 from route.parts import parts
+from route.parts.id.sounds import sounds
 from sqls import add_excitement_curve, add_project
 from sqls import create_song as add_song
 from sqls import (
@@ -60,12 +61,7 @@ CORS(app)
 
 
 app.register_blueprint(parts, url_prefix="/parts")
-
-
-@app.route("/parts/<int:partid>/sounds", methods=["GET"])
-def get_infomation_of_sounds(partid):
-    response = get_loop_positions_by_part(partid)
-    return make_response(jsonify(response))
+app.register_blueprint(sounds, url_prefix="/parts/<int:partid>/sounds")
 
 
 # INFO: 現状使っていない
