@@ -9,7 +9,6 @@ from sqls import (
     get_song_loop_ids,
     sound_array_wrap,
 )
-from util.connect_sound import connect_sound
 from verify import require_auth
 
 from .create_music import createMusic
