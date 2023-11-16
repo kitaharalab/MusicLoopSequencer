@@ -8,7 +8,6 @@ import pandas as pd
 from firebase_admin import credentials
 from flask import Flask, jsonify, make_response, request, send_file
 from flask_cors import CORS
-from psycopg2.extras import DictCursor
 from route.parts import parts
 from route.parts.id.sounds import sounds
 from route.parts.id.sounds.id import sound_id
@@ -16,7 +15,6 @@ from route.projects import projects
 from route.projects.songs import songs
 from sqls import create_song as add_song
 from sqls import (
-    get_connection,
     get_excitement_curve,
     get_loop_music_by_id,
     get_loop_topic_by_id,
@@ -52,21 +50,6 @@ app.register_blueprint(sounds, url_prefix="/parts/<int:partid>/sounds")
 # app.register_blueprint(sound_id, url_prefix="/parts/<int:partid>/sounds/<int:soundid>")
 app.register_blueprint(projects)
 app.register_blueprint(songs)
-
-
-@app.route("/projects/<projectid>/songs", methods=["GET"])
-def get_infomation_songs(projectid):
-    response = None
-    with get_connection() as conn:
-        with conn.cursor(cursor_factory=DictCursor) as cur:
-            cur.execute(
-                "SELECT id FROM songs WHERE project_id = %s ORDER BY id",
-                (int(projectid),),
-            )
-            result = cur.fetchall()
-            response = [dict(row) for row in result]
-
-    return make_response(jsonify(response))
 
 
 # TODO: 誤字の修正

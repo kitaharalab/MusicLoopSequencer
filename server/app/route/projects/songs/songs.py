@@ -1,7 +1,8 @@
 from flask import Blueprint, jsonify, make_response, request
+from psycopg2.extras import DictCursor
 from sqls import add_excitement_curve
 from sqls import create_song as add_song
-from sqls import get_parts, sound_array_wrap
+from sqls import get_connection, get_parts, sound_array_wrap
 from verify import require_auth
 
 from .create_music import createMusic
@@ -14,6 +15,7 @@ songs = Blueprint("songs", __name__)
 @songs.route("/projects/<int:projectid>/songs", methods=["POST"])
 @require_auth
 def create_song(uid, projectid):
+    print("get data")
     data = request.get_json()  # WebページからのJSONデータを受け取る．
     curves = data["curves"]
 
@@ -49,5 +51,20 @@ def create_song(uid, projectid):
         id = part["id"]
         name = part["name"]
         response["parts"].append({"id": id, "sounds": song_list[name]})
+
+    return make_response(jsonify(response))
+
+
+@songs.route("/projects/<projectid>/songs", methods=["GET"])
+def get_infomation_songs(projectid):
+    response = None
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute(
+                "SELECT id FROM songs WHERE project_id = %s ORDER BY id",
+                (int(projectid),),
+            )
+            result = cur.fetchall()
+            response = [dict(row) for row in result]
 
     return make_response(jsonify(response))
