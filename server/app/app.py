@@ -59,32 +59,12 @@ cred = credentials.Certificate("./credentials.json")
 firebase_app = firebase_admin.initialize_app(cred)
 
 app = Flask(__name__)
+CORS(app)
 
 app.register_blueprint(parts, url_prefix="/parts")
 app.register_blueprint(sounds, url_prefix="/parts/<int:partid>/sounds")
 # app.register_blueprint(sound_id, url_prefix="/parts/<int:partid>/sounds/<int:soundid>")
 app.register_blueprint(projects)
-CORS(app)
-
-
-# TODO: 楽曲のIDごとに盛り上がり度曲線を記録している
-@app.route("/projects/<int:projectid>", methods=["GET"])
-def get_infomation_of_project(projectid):
-    project_info = get_project(projectid)
-    song_ids = get_project_song_ids(projectid)
-    response = {"song_ids": song_ids, "project": project_info}
-
-    # curves = get_excitement_curve()
-    # curves = []
-    # with open(f"./project/{projectid}/curve/curve.txt") as f:
-    #     curves = f.read().split("\n")
-    # if curves[len(curves) - 1] == "":
-    #     curves.pop()
-    # for i in range(len(curves)):
-    #     curves[i] = int(curves[i])
-    # response = {""number-of-sound": len(song_ids), "curves": curves"}
-
-    return make_response(jsonify(response))
 
 
 @app.route("/projects/<int:projectid>/songs", methods=["POST"])

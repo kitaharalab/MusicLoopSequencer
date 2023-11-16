@@ -1,7 +1,7 @@
 import json
 
 from flask import Blueprint, jsonify, make_response, request
-from sqls import add_project, get_projects
+from sqls import add_project, get_project, get_project_song_ids, get_projects
 from verify import require_auth
 
 projects = Blueprint("projects", __name__)
@@ -31,4 +31,12 @@ def get_infomation_of_projects():
 
     response = get_projects(isExperiment)
 
+    return make_response(jsonify(response))
+
+
+@projects.route("/projects/<int:projectid>", methods=["GET"])
+def get_infomation_of_project(projectid):
+    project_info = get_project(projectid)
+    song_ids = get_project_song_ids(projectid)
+    response = {"song_ids": song_ids, "project": project_info}
     return make_response(jsonify(response))
