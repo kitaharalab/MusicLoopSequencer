@@ -1,7 +1,5 @@
 import io
-import json
 import os
-import random
 import re
 
 import firebase_admin
@@ -11,33 +9,26 @@ from firebase_admin import credentials
 from flask import Flask, jsonify, make_response, request, send_file
 from flask_cors import CORS
 from hmm_model.model import initialize_Hmm
-from hmmlearn import hmm
 from psycopg2.extras import DictCursor
 from pydub import AudioSegment
-from readFiles import readLoopsPath, readPartCoordinates
+from readFiles import readLoopsPath
 from route.parts import parts
 from route.parts.id.sounds import sounds
 from route.parts.id.sounds.id import sound_id
 from route.projects import projects
-from sqls import add_excitement_curve, add_project
+from sqls import add_excitement_curve
 from sqls import create_song as add_song
 from sqls import (
     get_connection,
     get_excitement_curve,
     get_loop_and_topics_from_part,
     get_loop_music_by_id,
-    get_loop_positions_by_part,
     get_loop_topic_by_id,
     get_loop_wav_from_loop_ids_by_mesure_part,
-    get_part_name,
     get_parts,
-    get_project,
-    get_project_song_ids,
-    get_projects,
     get_song_loop_ids,
     get_topic_id_ns,
     get_topic_preferences,
-    get_topic_preferences_by_part_topic_id,
     get_wav_data_from_song_id,
     play_loop_log,
     play_song_log,
