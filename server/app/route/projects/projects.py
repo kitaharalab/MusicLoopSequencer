@@ -1,7 +1,6 @@
 import json
 
 from flask import Blueprint, jsonify, make_response, request
-from flask_cors import CORS
 from sqls import add_project, get_projects
 from verify import require_auth
 
