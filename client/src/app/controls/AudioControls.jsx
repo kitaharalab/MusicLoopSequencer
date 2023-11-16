@@ -21,7 +21,7 @@ export default function AudioControls({ projectId }) {
     }/projects/${projectId}/songs/${songId}/wav`;
     axios
       .get(url, {
-        responseType: "arraybuffer",
+        responseType: "blob",
         headers: { "Content-Type": "audio/wav" },
       })
       .then((response) => {
