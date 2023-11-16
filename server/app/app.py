@@ -8,35 +8,27 @@ import pandas as pd
 from firebase_admin import credentials
 from flask import Flask, jsonify, make_response, request, send_file
 from flask_cors import CORS
-from hmm_model.model import initialize_Hmm
 from psycopg2.extras import DictCursor
-from pydub import AudioSegment
-from readFiles import readLoopsPath
 from route.parts import parts
 from route.parts.id.sounds import sounds
 from route.parts.id.sounds.id import sound_id
 from route.projects import projects
-from sqls import add_excitement_curve
+from route.projects.songs import songs
 from sqls import create_song as add_song
 from sqls import (
     get_connection,
     get_excitement_curve,
-    get_loop_and_topics_from_part,
     get_loop_music_by_id,
     get_loop_topic_by_id,
-    get_loop_wav_from_loop_ids_by_mesure_part,
     get_parts,
     get_song_loop_ids,
-    get_topic_id_ns,
-    get_topic_preferences,
     get_wav_data_from_song_id,
     play_loop_log,
     play_song_log,
     sound_array_wrap,
     update_song_details,
 )
-from util.dtw import dtw
-from util.hmm import fix_Auto_Hmm, fix_Hmm, use_Auto_HMM, use_HMM
+from util.connect_sound import connect_sound
 from verify import require_auth
 
 fix_len = 4
@@ -59,162 +51,7 @@ app.register_blueprint(parts, url_prefix="/parts")
 app.register_blueprint(sounds, url_prefix="/parts/<int:partid>/sounds")
 # app.register_blueprint(sound_id, url_prefix="/parts/<int:partid>/sounds/<int:soundid>")
 app.register_blueprint(projects)
-
-
-@app.route("/projects/<int:projectid>/songs", methods=["POST"])
-@require_auth
-def create_song(uid, projectid):
-    data = request.get_json()  # WebページからのJSONデータを受け取る．
-    curves = data["curves"]
-
-    # req = request.args
-    # fix = req.get("fix")
-    # structure = req.get("structure")
-
-    array, songid, section_array, wav_data_bytes = createMusic(curves, projectid, uid)
-    # array, songid, section_array = createMusic(curves, projectid, fix, structure)
-
-    array = name_to_id(array)
-
-    song_id = add_song(sound_array_wrap(array), projectid, uid, wav_data_bytes)
-
-    raw_curve = data["rawCurve"]
-    curve_max = data["curveMax"]
-    add_excitement_curve(song_id, raw_curve, curve_max)
-
-    parts = get_parts()
-
-    drums_list, bass_list, synth_list, sequence_list = format_list(array)
-    song_list = {
-        "Drums": drums_list,
-        "Bass": bass_list,
-        "Synth": synth_list,
-        "Sequence": sequence_list,
-    }
-
-    section = music_section_info_from_section_array(section_array)
-    response = {"songId": song_id, "parts": [], "section": section}
-
-    for part in parts:
-        id = part["id"]
-        name = part["name"]
-        response["parts"].append({"id": id, "sounds": song_list[name]})
-
-    return make_response(jsonify(response))
-
-
-# TODO: returnしてるsongIdは使ってないので修正
-def createMusic(array, projectid, user_id, fix=0, structure=1):
-    """楽曲の生成"""
-    # 盛り上がり度を求める
-    # self.excitement_array = self.model.chengeExcitement(array)
-    # 状態を求める
-    (
-        no_part_hmm_model,
-        intro_hmm_model,
-        breakdown_hmm_model,
-        buildup_hmm_model,
-        drop_hmm_model,
-        outro_hmm_model,
-    ) = initialize_Hmm()
-    hmm_array = ""
-    section_array = ""
-    if structure == 0:
-        hmm_array = use_HMM(array, no_part_hmm_model)
-    else:
-        hmm_array, section_array = use_Auto_HMM(
-            array,
-            intro_hmm_model,
-            breakdown_hmm_model,
-            buildup_hmm_model,
-            drop_hmm_model,
-            outro_hmm_model,
-        )
-    if fix == 1:
-        if structure == 0:
-            hmm_array, array = fix_Hmm(hmm_array, array, fix_len)
-        else:
-            section_array = dtw(array)
-            hmm_array, array = fix_Auto_Hmm(hmm_array, array, section_array, fix_len)
-    # 音素材を繋げる
-    sound_list_by_mesure_part = choose_sound(array, hmm_array, user_id)
-    # コードを付与する
-    # sound_list = give_chord(sound_list)
-    # 音素材を繋げる
-    songid, wav_data_bytes = connect_sound(
-        sound_list_by_mesure_part, projectid, "create", None
-    )
-
-    return sound_list_by_mesure_part, songid, section_array, wav_data_bytes
-
-
-def music_section_info_from_section_array(section_array):
-    music_section = []
-    id, start, end = 0, 0, 0
-    section_name = ["intro", "breakdown", "buildup", "drop", "outro"]
-    for i in range(len(section_array)):
-        if id != section_array[i]:
-            end = i - 1
-            section = {
-                "start": start,
-                "end": end,
-                "section_name": section_name[section_array[i - 1]],
-            }
-            music_section.append(section)
-            start = i
-            id = section_array[i]
-        if i == len(section_array) - 1:
-            end = len(section_array) - 1
-            section = {
-                "start": start,
-                "end": end,
-                "section_name": section_name[section_array[i]],
-            }
-            music_section.append(section)
-
-    return music_section
-
-
-# TODO: 多分array[i][j]にidを追加しそうなのでいらなくなる？
-# TODO: 名前の部分から修正する必要がある
-def name_to_id(array):
-    part_list = [readLoopsPath(part) for part in PARTS]
-    for i in range(len(array)):
-        for j in range(len(array[0])):
-            for k in range(len(part_list[j])):
-                if array[i][j] == part_list[j][k]:
-                    array[i][j] = str(k)
-
-    return array
-
-
-def format_list(array):
-    drums_list, bass_list, synth_list, sequence_list = (
-        ["null" for i in range(32)],
-        ["null" for i in range(32)],
-        ["null" for i in range(32)],
-        ["null" for i in range(32)],
-    )
-
-    for i in range(32):
-        if array[i][0] == "null" or array[i][0] is None:
-            drums_list[i] = None
-        else:
-            drums_list[i] = int(array[i][0])
-        if array[i][1] == "null" or array[i][1] is None:
-            bass_list[i] = None
-        else:
-            bass_list[i] = int(array[i][1])
-        if array[i][2] == "null" or array[i][2] is None:
-            synth_list[i] = None
-        else:
-            synth_list[i] = int(array[i][2])
-        if array[i][3] == "null" or array[i][3] is None:
-            sequence_list[i] = None
-        else:
-            sequence_list[i] = int(array[i][3])
-
-    return drums_list, bass_list, synth_list, sequence_list
+app.register_blueprint(songs)
 
 
 @app.route("/projects/<projectid>/songs", methods=["GET"])
@@ -795,117 +632,6 @@ def load_topic_preference():
     return ratio_topic
 
 
-def choose_sound(excitement_array, hmm_array, user_id):
-    """使用する音素材を選択する"""
-    sound_list = list()
-    for i in range(excitement_len):
-        binary = format(hmm_array[i], "b").zfill(4)
-        binary = binary[::-1]
-        excitement = excitement_array[i]
-        if i % fix_len == 0:
-            random_sound_list_by_part_excitement = choose_sound_randomly(user_id)
-        block_sound = list()
-        for part in range(4):
-            if binary[part] == "1":
-                block_sound.append(
-                    random_sound_list_by_part_excitement[part][excitement]
-                )
-            else:
-                block_sound.append(None)
-        sound_list.append(block_sound)
-
-    return sound_list
-
-
-# TODO: 音素材のファイル名とwavデータとidをデータベースから取得したい
-def choose_sound_randomly(user_id):
-    """音素材をランダムに選択する"""
-    random_sound_list = list()
-
-    topic_id_ns = get_topic_id_ns()
-    topic_n_ids = list(
-        map(lambda x: x["id"], filter(lambda x: x["number"] == topic_n, topic_id_ns))
-    )
-
-    topic_preferences = get_topic_preferences(user_id)
-    topic_n_preferences = list(
-        filter(lambda x: x["topic_id"] in topic_n_ids, topic_preferences)
-    )
-
-    topic_n_preferences_by_part_topic = dict()
-
-    for topic_n_preference in topic_n_preferences:
-        part_id = topic_n_preference["part_id"]
-        topic_id = topic_n_preference["topic_id"]
-        value = topic_n_preference["value"]
-        if part_id not in topic_n_preferences_by_part_topic:
-            topic_n_preferences_by_part_topic[part_id] = dict()
-        topic_n_preferences_by_part_topic[part_id][topic_id] = value
-    parts = get_parts()
-    parts = sorted(parts, key=lambda x: part_name2index[x["name"]])
-    ratio_topic = load_topic_preference()
-
-    random_sound_list = []
-    for part in parts:
-        sound_list = choose_sound_randomly_with_using_ratio_topic(
-            part["name"],
-            part["id"] - 1,
-            ratio_topic,
-            topic_n_preferences_by_part_topic[part["id"]],
-            topic_n_ids,
-        )
-        random_sound_list.append(sound_list)
-
-    return random_sound_list
-
-
-# TODO: 音素材のトピックと，トピック選好度を使ってるらしい
-def choose_sound_randomly_with_using_ratio_topic(
-    part_name, part_id, ratio_topic, topic_n_preferences_by_topic, topic_n_ids
-):
-    # このパートの盛り上がり度ごとの音素材のIDとトピックが欲しい
-    all_loop_and_topics = get_loop_and_topics_from_part(part_id + 1)
-    all_n_loop_and_topics = list(
-        filter(lambda x: x["topic_id"] in topic_n_ids, all_loop_and_topics)
-    )
-    # pprint.pprint(all_loop_and_topics)
-    topic_value_by_excitement_loop_topic: dict[int, dict[int, dict]] = dict()
-
-    for topic_value_by_topic in all_n_loop_and_topics:
-        excitement = topic_value_by_topic["excitement"]
-        loop_id = topic_value_by_topic["id"]
-        topic_id = topic_value_by_topic["topic_id"]
-        value = topic_value_by_topic["value"]
-        if excitement not in topic_value_by_excitement_loop_topic:
-            topic_value_by_excitement_loop_topic[excitement] = dict()
-        if loop_id not in topic_value_by_excitement_loop_topic[excitement]:
-            topic_value_by_excitement_loop_topic[excitement][loop_id] = dict()
-        topic_value_by_excitement_loop_topic[excitement][loop_id][topic_id] = value
-
-    random_loop_by_excitement = []
-    for (
-        excitement_value,
-        topic_value_by_loop_topic,
-    ) in topic_value_by_excitement_loop_topic.items():
-        loops_order = []
-        loop_topics_sums = []
-        for loop_id, topic_value_by_topic in topic_value_by_loop_topic.items():
-            loops_order.append(loop_id)
-            loop_topics_sum = 0
-            for topic_id, value in topic_value_by_topic.items():
-                loop_topics_sum += topic_n_preferences_by_topic[topic_id] * value
-            loop_topics_sums.append(loop_topics_sum)
-
-        topics_sum = sum(loop_topics_sums)
-        loop_topics_probability = [
-            loop_topics_sum / topics_sum for loop_topics_sum in loop_topics_sums
-        ]
-        random_loop_id = np.random.choice(loops_order, p=loop_topics_probability)
-        random_loop_by_excitement.append(random_loop_id)
-
-    return random_loop_by_excitement
-
-
 def read_from_csv(path):
     df = pd.read_csv(path, header=0, index_col=0)
 
@@ -922,61 +648,31 @@ def give_chord(sound_list):
     return sound_list
 
 
-def connect_sound(sound_list_by_mesure_part, projectid, mode, songid):
-    """音素材を繋げる"""
-    loop_wavs_by_measure_part = get_loop_wav_from_loop_ids_by_mesure_part(
-        sound_list_by_mesure_part
-    )
-    output_sound = AudioSegment.silent()
-    output_sound = output_sound[0:0]
-
-    for loop_wavs_by_part in loop_wavs_by_measure_part:
-        block_sound = None
-        for loop_wav in loop_wavs_by_part:
-            if loop_wav is None:
-                continue
-
-            wav_data = io.BytesIO(loop_wav)
-            if block_sound is None:
-                block_sound = AudioSegment.from_file(wav_data, format="wav")
-            else:
-                block_sound = block_sound.overlay(
-                    AudioSegment.from_file(wav_data, format="wav")
-                )
-        output_sound = output_sound + block_sound
-    # connect_new_song(projectid, output_sound, mode, songid)
-
-    wav_data = io.BytesIO()
-    output_sound.export(wav_data, format="wav")
-    wav_data_bytes = wav_data.getvalue()
-    return songid, wav_data_bytes
-
-
-# TODO: DBに移行したい
-def connect_new_song(projectid, output_sound, mode, songid):
-    if mode == "create":
-        songid = 0
-        created = False
-        while not created:
-            if not os.path.exists(f"./project/{projectid }/songs/{songid}"):
-                os.makedirs(f"./project/{projectid }/songs/{songid}", exist_ok=True)
-                output_sound.export(
-                    f"./project/{projectid}/songs/{songid}/song{songid}.wav",
-                    format="wav",
-                )
-                created = True
-                # sound = AudioSegment.from_wav("./project/" + projectid + "/songs/" + str(songid) + "/song" + str(songid) + ".wav")
-                # sound.export("./project/" + projectid + "/songs/" + str(songid) + "/song" + str(songid) + ".mp3", format="mp3")
-            else:
-                songid = songid + 1
-    else:
-        # TODO: insert(update)した後の音声データの書き込みがこれ．byteデータみたいなのだけ欲しい
-        os.makedirs(f"./project/{projectid }/songs/{songid}", exist_ok=True)
-        output_sound.export(
-            f"./project/{projectid}/songs/{songid}/song{songid}.wav",
-            format="wav",
-        )
-    return songid
+# # TODO: DBに移行したい
+# def connect_new_song(projectid, output_sound, mode, songid):
+#     if mode == "create":
+#         songid = 0
+#         created = False
+#         while not created:
+#             if not os.path.exists(f"./project/{projectid }/songs/{songid}"):
+#                 os.makedirs(f"./project/{projectid }/songs/{songid}", exist_ok=True)
+#                 output_sound.export(
+#                     f"./project/{projectid}/songs/{songid}/song{songid}.wav",
+#                     format="wav",
+#                 )
+#                 created = True
+#                 # sound = AudioSegment.from_wav("./project/" + projectid + "/songs/" + str(songid) + "/song" + str(songid) + ".wav")
+#                 # sound.export("./project/" + projectid + "/songs/" + str(songid) + "/song" + str(songid) + ".mp3", format="mp3")
+#             else:
+#                 songid = songid + 1
+#     else:
+#         # TODO: insert(update)した後の音声データの書き込みがこれ．byteデータみたいなのだけ欲しい
+#         os.makedirs(f"./project/{projectid }/songs/{songid}", exist_ok=True)
+#         output_sound.export(
+#             f"./project/{projectid}/songs/{songid}/song{songid}.wav",
+#             format="wav",
+#         )
+#     return songid
 
 
 if __name__ == "__main__":
