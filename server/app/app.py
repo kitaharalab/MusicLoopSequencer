@@ -1,5 +1,4 @@
 import io
-import os
 import re
 
 import firebase_admin
@@ -20,9 +19,7 @@ from sqls import (
     get_loop_topic_by_id,
     get_parts,
     get_song_loop_ids,
-    get_wav_data_from_song_id,
     play_loop_log,
-    play_song_log,
     sound_array_wrap,
     update_song_details,
 )
@@ -424,40 +421,6 @@ def downloadSong(projectid,songid,filename):
     response.headers['Content-Type'] = 'audio/wav'
     response.headers['Content-Disposition'] = 'attachment; filename=' + filename
     return response"""
-
-
-# TODO: 作成された曲なのでDBに変更したい
-@app.route("/projects/<projectid>/songs/<songid>/wav", methods=["GET"])
-def download_song(projectid, songid):
-    data = get_wav_data_from_song_id(songid)
-
-    if data is None:
-        return make_response(jsonify({"message": "指定された楽曲ファイルは存在しません"})), 204
-
-    response = send_file(
-        io.BytesIO(data),
-        mimetype="audio/wav",
-        as_attachment=True,
-        download_name=f"song_{songid}.wav",
-    )
-    response.headers["access-control-allow-origin"] = request.headers.get("origin")
-
-    return response
-
-
-@app.route("/projects/<projectid>/songs/<songid>/wav", methods=["POST"])
-@require_auth
-def log_play_song(uid, projectid, songid):
-    file_name = f"./project/{projectid}/songs/{songid}/song{songid}.wav"
-    exist_file = os.path.isfile(file_name)
-    # data = request.get_json()
-    # user_id = data.get("userId", None)
-
-    if not exist_file:
-        return make_response(jsonify({"message": "指定された楽曲ファイルは存在しません"})), 204
-
-    play_song_log(projectid, songid, uid)
-    return make_response(jsonify({"message": "操作がログに書き込まれました"})), 200
 
 
 @app.route("/parts/<int:partid>/musicloops/<musicloopid>/wav", methods=["GET"])
