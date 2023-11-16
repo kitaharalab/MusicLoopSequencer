@@ -8,9 +8,9 @@ import pandas as pd
 from firebase_admin import credentials
 from flask import Flask, jsonify, make_response, request, send_file
 from flask_cors import CORS
-from route.parts import parts
-from route.parts.id.sounds import sounds
-from route.parts.id.sounds.id import sound_id
+from route.music_parts import parts
+from route.music_parts.id.sounds import sounds
+from route.music_parts.id.sounds.id import sound_id
 from route.projects import projects
 from route.projects.songs import songs
 from route.projects.songs.music_parts import song_parts
