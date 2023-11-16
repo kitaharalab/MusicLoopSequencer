@@ -92,10 +92,8 @@ def create_song(uid, projectid):
         "Sequence": sequence_list,
     }
 
-    response = create_response(
-        section_array, song_id, drums_list, bass_list, synth_list, sequence_list
-    )
-    response = {"songId": song_id, "parts": [], "section": response.get("section", [])}
+    section = music_section_info_from_section_array(section_array)
+    response = {"songId": song_id, "parts": [], "section": section}
 
     for part in parts:
         id = part["id"]
@@ -150,31 +148,8 @@ def createMusic(array, projectid, user_id, fix=0, structure=1):
     return sound_list_by_mesure_part, songid, section_array, wav_data_bytes
 
 
-def create_response(
-    section_array, songid, drums_list, bass_list, synth_list, sequence_list
-):
-    response = None
-    if section_array == "":
-        response = {
-            "songid": int(songid),
-            "parts": [
-                {"partid": 0, "sounds": sequence_list},
-                {"partid": 1, "sounds": synth_list},
-                {"partid": 2, "sounds": bass_list},
-                {"partid": 3, "sounds": drums_list},
-            ],
-        }
-    else:
-        response = {
-            "songid": int(songid),
-            "parts": [
-                {"partid": 0, "sounds": sequence_list},
-                {"partid": 1, "sounds": synth_list},
-                {"partid": 2, "sounds": bass_list},
-                {"partid": 3, "sounds": drums_list},
-            ],
-            "section": [],
-        }
+def music_section_info_from_section_array(section_array):
+    music_section = []
     id, start, end = 0, 0, 0
     section_name = ["intro", "breakdown", "buildup", "drop", "outro"]
     for i in range(len(section_array)):
@@ -185,7 +160,7 @@ def create_response(
                 "end": end,
                 "section_name": section_name[section_array[i - 1]],
             }
-            response["section"].append(section)
+            music_section.append(section)
             start = i
             id = section_array[i]
         if i == len(section_array) - 1:
@@ -195,9 +170,9 @@ def create_response(
                 "end": end,
                 "section_name": section_name[section_array[i]],
             }
-            response["section"].append(section)
+            music_section.append(section)
 
-    return response
+    return music_section
 
 
 # TODO: 多分array[i][j]にidを追加しそうなのでいらなくなる？
