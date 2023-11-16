@@ -778,12 +778,15 @@ def download_song(projectid, songid):
     if data is None:
         return make_response(jsonify({"message": "指定された楽曲ファイルは存在しません"})), 204
 
-    return send_file(
+    response = send_file(
         io.BytesIO(data),
         mimetype="audio/wav",
         as_attachment=True,
         download_name=f"song_{songid}.wav",
     )
+    response.headers["access-control-allow-origin"] = request.headers.get("origin")
+
+    return response
 
 
 @app.route("/projects/<projectid>/songs/<songid>/wav", methods=["POST"])
