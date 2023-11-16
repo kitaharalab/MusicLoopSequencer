@@ -15,7 +15,6 @@ from route.projects import projects
 from route.projects.songs import songs
 from sqls import create_song as add_song
 from sqls import (
-    get_excitement_curve,
     get_loop_music_by_id,
     get_loop_topic_by_id,
     get_parts,
@@ -52,27 +51,6 @@ app.register_blueprint(projects)
 app.register_blueprint(songs)
 
 
-# TODO: 誤字の修正
-@app.route("/projects/<int:projectid>/songs/<int:songid>", methods=["GET"])
-def get_infomation_song(projectid, songid):
-    part_name2index = {"Drums": 0, "Bass": 1, "Synth": 2, "Sequence": 3}
-    parts = get_parts()
-    parts = sorted(parts, key=lambda x: part_name2index[x["name"]])
-
-    loop_ids_by_part = get_song_loop_ids(songid)
-    excitement_curve = get_excitement_curve(songid)
-
-    response = {"parts": [], "excitement_curve": excitement_curve}
-    for part in parts:
-        response["parts"].append(
-            {
-                "partId": part["id"],
-                "partNmae": part["name"],
-                "sounds": loop_ids_by_part[part["id"]],
-            }
-        )
-
-    return make_response(jsonify(response))
 
 
 # TODO: どこで使ってるか不明
