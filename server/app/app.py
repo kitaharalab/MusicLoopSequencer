@@ -16,6 +16,8 @@ from pydub import AudioSegment
 from readFiles import readLoopsPath, readPartCoordinates
 from route.parts import parts
 from route.parts.id.sounds import sounds
+from route.parts.id.sounds.id import sound_id
+from route.projects import projects
 from sqls import add_excitement_curve, add_project
 from sqls import create_song as add_song
 from sqls import (
@@ -57,65 +59,12 @@ cred = credentials.Certificate("./credentials.json")
 firebase_app = firebase_admin.initialize_app(cred)
 
 app = Flask(__name__)
-CORS(app)
-
 
 app.register_blueprint(parts, url_prefix="/parts")
 app.register_blueprint(sounds, url_prefix="/parts/<int:partid>/sounds")
-
-
-# INFO: 現状使っていない
-@app.route("/parts/<int:partid>/sounds/<int:soundid>", methods=["GET"])
-def get_infomation_sound(partid, soundid):
-    part_name = get_part_name(partid)
-    x_coordinate, y_coordinate, range_lists = readLoopsPath(part_name)
-
-    degree_of_excitement = 0
-    if soundid < int(range_lists[0]):
-        degree_of_excitement = 0
-    elif soundid < int(range_lists[1]):
-        degree_of_excitement = 1
-    elif soundid < int(range_lists[2]):
-        degree_of_excitement = 2
-    elif soundid < int(range_lists[3]):
-        degree_of_excitement = 3
-    else:
-        degree_of_excitement = 4
-
-    sound_feature = [x_coordinate[soundid], y_coordinate[soundid]]
-
-    response = {
-        "sound-feature": sound_feature,
-        "degree-of-excitement": degree_of_excitement,
-    }
-    return make_response(jsonify(response))
-
-
-@app.route("/projects", methods=["POST"])
-@require_auth
-def create_project(uid):
-    # TODO: パラメータの取り方．request.get_json()
-    req_data = None if request.data == b"" else request.data.decode("utf-8")
-
-    data_json = json.loads(req_data) if req_data is not None else {}
-    title = data_json.get("title", None)
-    title = title if title is not None else "Untitled"
-    new_project_id = add_project(title, uid)
-
-    return make_response(jsonify(new_project_id))
-
-
-# TODO: ユーザーの認証でそのユーザーのプロジェクトだけ取る
-@app.route("/projects", methods=["GET"])
-def get_infomation_of_projects():
-    isExperimentParam = request.args.get("experiment")
-    isExperiment = (
-        json.loads(isExperimentParam) if isExperimentParam is not None else False
-    )
-
-    response = get_projects(isExperiment)
-
-    return make_response(jsonify(response))
+# app.register_blueprint(sound_id, url_prefix="/parts/<int:partid>/sounds/<int:soundid>")
+app.register_blueprint(projects)
+CORS(app)
 
 
 # TODO: 楽曲のIDごとに盛り上がり度曲線を記録している
