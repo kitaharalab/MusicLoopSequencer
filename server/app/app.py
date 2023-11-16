@@ -4,6 +4,7 @@ from firebase_admin import credentials
 from flask import Flask
 from flask_cors import CORS
 from route.music_parts import parts
+from route.music_parts.id.music_loop import music_loop
 from route.music_parts.id.sounds import sounds
 from route.music_parts.id.sounds.id import sound_id
 from route.projects import projects
@@ -38,6 +39,7 @@ app.register_blueprint(song_parts)
 app.register_blueprint(part_measure)
 app.register_blueprint(mesure_music_loop)
 app.register_blueprint(topic)
+app.register_blueprint(music_loop)
 
 
 # INFO: OLD, パス名から実際の音声データを取ってくるときの処理
