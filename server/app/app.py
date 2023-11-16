@@ -4,7 +4,7 @@ import re
 import firebase_admin
 import pandas as pd
 from firebase_admin import credentials
-from flask import Flask, jsonify, make_response, request, send_file
+from flask import Flask, jsonify, make_response
 from flask_cors import CORS
 from route.music_parts import parts
 from route.music_parts.id.sounds import sounds
@@ -14,8 +14,6 @@ from route.projects.songs import songs
 from route.projects.songs.music_parts import song_parts
 from route.projects.songs.music_parts.measure import part_measure
 from route.projects.songs.music_parts.measure.music_loop import mesure_music_loop
-from sqls import get_loop_music_by_id, get_loop_topic_by_id, play_loop_log
-from verify import require_auth
 
 fix_len = 4
 topic_n = 4
@@ -190,31 +188,6 @@ def downloadSong(projectid,songid,filename):
     return response"""
 
 
-@app.route("/parts/<int:partid>/musicloops/<musicloopid>/wav", methods=["GET"])
-def download_musicloop(partid, musicloopid):
-    data = get_loop_music_by_id(musicloopid)
-
-    if data is None:
-        return make_response(jsonify({"message": "指定された楽曲ファイルは存在しません"})), 204
-
-    return send_file(io.BytesIO(data), mimetype="audio/wav")
-
-
-@app.route("/parts/<int:partid>/musicloops/<musicloopid>/wav", methods=["POST"])
-@require_auth
-def log_loop_play(uid, partid, musicloopid):
-    data = request.get_json()
-    play_loop_log(data["projectId"], data["songId"], partid, musicloopid, uid)
-
-    return make_response(jsonify({"message": "操作がログに書き込まれました"})), 200
-
-
-@app.route("/parts/<int:partid>/musicloops/<int:musicloopid>/topic", methods=["GET"])
-def get_topic_ratio(partid: int, musicloopid: int):
-    loop_topic = get_loop_topic_by_id(musicloopid)
-    return make_response(jsonify(loop_topic))
-
-
 # INFO: 以下の処理は元々のデータからトピック選好度を持ってくるための処理
 # part = "null"
 # if partid == "0":
@@ -295,14 +268,15 @@ def read_from_csv(path):
     return df
 
 
-def give_chord(sound_list):
-    """コードを付与"""
-    chord = ["2", "5", "3", "6", "4", "6", "7", "1"]
-    for i, sound in enumerate(sound_list, 0):
-        for part in range(1, 4):
-            sound[part] = re.sub("[0-9].wav", chord[i % 8] + ".wav", sound[part])
+# INFO: OLD, パス名から実際の音声データを取ってくるときの処理
+# def give_chord(sound_list):
+#     """コードを付与"""
+#     chord = ["2", "5", "3", "6", "4", "6", "7", "1"]
+#     for i, sound in enumerate(sound_list, 0):
+#         for part in range(1, 4):
+#             sound[part] = re.sub("[0-9].wav", chord[i % 8] + ".wav", sound[part])
 
-    return sound_list
+#     return sound_list
 
 
 # # TODO: DBに移行したい
