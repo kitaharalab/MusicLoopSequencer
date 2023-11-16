@@ -14,6 +14,7 @@ from hmmlearn import hmm
 from psycopg2.extras import DictCursor
 from pydub import AudioSegment
 from readFiles import readLoopsPath, readPartCoordinates
+from route.parts import parts
 from sqls import add_excitement_curve, add_project
 from sqls import create_song as add_song
 from sqls import (
@@ -58,10 +59,7 @@ app = Flask(__name__)
 CORS(app)
 
 
-@app.route("/parts", methods=["GET"])
-def get_infomation_of_parts():
-    parts = get_parts()
-    return make_response(jsonify(parts))
+app.register_blueprint(parts, url_prefix="/parts")
 
 
 @app.route("/parts/<int:partid>/sounds", methods=["GET"])
