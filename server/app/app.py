@@ -2,7 +2,6 @@ import io
 import re
 
 import firebase_admin
-import numpy as np
 import pandas as pd
 from firebase_admin import credentials
 from flask import Flask, jsonify, make_response, request, send_file
@@ -14,17 +13,8 @@ from route.projects import projects
 from route.projects.songs import songs
 from route.projects.songs.music_parts import song_parts
 from route.projects.songs.music_parts.measure import part_measure
-from sqls import create_song as add_song
-from sqls import (
-    get_loop_music_by_id,
-    get_loop_topic_by_id,
-    get_parts,
-    get_song_loop_ids,
-    play_loop_log,
-    sound_array_wrap,
-    update_song_details,
-)
-from util.connect_sound import connect_sound
+from route.projects.songs.music_parts.measure.music_loop import mesure_music_loop
+from sqls import get_loop_music_by_id, get_loop_topic_by_id, play_loop_log
 from verify import require_auth
 
 fix_len = 4
@@ -50,206 +40,7 @@ app.register_blueprint(projects)
 app.register_blueprint(songs)
 app.register_blueprint(song_parts)
 app.register_blueprint(part_measure)
-
-
-@app.route(
-    "/projects/<int:projectid>/songs/<int:songid>/parts/<int:partid>/measures/<int:measureid>/musicloops/<int:musicloopid>",
-    methods=["POST"],
-)
-@require_auth
-def insert_sound(uid, projectid, songid, partid, measureid, musicloopid):
-    parts = get_parts()
-    # part_name2index = {"Drums": 0, "Bass": 1, "Synth": 2, "Sequence": 3}
-    parts = sorted(parts, key=lambda x: x["id"])
-    # data = request.get_json()
-    # user_id = data.get("userId", None)
-
-    # TODO: パラメータの取得
-    # req = request.args
-    # fix = req.get("fix")
-    # adapt = req.get("adapt")
-
-    # TODO: fixが1のときは4小節ごとに音素材を入れる
-    #         for i in range(4):
-    #             sound_array[int(int(measureid) / 4) * 4 + i][3 - int(partid)] = int(
-    #                 musicloopid
-    #             )
-    #
-    update_song_details(songid, partid, int(measureid) + 1, musicloopid, uid)
-    song_details = get_song_loop_ids(song_id=songid)
-
-    # 0:drums
-    # 1:bass
-    # 2:synth
-    # 3:sequence
-    sound_array = [song_details[part["id"]] for part in parts]
-    """sound_array[part_id][measure] = loop_id"""
-    sound_array = [list(arr) for arr in zip(*sound_array)]
-    print(song_details[partid][measureid])
-    print(partid, measureid, musicloopid)
-    print(sound_array[measureid][partid - 1])
-
-    # TODO: topicのアップデートをここでしてる
-    sound_array = rewrite_music_data(measureid, partid, musicloopid, sound_array)
-    connect_sound(sound_array, projectid, "insert", songid)
-
-    # TODO:
-    #     sound_array = rewrite_music_data(
-    #     measureid,
-    #     partid,
-    #     musicloopid,
-    #     sound_array,
-    #     drums_list,
-    #     bass_list,
-    #     synth_list,
-    #     sequence_list,
-    #     fix,
-    #     adapt,
-    # )
-
-    response = {"songId": int(songid), "parts": []}
-    for part in parts:
-        response["parts"].append(
-            {
-                "partId": part["id"],
-                "partName": part["name"],
-                "sounds": song_details[part["id"]],
-            }
-        )
-
-    return make_response(jsonify(response))
-
-
-def rewrite_music_data(measureid, partid, musicloopid, sound_array, adapt=0):
-    # TODO: IDから音素材へのパスへと変換
-    # 各音素材へのパス
-    drums_list, bass_list, synth_list, sequence_list = get_sound_data()
-
-    for i in range(len(sound_array)):
-        for j in range(len(sound_array[0])):
-            if j == 0:
-                for k in range(len(drums_list)):
-                    if sound_array[i][j] == k:
-                        sound_array[i][j] = drums_list[k]
-                    elif sound_array[i][j] is None:
-                        sound_array[i][j] = "null"
-            elif j == 1:
-                for k in range(len(bass_list)):
-                    if sound_array[i][j] == k:
-                        sound_array[i][j] = bass_list[k]
-                    elif sound_array[i][j] is None:
-                        sound_array[i][j] = "null"
-            elif j == 2:
-                for k in range(len(synth_list)):
-                    if sound_array[i][j] == k:
-                        sound_array[i][j] = synth_list[k]
-                    elif sound_array[i][j] is None:
-                        sound_array[i][j] = "null"
-            else:
-                for k in range(len(sequence_list)):
-                    if sound_array[i][j] == k:
-                        sound_array[i][j] = sequence_list[k]
-                    elif sound_array[i][j] is None:
-                        sound_array[i][j] = "null"
-    if adapt == 1:
-        update_topic_ratio(sound_array, measureid, partid)
-    return sound_array
-
-
-def read_file(path):
-    data_list = []
-    with open(path) as f:
-        data_list = f.read().split("\n")
-
-    return data_list
-
-
-def load_music_data(path):
-    data_list = read_file(path)
-
-    measure_number = 0
-    sound_array = [["null" for i in range(4)] for j in range(32)]
-
-    for i in range(len(data_list)):
-        if data_list[i] != "null":
-            sound_array[measure_number][i % 4] = int(data_list[i])
-        else:
-            sound_array[measure_number][i % 4] = None
-        if i % 4 == 3:
-            measure_number += 1
-
-
-def get_music_data(data):
-    sequence_list = data["sequenceList"]
-    synth_list = data["synthList"]
-    bass_list = data["bassList"]
-    drums_list = data["drumsList"]
-
-    sound_array = [["null" for i in range(4)] for j in range(32)]
-
-    for i in range(len(sound_array)):
-        for j in range(len(sound_array[0])):
-            if j == 0:
-                sound_array[i][j] = drums_list[i]
-            elif j == 1:
-                sound_array[i][j] = bass_list[i]
-            elif j == 2:
-                sound_array[i][j] = synth_list[i]
-            else:
-                sound_array[i][j] = sequence_list[i]
-    return sound_array
-
-
-def get_sound_data():
-    drums_list = []
-    bass_list = []
-    synth_list = []
-    sequence_list = []
-    with open("./text/drums_word_list.txt") as f:
-        drums_list = f.read().split("\n")
-    with open("./text/bass_word_list.txt") as f:
-        bass_list = f.read().split("\n")
-    with open("./text/synth_word_list.txt") as f:
-        synth_list = f.read().split("\n")
-    with open("./text/sequence_word_list.txt") as f:
-        sequence_list = f.read().split("\n")
-    return drums_list, bass_list, synth_list, sequence_list
-
-
-def update_topic_ratio(sound_array, measureid, partid):
-    # print("ここまでは大丈夫")
-    # TODO: partidをむりやり変更，現在のIDから1を引けば同じになるという前提．measureIDも同様
-    split_name = re.split("/|\.", str(sound_array[int(measureid)][int(partid) - 1]))
-    # part_list = ["Drums", "Bass", "Synth", "Sequence"]
-    pass_ratio_topic = f"./lda/{split_name[3]}/ratio_topic{split_name[4]}.txt"
-    ratio_topic = read_file(pass_ratio_topic)
-
-    for i in range(len(ratio_topic)):
-        ratio_topic[i] = float(ratio_topic[i])
-    # TODO: 音素材のpart name, その盛り上がり度
-    df = pd.read_csv(
-        "./lda/" + split_name[3] + "/lda" + split_name[4] + ".csv",
-        header=0,
-        index_col=0,
-    )
-    feature_names = df.index.values
-    n = 0
-
-    for i in range(len(feature_names)):
-        if feature_names[i] == split_name[5]:
-            n = i
-    topic_array = np.array(df[n : n + 1])[0][0:]
-    for i in range(topic_n):
-        ratio_topic[i] += topic_array[i]
-
-    # TODO: topic選好度をデータベースに入れる
-    with open(pass_ratio_topic, mode="w") as f:
-        for k in range(4):
-            # print(k)
-            if k == 0:
-                f.write(str(ratio_topic[k]))
-            else:
-                f.write("\n" + str(ratio_topic[k]))
+app.register_blueprint(mesure_music_loop)
 
 
 # TODO: デリートの実装
@@ -343,37 +134,51 @@ def update_topic_ratio(sound_array, measureid, partid):
 #                         sound_array[i][j] = "null"
 #     return sound_array
 
+# def load_music_data(path):
+#     data_list = read_file(path)
 
-def save_music_data(
-    projectid,
-    songid,
-    sound_array,
-    drums_list,
-    bass_list,
-    synth_list,
-    sequence_list,
-    user_id,
-):
-    for i in range(len(sound_array)):
-        for j in range(len(sound_array[0])):
-            if j == 0:
-                for k in range(len(drums_list)):
-                    if sound_array[i][j] == drums_list[k]:
-                        sound_array[i][j] = str(k)
-            elif j == 1:
-                for k in range(len(bass_list)):
-                    if sound_array[i][j] == bass_list[k]:
-                        sound_array[i][j] = str(k)
-            elif j == 2:
-                for k in range(len(synth_list)):
-                    if sound_array[i][j] == synth_list[k]:
-                        sound_array[i][j] = str(k)
-            else:
-                for k in range(len(sequence_list)):
-                    if sound_array[i][j] == sequence_list[k]:
-                        sound_array[i][j] = str(k)
+#     measure_number = 0
+#     sound_array = [["null" for i in range(4)] for j in range(32)]
 
-    add_song(sound_array_wrap(sound_array), songid, user_id)
+#     for i in range(len(data_list)):
+#         if data_list[i] != "null":
+#             sound_array[measure_number][i % 4] = int(data_list[i])
+#         else:
+#             sound_array[measure_number][i % 4] = None
+#         if i % 4 == 3:
+#             measure_number += 1
+
+
+# def save_music_data(
+#     projectid,
+#     songid,
+#     sound_array,
+#     drums_list,
+#     bass_list,
+#     synth_list,
+#     sequence_list,
+#     user_id,
+# ):
+#     for i in range(len(sound_array)):
+#         for j in range(len(sound_array[0])):
+#             if j == 0:
+#                 for k in range(len(drums_list)):
+#                     if sound_array[i][j] == drums_list[k]:
+#                         sound_array[i][j] = str(k)
+#             elif j == 1:
+#                 for k in range(len(bass_list)):
+#                     if sound_array[i][j] == bass_list[k]:
+#                         sound_array[i][j] = str(k)
+#             elif j == 2:
+#                 for k in range(len(synth_list)):
+#                     if sound_array[i][j] == synth_list[k]:
+#                         sound_array[i][j] = str(k)
+#             else:
+#                 for k in range(len(sequence_list)):
+#                     if sound_array[i][j] == sequence_list[k]:
+#                         sound_array[i][j] = str(k)
+
+#     add_song(sound_array_wrap(sound_array), songid, user_id)
 
 
 """@app.route("/projects/<projectid>/songs/<songid>/<filename>", methods=['GET'])
