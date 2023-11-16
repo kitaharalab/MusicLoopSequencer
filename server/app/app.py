@@ -35,6 +35,8 @@ from sqls import (
     sound_array_wrap,
     update_song_details,
 )
+from util.dtw import dtw
+from util.hmm import fix_Auto_Hmm, fix_Hmm, use_Auto_HMM, use_HMM
 from verify import require_auth
 
 fix_len = 4
@@ -132,10 +134,10 @@ def createMusic(array, projectid, user_id, fix=0, structure=1):
         )
     if fix == 1:
         if structure == 0:
-            hmm_array, array = fix_Hmm(hmm_array, array)
+            hmm_array, array = fix_Hmm(hmm_array, array, fix_len)
         else:
             section_array = dtw(array)
-            hmm_array, array = fix_Auto_Hmm(hmm_array, array, section_array)
+            hmm_array, array = fix_Auto_Hmm(hmm_array, array, section_array, fix_len)
     # 音素材を繋げる
     sound_list_by_mesure_part = choose_sound(array, hmm_array, user_id)
     # コードを付与する
@@ -816,169 +818,6 @@ def load_topic_preference():
                 ratio_topic[i][j][k] = float(topic[k])
 
     return ratio_topic
-
-
-def use_HMM(excitement_array, no_part_hmm_model):
-    """HMMを使用する"""
-    observation_data = np.atleast_2d(excitement_array).T
-    hmm_array, hmm_array = no_part_hmm_model.decode(observation_data)
-    return hmm_array
-
-
-def use_Auto_HMM(
-    excitement_array,
-    intro_hmm_model,
-    breakdown_hmm_model,
-    buildup_hmm_model,
-    drop_hmm_model,
-    outro_hmm_model,
-):
-    """構成を考慮したHMMを使用する"""
-    section_array = dtw(excitement_array)
-    # パート毎にリストを用意する
-    intro_array, breakdown_array, buildup_array, drop_array, outro_array = (
-        list(),
-        list(),
-        list(),
-        list(),
-        list(),
-    )
-
-    for i, e in enumerate(excitement_array):
-        if section_array[i] == 0:
-            intro_array.append(e)
-        elif section_array[i] == 1:
-            breakdown_array.append(e)
-        elif section_array[i] == 2:
-            buildup_array.append(e)
-        elif section_array[i] == 3:
-            drop_array.append(e)
-        elif section_array[i] == 4:
-            outro_array.append(e)
-
-    # intro
-    intro_data = np.atleast_2d(intro_array).T
-    intro_hmm_array, intro_hmm_array = intro_hmm_model.decode(intro_data)
-    # breakdown
-    breakdown_data = np.atleast_2d(breakdown_array).T
-    breakdown_hmm_array, breakdown_hmm_array = breakdown_hmm_model.decode(
-        breakdown_data
-    )
-    # buildup
-    buildup_data = np.atleast_2d(buildup_array).T
-    buildup_hmm_array, buildup_hmm_array = buildup_hmm_model.decode(buildup_data)
-    # drop
-    drop_data = np.atleast_2d(drop_array).T
-    drop_hmm_array, drop_hmm_array = drop_hmm_model.decode(drop_data)
-    # outro
-    outro_data = np.atleast_2d(outro_array).T
-    outro_hmm_array, outro_hmm_array = outro_hmm_model.decode(outro_data)
-
-    temp = np.concatenate(
-        [
-            intro_hmm_array,
-            breakdown_hmm_array,
-            buildup_hmm_array,
-            drop_hmm_array,
-            outro_hmm_array,
-        ]
-    )
-
-    return (
-        temp,
-        section_array,
-    )
-
-
-def dtw(excitement_array):
-    """DTWの計算を行う"""
-    # セクションは4小節ごとに考慮する
-    short_excitement_array = list()
-    sum = 0
-    for i, e in enumerate(excitement_array, 1):
-        if i % 4 == 0 and i != 0:
-            short_excitement_array.append(round(sum / 4))
-            sum = 0
-        sum += e
-    excitement_array = short_excitement_array
-    # セクションが取るであろう盛り上がり度
-    # intro, breakdown + buildup, drop, outro
-    section_excitement = [0, 1, 3.3, 0]
-    # 2つの時系列の長さ
-    excitement_len = len(excitement_array)
-    section_len = len(section_excitement)
-    # 初期化
-    dtw = calc_dtw(excitement_len, section_len, excitement_array, section_excitement)
-    # セクションを決定する
-    section_array = list()
-    # 逆から考える
-    dtw = dtw[::-1]
-    # outroで終わるように調整
-    for i in range(4):
-        section_array.append(4)
-    # 最小値を見ながらセクションを決定する
-    for d in dtw[1:]:
-        # 見る範囲
-        start = section_array[-1] - 1
-        end = section_array[-1] + 1
-        section = d.index(min(d[start:end]))
-        for i in range(4):
-            section_array.append(section)
-    # もとに戻す
-    section_array = restore_section_array(section_array)
-    return section_array
-
-
-def calc_dtw(excitement_len, section_len, excitement_array, section_excitement):
-    dtw = [
-        [float("inf") for i in range(section_len + 1)]
-        for j in range(excitement_len + 1)
-    ]
-    dtw[0][0] = 0
-    # 累積を考える
-    for i in range(1, excitement_len + 1):
-        for j in range(1, section_len + 1):
-            cost = abs(excitement_array[i - 1] - section_excitement[j - 1])
-            dtw[i][j] = cost + min(dtw[i - 1][j - 1], dtw[i - 1][j])
-    return dtw
-
-
-def restore_section_array(section_array):
-    section_array = section_array[::-1]
-    section_array = section_array[4:]
-    section_array = [s - 1 for s in section_array]
-    for i in range(len(section_array)):
-        if section_array[i] == 2 or section_array[i] == 3:
-            section_array[i] += 1
-    buildup_start = section_array.index(3) - 2
-    buildup_end = section_array.index(3)
-    section_array[buildup_start:buildup_end] = [2, 2]
-    return section_array
-
-
-def fix_Hmm(hmm_array, excitement_array):
-    """小節毎に揃える"""
-    for i in range(len(hmm_array)):
-        if i % fix_len == 0:
-            h = hmm_array[i]
-            e = excitement_array[i]
-        hmm_array[i] = h
-        excitement_array[i] = e
-    return hmm_array, excitement_array
-
-
-def fix_Auto_Hmm(hmm_array, excitement_array, section_array):
-    """セクションに合わせて揃える"""
-    pre_section = -1
-    for i in range(len(hmm_array)):
-        if pre_section != section_array[i] or i % fix_len == 0:
-            h = hmm_array[i]
-            e = excitement_array[i]
-        hmm_array[i] = h
-        excitement_array[i] = e
-        pre_section = section_array[i]
-
-    return hmm_array, excitement_array
 
 
 def choose_sound(excitement_array, hmm_array, user_id):
