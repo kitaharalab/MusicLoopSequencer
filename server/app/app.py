@@ -774,9 +774,16 @@ def downloadSong(projectid,songid,filename):
 @app.route("/projects/<projectid>/songs/<songid>/wav", methods=["GET"])
 def download_song(projectid, songid):
     data = get_wav_data_from_song_id(songid)
-    response = make_response(data)
-    response.headers.set("Content-Type", request.content_type)
-    return response
+
+    if data is None:
+        return make_response(jsonify({"message": "指定された楽曲ファイルは存在しません"})), 204
+
+    return send_file(
+        io.BytesIO(data),
+        mimetype="audio/wav",
+        as_attachment=True,
+        download_name=f"song_{songid}.wav",
+    )
 
 
 @app.route("/projects/<projectid>/songs/<songid>/wav", methods=["POST"])
