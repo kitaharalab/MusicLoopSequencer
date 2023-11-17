@@ -18,7 +18,7 @@ export default function AudioControls({ projectId }) {
 
     const url = `${
       import.meta.env.VITE_SERVER_URL
-    }/projects/${projectId}/songs/${songId}/wav`;
+    }/projects/${projectId}/songs/${songId}/wav/`;
     axios
       .get(url, {
         responseType: "blob",
