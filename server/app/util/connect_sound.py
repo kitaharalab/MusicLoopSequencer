@@ -19,16 +19,18 @@ def connect_sound(sound_list_by_mesure_part, projectid, mode, songid):
                 continue
 
             wav_data = io.BytesIO(loop_wav)
+            sound = AudioSegment.from_file(wav_data, format="wav")
+
             if block_sound is None:
-                block_sound = AudioSegment.from_file(wav_data, format="wav")
+                block_sound = sound
             else:
-                block_sound = block_sound.overlay(
-                    AudioSegment.from_file(wav_data, format="wav")
-                )
+                block_sound = block_sound.overlay(sound)
         output_sound = output_sound + block_sound
-    # connect_new_song(projectid, output_sound, mode, songid)
 
     wav_data = io.BytesIO()
-    output_sound.export(wav_data, format="wav")
+    # 2Byte = 16bit
+    output_sound.set_sample_width(2).set_frame_rate(44100).export(
+        wav_data, format="wav"
+    )
     wav_data_bytes = wav_data.getvalue()
     return songid, wav_data_bytes
