@@ -27,6 +27,7 @@ def update_topic_ratio(sound_array, measureid, partid, topic_n=4):
         if feature_names[i] == split_name[5]:
             n = i
     topic_array = np.array(df[n : n + 1])[0][0:]
+    # TODO: partと盛り上がり度から出てくるトピック選好度を，全てのトピックにおいて足す
     for i in range(topic_n):
         ratio_topic[i] += topic_array[i]
 

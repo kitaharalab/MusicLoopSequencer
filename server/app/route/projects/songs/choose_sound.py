@@ -108,6 +108,7 @@ def choose_sound_randomly_with_using_ratio_topic(
             loops_order.append(loop_id)
             loop_topics_sum = 0
             for topic_id, value in topic_value_by_topic.items():
+                # loop_topics_sum += topic_n_preferences_by_topic[excitement_value][topic_id] * value
                 loop_topics_sum += topic_n_preferences_by_topic[topic_id] * value
             loop_topics_sums.append(loop_topics_sum)
 

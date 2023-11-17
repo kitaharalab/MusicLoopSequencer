@@ -15,6 +15,9 @@ CREATE TABLE IF NOT EXISTS
         PRIMARY KEY (loop_id, topic_id)
     );
 
+-- part id と盛り上がり度で，トピック数に基づくトピックに対して，値がある
+-- topic0,
+-- topic1
 CREATE TABLE IF NOT EXISTS
     topic_preferences (
         user_id TEXT NOT NULL,
