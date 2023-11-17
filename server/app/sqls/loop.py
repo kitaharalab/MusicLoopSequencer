@@ -86,7 +86,7 @@ def get_loop_wav_from_loop_ids_by_mesure_part(loop_ids_by_mesure_part: list):
             for loop_ids_by_part in loop_ids_by_mesure_part:
                 response.append([])
                 for loop_id in loop_ids_by_part:
-                    if loop_id is None:
+                    if loop_id is None or loop_id == "null":
                         response[-1].append(None)
                         continue
                     cur.execute(sql, (int(loop_id),))
