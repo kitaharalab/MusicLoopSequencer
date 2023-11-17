@@ -41,8 +41,8 @@ def require_auth(f):
             decoded_token = verify_token(token)
         except AuthError as e:
             return {"message": str(e)}, 401
-        except Exception:
-            return {"message": "Internal server error"}, 500
+        except Exception as e:
+            return {"message": f"Internal server error. {str(e)}"}, 500
 
         uid = decoded_token.get("uid")
 
