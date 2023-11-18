@@ -10,6 +10,7 @@ def update_topic_ratio(sound_array, measureid, partid, topic_n=4):
     split_name = re.split("/|\.", str(sound_array[int(measureid)][int(partid) - 1]))
     # part_list = ["Drums", "Bass", "Synth", "Sequence"]
     pass_ratio_topic = f"./lda/{split_name[3]}/ratio_topic{split_name[4]}.txt"
+    # TODO: 変更先の音素材の盛り上がり度とpartidとトピック数から，topic選好度を取得したい
     ratio_topic = read_file(pass_ratio_topic)
 
     for i in range(len(ratio_topic)):
