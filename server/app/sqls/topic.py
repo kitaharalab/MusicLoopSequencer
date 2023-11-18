@@ -76,3 +76,44 @@ def add_topic_preferences(user_id: str):
                             (user_id, topic_id_n["id"], part["id"], excitement),
                         )
             conn.commit()
+
+
+def get_topic_preferences_from_part_excitement(
+    user_id: int, part_id: int, excitement: int
+):
+    topic_preferences = get_topic_preferences(user_id)
+    if topic_preferences is None:
+        return None
+
+    filtered_topic_preferences = list(
+        filter(
+            lambda x: x["part_id"] == part_id and x["excitement"] == excitement,
+            topic_preferences,
+        )
+    )
+
+    return filtered_topic_preferences
+
+
+def update_topic_preferences_from_topic_preferences(
+    user_id: int, topic_preferences: list[dict]
+):
+    update_sql = """
+        UPDATE topic_preferences
+        SET value = %s
+        WHERE user_id = %s AND topic_id = %s AND part_id = %s AND excitement = %s
+    """
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            for topic_preference in topic_preferences:
+                cur.execute(
+                    update_sql,
+                    (
+                        topic_preference["value"],
+                        user_id,
+                        topic_preference["topic_id"],
+                        topic_preference["part_id"],
+                        topic_preference["excitement"],
+                    ),
+                )
+            conn.commit()
