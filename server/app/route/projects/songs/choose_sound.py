@@ -50,15 +50,22 @@ def choose_sound_randomly(user_id, topic_n):
         filter(lambda x: x["topic_id"] in topic_n_ids, topic_preferences)
     )
 
-    topic_n_preferences_by_part_topic = dict()
+    topic_n_preferences_by_part_measure_topic = dict()
 
     for topic_n_preference in topic_n_preferences:
         part_id = topic_n_preference["part_id"]
         topic_id = topic_n_preference["topic_id"]
+        excitement = topic_n_preference["excitement"]
         value = topic_n_preference["value"]
-        if part_id not in topic_n_preferences_by_part_topic:
-            topic_n_preferences_by_part_topic[part_id] = dict()
-        topic_n_preferences_by_part_topic[part_id][topic_id] = value
+
+        if part_id not in topic_n_preferences_by_part_measure_topic:
+            topic_n_preferences_by_part_measure_topic[part_id] = dict()
+
+        if excitement not in topic_n_preferences_by_part_measure_topic[part_id]:
+            topic_n_preferences_by_part_measure_topic[part_id][excitement] = dict()
+
+        topic_n_preferences_by_part_measure_topic[part_id][excitement][topic_id] = value
+
     parts = get_parts()
     parts = sorted(parts, key=lambda x: part_name2index[x["name"]])
 
@@ -66,7 +73,7 @@ def choose_sound_randomly(user_id, topic_n):
     for part in parts:
         sound_list = choose_sound_randomly_with_using_ratio_topic(
             part["id"] - 1,
-            topic_n_preferences_by_part_topic[part["id"]],
+            topic_n_preferences_by_part_measure_topic[part["id"]],
             topic_n_ids,
         )
         random_sound_list.append(sound_list)
@@ -76,7 +83,7 @@ def choose_sound_randomly(user_id, topic_n):
 
 # TODO: 音素材のトピックと，トピック選好度を使ってるらしい
 def choose_sound_randomly_with_using_ratio_topic(
-    part_id, topic_n_preferences_by_topic, topic_n_ids
+    part_id, topic_n_preferences_by_excitement_topic, topic_n_ids
 ):
     # このパートの盛り上がり度ごとの音素材のIDとトピックが欲しい
     all_loop_and_topics = get_loop_and_topics_from_part(part_id + 1)
@@ -109,7 +116,10 @@ def choose_sound_randomly_with_using_ratio_topic(
             loop_topics_sum = 0
             for topic_id, value in topic_value_by_topic.items():
                 # loop_topics_sum += topic_n_preferences_by_topic[excitement_value][topic_id] * value
-                loop_topics_sum += topic_n_preferences_by_topic[topic_id] * value
+                loop_topics_sum += (
+                    topic_n_preferences_by_excitement_topic[excitement_value][topic_id]
+                    * value
+                )
             loop_topics_sums.append(loop_topics_sum)
 
         topics_sum = sum(loop_topics_sums)

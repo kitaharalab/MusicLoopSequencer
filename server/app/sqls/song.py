@@ -88,3 +88,17 @@ def get_wav_data_from_song_id(song_id: int) -> bytes:
             )
             result = cur.fetchone()
             return result["wave_data"].tobytes() if result is not None else None
+
+
+def update_wav_data(song_id: int, wav_data: bytes) -> None:
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute(
+                """
+                UPDATE songs
+                SET wave_data = %s
+                WHERE id = %s
+                """,
+                (wav_data, song_id),
+            )
+            conn.commit()
