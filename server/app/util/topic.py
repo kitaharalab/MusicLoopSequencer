@@ -27,11 +27,3 @@ def update_topic_ratio(partid, loop_id, user_id, topic_n=4):
     for topic_number in range(topic_n):
         topic_n_preferences[topic_number]["value"] += loop_n_info[topic_number]["value"]
     update_topic_preferences_from_topic_preferences(user_id, topic_n_preferences)
-
-
-def read_file(path):
-    data_list = []
-    with open(path) as f:
-        data_list = f.read().split("\n")
-
-    return data_list
