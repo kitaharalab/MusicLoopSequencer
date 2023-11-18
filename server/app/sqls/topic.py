@@ -40,7 +40,7 @@ def get_topic_preferences(user_id: str):
             result = cur.fetchall()
             response = [dict(row) for row in result]
 
-    return response
+    return response if len(response) > 0 else None
 
 
 def get_topic_preferences_by_part_topic_id(user_id: str):
@@ -60,7 +60,7 @@ def get_topic_preferences_by_part_topic_id(user_id: str):
 
 def add_topic_preferences(user_id: str):
     insert_sql = """
-        INSERT INTO topic_preferences (user_id, topic_id, part_id, value)
+        INSERT INTO topic_preferences (user_id, topic_id, part_id, excitement)
         values (%s, %s, %s, %s)
     """
     parts = get_parts()
@@ -69,5 +69,9 @@ def add_topic_preferences(user_id: str):
         with conn.cursor(cursor_factory=DictCursor) as cur:
             for part in parts:
                 for topic_id_n in topic_id_ns:
-                    cur.execute(insert_sql, (user_id, topic_id_n["id"], part["id"], 1))
+                    for excitement in range(5):
+                        cur.execute(
+                            insert_sql,
+                            (user_id, topic_id_n["id"], part["id"], excitement),
+                        )
             conn.commit()
