@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, make_response, request
-from sqls import get_parts, get_song_loop_ids, update_song_details
+from sqls import get_parts, get_song_loop_ids, update_song_details, update_wav_data
 from util.connect_sound import connect_sound
 from util.topic import update_topic_ratio
 from verify import require_auth
@@ -47,13 +47,11 @@ def insert_sound(uid, projectid, songid, partid, measureid, musicloopid):
     print(partid, measureid, musicloopid)
     print(sound_ids_by_measure_part[measureid][partid - 1])
 
-    sound_names = sound_ids_to_sound_names(
-        measureid, partid, musicloopid, sound_ids_by_measure_part
-    )
     if adapt == 1:
-        update_topic_ratio(sound_names, measureid, partid)
+        update_topic_ratio([], measureid, partid, musicloopid, uid)
 
-    connect_sound(sound_ids_by_measure_part, projectid, "insert", songid)
+    _, wav_data = connect_sound(sound_ids_by_measure_part, projectid, "insert", songid)
+    update_wav_data(songid, wav_data)
 
     # TODO:
     #     sound_array = rewrite_music_data(
