@@ -27,6 +27,7 @@ def get_topic_preferences(user_id: str):
         SELECT
             topic_id,
             part_id,
+            excitement,
             value
         FROM
             topic_preferences
