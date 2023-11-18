@@ -1,8 +1,4 @@
-from util.topic import update_topic_ratio
-
-
-def rewrite_music_data(measureid, partid, musicloopid, sound_array, adapt=0):
-    # TODO: IDから音素材へのパスへと変換
+def sound_ids_to_sound_names(measureid, partid, musicloopid, sound_array, adapt=0):
     # 各音素材へのパス
     drums_list, bass_list, synth_list, sequence_list = get_sound_data()
 
@@ -32,8 +28,7 @@ def rewrite_music_data(measureid, partid, musicloopid, sound_array, adapt=0):
                         sound_array[i][j] = sequence_list[k]
                     elif sound_array[i][j] is None:
                         sound_array[i][j] = "null"
-    if adapt == 1:
-        update_topic_ratio(sound_array, measureid, partid)
+
     return sound_array
 
 
