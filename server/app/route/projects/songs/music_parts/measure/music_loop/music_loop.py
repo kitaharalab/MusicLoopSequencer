@@ -4,8 +4,6 @@ from util.connect_sound import connect_sound
 from util.topic import update_topic_ratio
 from verify import require_auth
 
-from .rewrite_song import sound_ids_to_sound_names
-
 mesure_music_loop = Blueprint("mesure_music_loop", __name__)
 
 
@@ -19,8 +17,6 @@ def insert_sound(uid, projectid, songid, partid, measureid, musicloopid):
     parts = get_parts()
     # part_name2index = {"Drums": 0, "Bass": 1, "Synth": 2, "Sequence": 3}
     parts = sorted(parts, key=lambda x: x["id"])
-    # data = request.get_json()
-    # user_id = data.get("userId", None)
 
     # TODO: パラメータの取得
     req = request.args
@@ -48,7 +44,7 @@ def insert_sound(uid, projectid, songid, partid, measureid, musicloopid):
     print(sound_ids_by_measure_part[measureid][partid - 1])
 
     if adapt == 1:
-        update_topic_ratio([], measureid, partid, musicloopid, uid)
+        update_topic_ratio(partid, musicloopid, uid)
 
     _, wav_data = connect_sound(sound_ids_by_measure_part, projectid, "insert", songid)
     update_wav_data(songid, wav_data)

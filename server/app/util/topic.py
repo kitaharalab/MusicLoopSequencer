@@ -13,31 +13,8 @@ from sqls import (
 )
 
 
-def update_topic_ratio(sound_array, measureid, partid, loop_id, user_id, topic_n=4):
-    # # print("ここまでは大丈夫")
-    # # TODO: partidをむりやり変更，現在のIDから1を引けば同じになるという前提．measureIDも同様
-    # split_name = re.split("/|\.", str(sound_array[int(measureid)][int(partid) - 1]))
-    # # part_list = ["Drums", "Bass", "Synth", "Sequence"]
-    # pass_ratio_topic = f"./lda/{split_name[3]}/ratio_topic{split_name[4]}.txt"
-    # # TODO: 変更先の音素材の盛り上がり度とpartidとトピック数から，topic選好度を取得したい
-    # ratio_topic = read_file(pass_ratio_topic)
-
-    # for i in range(len(ratio_topic)):
-    #     ratio_topic[i] = float(ratio_topic[i])
-    # # TODO: 音素材のpart name, その盛り上がり度
-    # df = pd.read_csv(
-    #     "./lda/" + split_name[3] + "/lda" + split_name[4] + ".csv",
-    #     header=0,
-    #     index_col=0,
-    # )
-    # feature_names = df.index.values
-    # n = 0
-
-    # for i in range(len(feature_names)):
-    #     if feature_names[i] == split_name[5]:
-    #         n = i
-    # topic_array = np.array(df[n : n + 1])[0][0:]
-    # TODO: partと盛り上がり度から出てくるトピック選好度を，全てのトピックにおいて足す
+def update_topic_ratio(partid, loop_id, user_id, topic_n=4):
+    # INFO: partと盛り上がり度から出てくるトピック選好度を，全てのトピックにおいて足す
     topic_id_ns = get_topic_id_ns()
     topic_n_ids = list(
         map(lambda x: x["id"], filter(lambda x: x["number"] == topic_n, topic_id_ns))
@@ -57,18 +34,6 @@ def update_topic_ratio(sound_array, measureid, partid, loop_id, user_id, topic_n
     for topic_number in range(topic_n):
         topic_n_preferences[topic_number]["value"] += loop_n_info[topic_number]["value"]
     update_topic_preferences_from_topic_preferences(user_id, topic_n_preferences)
-
-    # for i in range(topic_n):
-    #     ratio_topic[i] += topic_array[i]
-
-    # # TODO: topic選好度をデータベースに入れる
-    # with open(pass_ratio_topic, mode="w") as f:
-    #     for k in range(4):
-    #         # print(k)
-    #         if k == 0:
-    #             f.write(str(ratio_topic[k]))
-    #         else:
-    #             f.write("\n" + str(ratio_topic[k]))
 
 
 def read_file(path):
