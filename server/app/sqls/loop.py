@@ -97,3 +97,21 @@ def get_loop_wav_from_loop_ids_by_mesure_part(loop_ids_by_mesure_part: list):
                         response[-1].append(None)
 
     return response
+
+
+def get_loop_topics(loop_id: int):
+    sql = """
+    SELECT
+        topic_id,
+        value
+    FROM loop_topics
+    where
+        loop_id=%s
+    """
+    response = None
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute(sql, (loop_id,))
+            response = [dict(row) for row in cur.fetchall()]
+
+    return response if len(response) > 0 else None
