@@ -121,34 +121,32 @@ export default function LoopTable({ projectId, measure }) {
           </Tr>
         </Thead>
         <Tbody>
-          {parts?.map(({ partId, sounds }) => {
-            const existSound = measureRange.map((i) => sounds[i] != null);
-            return (
-              <Tr key={partId}>
-                {existSound.map((exist, i) => {
-                  const isSelect =
-                    selectMeasurePart.measure === i &&
-                    selectMeasurePart.part === partId;
+          {parts?.map(({ partId, sounds }) => (
+            <Tr key={partId}>
+              {sounds.map((loopId, i) => {
+                const exist = loopId != null;
+                const isSelect =
+                  selectMeasurePart.measure === i &&
+                  selectMeasurePart.part === partId;
 
-                  return (
-                    <Td
-                      key={`${partId}-${i}`}
-                      bgColor={exist ? colorScale(partId) : "white"}
-                      borderColor={borderColorScale(partId)}
-                      borderWidth={isSelect ? 3 : 0}
-                      borderRadius="8px"
-                      filter={colorFilter(isSelect || !exist)}
-                      data-part={partId}
-                      data-measure={i + 1}
-                      data-exist={exist}
-                      onClick={handleOnClickMeasurePart}
-                      height="30px"
-                    />
-                  );
-                })}
-              </Tr>
-            );
-          })}
+                return (
+                  <Td
+                    key={`${partId}-${i}`}
+                    bgColor={exist ? colorScale(partId) : "white"}
+                    borderColor={borderColorScale(partId)}
+                    borderWidth={isSelect ? 3 : 0}
+                    borderRadius="8px"
+                    filter={colorFilter(isSelect || !exist)}
+                    data-part={partId}
+                    data-measure={i + 1}
+                    data-exist={exist}
+                    onClick={handleOnClickMeasurePart}
+                    height="30px"
+                  />
+                );
+              })}
+            </Tr>
+          ))}
         </Tbody>
       </Table>
     </TableContainer>

@@ -13,13 +13,18 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import * as d3 from "d3";
-import { onAuthStateChanged, getAuth } from "firebase/auth";
 import React, { useEffect, useRef, useState } from "react";
 // import onMusicLoop from "./onMusicLoop";
 import { flushSync } from "react-dom";
-import { BiVolumeFull, BiSolidVolumeMute, BiRefresh } from "react-icons/bi";
+import {
+  BiVolumeFull,
+  BiSolidVolumeMute,
+  BiRefresh,
+  BiSolidTrashAlt,
+} from "react-icons/bi";
 import { useDispatch, useSelector } from "react-redux";
 
+import { auth } from "../../../components/authentication/firebase";
 import { setSongId } from "../../../redux/songIdSlice";
 
 import ScatterPlot from "./ScatterPlot";
@@ -76,10 +81,20 @@ function Chart({
   );
 }
 
-function Content({ width, height, handleInsertLoopMaterial, handlePlayAudio }) {
+function Content({
+  projectId,
+  songId,
+  width,
+  height,
+  handleInsertLoopMaterial,
+  handlePlayAudio,
+}) {
   const [isMute, setIsMute] = useState(false);
   const [zoomTransform, setZoomTransform] = useState(d3.zoomIdentity);
+  const { measure, part } = useSelector((store) => store.sounds);
   const zoomState = { zoomTransform, setZoomTransform };
+
+  const dispatch = useDispatch();
 
   function handleOnClick(id) {
     if (!isMute) {
@@ -95,6 +110,28 @@ function Content({ width, height, handleInsertLoopMaterial, handlePlayAudio }) {
         </Center>
         <Spacer />
         <ButtonGroup>
+          <IconButton
+            icon={<Icon as={BiSolidTrashAlt} />}
+            onClick={async () => {
+              if (part == null || measure == null) {
+                return;
+              }
+              const deleteUrl = `${
+                import.meta.env.VITE_SERVER_URL
+              }/projects/${projectId}/songs/${songId}/parts/${part}/measures/${measure}`;
+              const idToken = await auth.currentUser?.getIdToken();
+              await axios.delete(deleteUrl, {
+                headers: {
+                  Authorization: `Bearer ${idToken}`,
+                },
+              });
+
+              flushSync(() => {
+                dispatch(setSongId(undefined));
+              });
+              dispatch(setSongId(songId));
+            }}
+          />
           <IconButton
             icon={<Icon as={isMute ? BiSolidVolumeMute : BiVolumeFull} />}
             onClick={() => {
@@ -132,16 +169,7 @@ export default function LoopMaterialView({ projectId, songId }) {
   const partsRef = useRef();
   const dispatch = useDispatch();
 
-  const [user, setUser] = useState(null);
-  useEffect(() => {
-    const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-    });
-    return unsubscribe;
-  }, []);
-
-  const getMusicParts = () => {
+  const getMusicParts = async () => {
     if (songId === null || songId === undefined) {
       return;
     }
@@ -149,10 +177,9 @@ export default function LoopMaterialView({ projectId, songId }) {
     const url = `${
       import.meta.env.VITE_SERVER_URL
     }/projects/${projectId}/songs/${songId}`;
-    axios.get(url).then((response) => {
-      const { data } = response;
-      partsRef.current = data.parts;
-    });
+    const { data } = await axios.get(url);
+    const { parts } = data;
+    partsRef.current = parts;
   };
 
   useEffect(() => {
@@ -173,7 +200,6 @@ export default function LoopMaterialView({ projectId, songId }) {
         measure,
         loopId,
         partsRef.current,
-        user.uid,
       );
 
       flushSync(() => {
@@ -191,6 +217,7 @@ export default function LoopMaterialView({ projectId, songId }) {
       audio?.pause();
       const loop = await onMusicLoop(projectId, songId, part, id);
       setAudio(loop);
+      loop.volume = 0.3;
       loop.play();
     }
     getAndPlayMusicLoop();
@@ -203,6 +230,8 @@ export default function LoopMaterialView({ projectId, songId }) {
           <Content
             width={width}
             height={width}
+            projectId={projectId}
+            songId={songId}
             handleInsertLoopMaterial={(id) => {
               handleInsertLoopMaterial(id, songId);
             }}

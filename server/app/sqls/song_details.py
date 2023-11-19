@@ -118,3 +118,21 @@ def update_song_details(
                 (loop_id, song_id, part_id, measure),
             )
             conn.commit()
+
+
+def delete_song_details(song_id: int, part_id: int, measure: int):
+    sql = """
+    UPDATE song_details
+    SET loop_id=NULL
+    WHERE
+        song_id=%s
+        AND part_id=%s
+        AND measure=%s
+    """
+    print()
+    print(song_id, measure, part_id)
+    print()
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute(sql, (song_id, part_id, measure))
+            conn.commit()
