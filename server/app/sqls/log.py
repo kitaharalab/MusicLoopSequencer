@@ -19,6 +19,8 @@ class LogEvent(Enum):
     CREATE_PROJECT = auto()
     OPEN_PROJECT = auto()
     CHECK_SONG_LOOP = auto()
+    LOOP_MUTE = auto()
+    LOOP_UNMUTE = auto()
 
 
 # EVENT TEXT NOT NULL,
@@ -239,3 +241,24 @@ def check_song_loop_log(
                 ),
             )
             conn.commit()
+
+
+def loop_mute_log_base(event: LogEvent, project_id: int, song_id: int, user_id: str):
+    sql = """
+    insert into operation_logs (event, project_id, song_id, user_id) values (%s, %s, %s, %s);
+    """
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute(
+                sql,
+                (event.name, project_id, song_id, user_id),
+            )
+            conn.commit()
+
+
+def loop_mute_log(project_id: int, song_id: int, user_id: str):
+    loop_mute_log_base(LogEvent.LOOP_MUTE, project_id, song_id, user_id)
+
+
+def loop_unmute_log(project_id: int, song_id: int, user_id: str):
+    loop_mute_log_base(LogEvent.LOOP_UNMUTE, project_id, song_id, user_id)

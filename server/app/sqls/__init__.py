@@ -5,6 +5,8 @@ from .log import (
     create_project_log,
     delete_loop_log,
     insert_loop_log,
+    loop_mute_log,
+    loop_unmute_log,
     open_project_log,
     pause_song_log,
     play_loop_log,

@@ -11,6 +11,8 @@ from sqls import (
     get_song_details,
     get_song_loop_ids,
     get_wav_data_from_song_id,
+    loop_mute_log,
+    loop_unmute_log,
     pause_song_log,
     play_song_log,
     sound_array_wrap,
@@ -105,6 +107,22 @@ def get_infomation_song(projectid, songid):
         )
 
     return make_response(jsonify(response))
+
+
+@songs.route("/projects/<int:projectid>/songs/<int:songid>", methods=["POST"])
+@require_auth
+def log(uid, projectid, songid):
+    params = request.get_json()
+    is_mute = params.get("mute", None)
+    if is_mute is None:
+        return make_response(jsonify({"message": "do nothing"})), 204
+
+    if is_mute:
+        loop_mute_log(projectid, songid, uid)
+        return make_response(jsonify({"message": "muteloop log"}))
+    else:
+        loop_unmute_log(projectid, songid, uid)
+        return make_response(jsonify({"message": "unmute loop log"}))
 
 
 @songs.route("/projects/<projectid>/songs/<songid>/wav/", methods=["GET"])
