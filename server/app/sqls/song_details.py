@@ -25,6 +25,9 @@ def get_song_details(song_id):
             result = cur.fetchall()
             response = [dict(row) for row in result]
 
+    if len(response) == 0:
+        return None
+
     parts = get_parts()
     details_by_part_id = dict()
     for part in parts:
