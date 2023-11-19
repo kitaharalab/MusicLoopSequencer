@@ -17,7 +17,12 @@ import { onAuthStateChanged, getAuth } from "firebase/auth";
 import React, { useEffect, useRef, useState } from "react";
 // import onMusicLoop from "./onMusicLoop";
 import { flushSync } from "react-dom";
-import { BiVolumeFull, BiSolidVolumeMute, BiRefresh } from "react-icons/bi";
+import {
+  BiVolumeFull,
+  BiSolidVolumeMute,
+  BiRefresh,
+  BiSolidTrashAlt,
+} from "react-icons/bi";
 import { useDispatch, useSelector } from "react-redux";
 
 import { setSongId } from "../../../redux/songIdSlice";
@@ -76,10 +81,20 @@ function Chart({
   );
 }
 
-function Content({ width, height, handleInsertLoopMaterial, handlePlayAudio }) {
+function Content({
+  projectId,
+  songId,
+  width,
+  height,
+  handleInsertLoopMaterial,
+  handlePlayAudio,
+}) {
   const [isMute, setIsMute] = useState(false);
   const [zoomTransform, setZoomTransform] = useState(d3.zoomIdentity);
+  const { measure, part } = useSelector((store) => store.sounds);
   const zoomState = { zoomTransform, setZoomTransform };
+
+  const dispatch = useDispatch();
 
   function handleOnClick(id) {
     if (!isMute) {
@@ -95,6 +110,28 @@ function Content({ width, height, handleInsertLoopMaterial, handlePlayAudio }) {
         </Center>
         <Spacer />
         <ButtonGroup>
+          <IconButton
+            icon={<Icon as={BiSolidTrashAlt} />}
+            onClick={async () => {
+              if (part == null || measure == null) {
+                return;
+              }
+              const deleteUrl = `${
+                import.meta.env.VITE_SERVER_URL
+              }/projects/${projectId}/songs/${songId}/parts/${part}/measures/${measure}`;
+              const idToken = await auth.currentUser?.getIdToken();
+              await axios.delete(deleteUrl, {
+                headers: {
+                  Authorization: `Bearer ${idToken}`,
+                },
+              });
+
+              flushSync(() => {
+                dispatch(setSongId(undefined));
+              });
+              dispatch(setSongId(songId));
+            }}
+          />
           <IconButton
             icon={<Icon as={isMute ? BiSolidVolumeMute : BiVolumeFull} />}
             onClick={() => {
