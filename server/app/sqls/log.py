@@ -9,6 +9,8 @@ from .connection import get_connection
 class LogEvent(Enum):
     CREATE_SONG = auto()
     PLAY_SONG = auto()
+    PAUSE_SONG = auto()
+    STOP_SONG = auto()
     CHANGE_LOOP = auto()
     PLAY_LOOP = auto()
     CREATE_PROJECT = auto()
@@ -79,6 +81,32 @@ def play_song_log(project_id: int, song_id: int, user_id: str):
             cur.execute(
                 sql,
                 (LogEvent.PLAY_SONG.name, project_id, song_id, user_id),
+            )
+            conn.commit()
+
+
+def pause_song_log(project_id: int, song_id: int, user_id: str):
+    sql = """
+    insert into operation_logs (event, project_id, song_id, user_id) values (%s, %s, %s, %s);
+    """
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute(
+                sql,
+                (LogEvent.PAUSE_SONG.name, project_id, song_id, user_id),
+            )
+            conn.commit()
+
+
+def stop_song_log(project_id: int, song_id: int, user_id: str):
+    sql = """
+    insert into operation_logs (event, project_id, song_id, user_id) values (%s, %s, %s, %s);
+    """
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute(
+                sql,
+                (LogEvent.STOP_SONG.name, project_id, song_id, user_id),
             )
             conn.commit()
 
