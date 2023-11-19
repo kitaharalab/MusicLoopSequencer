@@ -1,4 +1,6 @@
 from flask import Blueprint, jsonify, make_response
+from sqls import delete_song_details
+from verify import require_auth
 
 part_measure = Blueprint("part_measure", __name__)
 
@@ -45,12 +47,20 @@ def get_infomation_of_inserted_sound(projectid, songid, partid, measureid):
 
 
 # TODO: デリートの実装
-# @app.route(
-#     "/projects/<projectid>/songs/<songid>/parts/<partid>/measures/<measureid>",
-#     methods=["DELETE"],
-# )
-# @require_auth
-# def delete_sound(projectid, songid, partid, measureid):
+@part_measure.route(
+    "/projects/<int:projectid>/songs/<int:songid>/parts/<int:partid>/measures/<int:measureid>",
+    methods=["DELETE"],
+)
+@require_auth
+def delete_sound(uid, projectid, songid, partid, measureid):
+    #     req = request.args
+    #     fix = req.get("fix")
+    # if fix -> int(measure/fix_len) ~ int(measure/fix_len) + fix_len to delete
+
+    delete_song_details(songid, partid, measureid + 1)
+    return make_response(jsonify({"message": "delete"}))
+
+
 #     req = request.args
 #     fix = req.get("fix")
 #     sound_array = load_music_data(

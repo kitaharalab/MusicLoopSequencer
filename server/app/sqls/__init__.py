@@ -17,7 +17,12 @@ from .song import (
     sound_array_wrap,
     update_wav_data,
 )
-from .song_details import get_song_details, get_song_loop_ids, update_song_details
+from .song_details import (
+    delete_song_details,
+    get_song_details,
+    get_song_loop_ids,
+    update_song_details,
+)
 from .topic import (
     add_topic_preferences,
     get_topic_id_ns,
