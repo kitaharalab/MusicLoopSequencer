@@ -1,7 +1,13 @@
 import json
 
 from flask import Blueprint, jsonify, make_response, request
-from sqls import add_project, get_project, get_project_song_ids, get_projects
+from sqls import (
+    add_project,
+    create_project_log,
+    get_project,
+    get_project_song_ids,
+    get_projects,
+)
 from verify import require_auth
 
 projects = Blueprint("projects", __name__)
@@ -17,6 +23,7 @@ def create_project(uid):
     title = data_json.get("title", None)
     title = title if title is not None else "Untitled"
     new_project_id = add_project(title, uid)
+    create_project_log(new_project_id["id"], uid)
 
     return make_response(jsonify(new_project_id))
 
