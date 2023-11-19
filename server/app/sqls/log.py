@@ -15,6 +15,7 @@ class LogEvent(Enum):
     PLAY_LOOP = auto()
     CREATE_PROJECT = auto()
     OPEN_PROJECT = auto()
+    CHECK_SONG_LOOP = auto()
 
 
 # EVENT TEXT NOT NULL,
@@ -159,5 +160,37 @@ def open_project_log(project_id: int, user_id: str):
             cur.execute(
                 sql,
                 (LogEvent.OPEN_PROJECT.name, project_id, user_id),
+            )
+            conn.commit()
+
+
+def check_song_loop_log(
+    project_id: int,
+    song_id: int,
+    part_id: int,
+    measure: int,
+    loop_id: int,
+    user_id: str,
+):
+    sql = """
+    insert into
+        operation_logs (event, project_id, song_id, part_id, measure, loop_id, user_id)
+    values
+        (%s, %s, %s, %s, %s, %s, %s);
+    """
+
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute(
+                sql,
+                (
+                    LogEvent.CHECK_SONG_LOOP.name,
+                    project_id,
+                    song_id,
+                    part_id,
+                    measure,
+                    loop_id,
+                    user_id,
+                ),
             )
             conn.commit()

@@ -1,6 +1,7 @@
 from .connection import get_connection
 from .excitement_curve import add_excitement_curve, get_excitement_curve
 from .log import (
+    check_song_loop_log,
     create_project_log,
     open_project_log,
     pause_song_log,
