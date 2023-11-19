@@ -1,4 +1,5 @@
 from enum import Enum, auto
+from math import e
 from typing import Any
 
 from psycopg2.extras import DictCursor
@@ -12,6 +13,8 @@ class LogEvent(Enum):
     PAUSE_SONG = auto()
     STOP_SONG = auto()
     CHANGE_LOOP = auto()
+    INSERT_LOOP = auto()
+    DELETE_LOOP = auto()
     PLAY_LOOP = auto()
     CREATE_PROJECT = auto()
     OPEN_PROJECT = auto()
@@ -47,6 +50,7 @@ def change_loop_log(
     from_loop_id: int,
     to_loop_id: int,
     user_id: str,
+    event: LogEvent = LogEvent.CHANGE_LOOP,
 ):
     sql = """
     insert into
@@ -60,7 +64,7 @@ def change_loop_log(
             cur.execute(
                 sql,
                 (
-                    LogEvent.CHANGE_LOOP.name,
+                    event.name,
                     project_id,
                     song_id,
                     part_id,
@@ -71,6 +75,47 @@ def change_loop_log(
                 ),
             )
             conn.commit()
+
+
+def insert_loop_log(
+    project_id: int,
+    song_id: int,
+    part_id: int,
+    measure: int,
+    from_loop_id: int,
+    to_loop_id: int,
+    user_id: str,
+):
+    change_loop_log(
+        project_id=project_id,
+        song_id=song_id,
+        part_id=part_id,
+        measure=measure,
+        from_loop_id=from_loop_id,
+        to_loop_id=to_loop_id,
+        user_id=user_id,
+        event=LogEvent.INSERT_LOOP,
+    )
+
+
+def delete_loop_log(
+    project_id: int,
+    song_id: int,
+    part_id: int,
+    measure: int,
+    loop_id: int,
+    user_id: str,
+):
+    change_loop_log(
+        project_id=project_id,
+        song_id=song_id,
+        part_id=part_id,
+        measure=measure,
+        from_loop_id=loop_id,
+        to_loop_id=None,
+        user_id=user_id,
+        event=LogEvent.DELETE_LOOP,
+    )
 
 
 def play_song_log(project_id: int, song_id: int, user_id: str):
