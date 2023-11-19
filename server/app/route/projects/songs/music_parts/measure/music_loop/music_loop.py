@@ -1,5 +1,11 @@
 from flask import Blueprint, jsonify, make_response, request
-from sqls import get_parts, get_song_loop_ids, update_song_details, update_wav_data
+from sqls import (
+    check_song_loop_log,
+    get_parts,
+    get_song_loop_ids,
+    update_song_details,
+    update_wav_data,
+)
 from util.connect_sound import connect_sound
 from util.topic import update_topic_ratio
 from verify import require_auth
@@ -14,6 +20,11 @@ mesure_music_loop = Blueprint("mesure_music_loop", __name__)
 )
 @require_auth
 def insert_sound(uid, projectid, songid, partid, measureid, musicloopid):
+    params = request.get_json()
+    if params.get("check", False):
+        check_song_loop_log(projectid, songid, partid, measureid + 1, musicloopid, uid)
+        return make_response(jsonify({"message": "check song loop log"}))
+
     parts = get_parts()
     # part_name2index = {"Drums": 0, "Bass": 1, "Synth": 2, "Sequence": 3}
     parts = sorted(parts, key=lambda x: x["id"])

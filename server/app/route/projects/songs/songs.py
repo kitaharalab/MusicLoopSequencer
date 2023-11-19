@@ -3,17 +3,22 @@ import os
 
 from flask import Blueprint, jsonify, make_response, request, send_file
 from psycopg2.extras import DictCursor
-from sqls import add_excitement_curve
-from sqls import create_song as add_song
 from sqls import (
+    add_excitement_curve,
     get_connection,
     get_excitement_curve,
     get_parts,
+    get_song_details,
     get_song_loop_ids,
     get_wav_data_from_song_id,
+    loop_mute_log,
+    loop_unmute_log,
+    pause_song_log,
     play_song_log,
     sound_array_wrap,
+    stop_song_log,
 )
+from sqls import create_song as add_song
 from verify import require_auth
 
 from .create_music import createMusic
@@ -104,6 +109,22 @@ def get_infomation_song(projectid, songid):
     return make_response(jsonify(response))
 
 
+@songs.route("/projects/<int:projectid>/songs/<int:songid>", methods=["POST"])
+@require_auth
+def log(uid, projectid, songid):
+    params = request.get_json()
+    is_mute = params.get("mute", None)
+    if is_mute is None:
+        return make_response(jsonify({"message": "do nothing"})), 204
+
+    if is_mute:
+        loop_mute_log(projectid, songid, uid)
+        return make_response(jsonify({"message": "muteloop log"}))
+    else:
+        loop_unmute_log(projectid, songid, uid)
+        return make_response(jsonify({"message": "unmute loop log"}))
+
+
 @songs.route("/projects/<projectid>/songs/<songid>/wav/", methods=["GET"])
 def download_song(projectid, songid):
     data = get_wav_data_from_song_id(songid)
@@ -125,13 +146,22 @@ def download_song(projectid, songid):
 @songs.route("/projects/<projectid>/songs/<songid>/wav", methods=["POST"])
 @require_auth
 def log_play_song(uid, projectid, songid):
-    file_name = f"./project/{projectid}/songs/{songid}/song{songid}.wav"
-    exist_file = os.path.isfile(file_name)
-    # data = request.get_json()
-    # user_id = data.get("userId", None)
+    song_data = get_song_details(songid)
+    exsist_song = song_data is not None
 
-    if not exist_file:
+    if not exsist_song:
         return make_response(jsonify({"message": "指定された楽曲ファイルは存在しません"})), 204
 
+    params = request.get_json()
+    response = make_response(jsonify({"message": "操作がログに書き込まれました"}))
+
+    if params.get("pause", False):
+        pause_song_log(projectid, songid, uid)
+        return response
+
+    if params.get("stop", False):
+        stop_song_log(projectid, songid, uid)
+        return response
+
     play_song_log(projectid, songid, uid)
-    return make_response(jsonify({"message": "操作がログに書き込まれました"})), 200
+    return response

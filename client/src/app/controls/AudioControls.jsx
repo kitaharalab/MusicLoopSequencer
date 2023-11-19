@@ -10,6 +10,10 @@ export default function AudioControls({ projectId }) {
   const [audioUrl, setAudioUrl] = useState();
   const songId = useSelector((state) => state.songId.songId);
 
+  const audioLogUrl = `${
+    import.meta.env.VITE_SERVER_URL
+  }/projects/${projectId}/songs/${songId}/wav`;
+
   useEffect(() => {
     audio?.pause();
     if (songId === undefined || songId === null) {
@@ -53,13 +57,10 @@ export default function AudioControls({ projectId }) {
       <Button
         type="button"
         onClick={async () => {
-          const url = `${
-            import.meta.env.VITE_SERVER_URL
-          }/projects/${projectId}/songs/${songId}/wav`;
           const idToken = await auth.currentUser?.getIdToken();
           axios.post(
-            url,
-            {},
+            audioLogUrl,
+            { play: true },
             { headers: { Authorization: `Bearer ${idToken}` } },
           );
           audio?.play();
@@ -68,16 +69,33 @@ export default function AudioControls({ projectId }) {
         play
       </Button>
 
-      <Button type="button" onClick={() => audio?.pause()}>
+      <Button
+        type="button"
+        onClick={async () => {
+          const idToken = await auth.currentUser?.getIdToken();
+          axios.post(
+            audioLogUrl,
+            { pause: true },
+            { headers: { Authorization: `Bearer ${idToken}` } },
+          );
+          audio?.pause();
+        }}
+      >
         pause
       </Button>
       <Button
         type="button"
-        onClick={() => {
+        onClick={async () => {
           if (!audio) {
             return;
           }
 
+          const idToken = await auth.currentUser?.getIdToken();
+          axios.post(
+            audioLogUrl,
+            { stop: true },
+            { headers: { Authorization: `Bearer ${idToken}` } },
+          );
           audio.pause();
           audio.currentTime = 0;
         }}

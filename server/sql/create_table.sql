@@ -116,7 +116,7 @@ CREATE TABLE
         EVENT TEXT NOT NULL,
         user_id TEXT NOT NULL,
         project_id INTEGER NOT NULL,
-        song_id INTEGER NOT NULL,
+        song_id INTEGER,
         part_id INTEGER,
         measure INTEGER,
         loop_id INTEGER,

@@ -134,7 +134,20 @@ function Content({
           />
           <IconButton
             icon={<Icon as={isMute ? BiSolidVolumeMute : BiVolumeFull} />}
-            onClick={() => {
+            onClick={async () => {
+              const logUrl = `${
+                import.meta.env.VITE_SERVER_URL
+              }/projects/${projectId}/songs/${songId}`;
+              const idToken = await auth.currentUser?.getIdToken();
+              axios.post(
+                logUrl,
+                { mute: !isMute },
+                {
+                  headers: {
+                    Authorization: `Bearer ${idToken}`,
+                  },
+                },
+              );
               setIsMute(!isMute);
             }}
           />

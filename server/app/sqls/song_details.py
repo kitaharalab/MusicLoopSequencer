@@ -1,7 +1,7 @@
 from psycopg2.extras import DictCursor
 
 from .connection import get_connection
-from .log import change_loop_log
+from .log import insert_loop_log
 from .part import get_parts
 from .song import get_project_id_from_song_id
 
@@ -24,6 +24,9 @@ def get_song_details(song_id):
             )
             result = cur.fetchall()
             response = [dict(row) for row in result]
+
+    if len(response) == 0:
+        return None
 
     parts = get_parts()
     details_by_part_id = dict()
@@ -106,7 +109,7 @@ def update_song_details(
     project_id = get_project_id_from_song_id(song_id)
 
     # log
-    change_loop_log(
+    insert_loop_log(
         project_id, song_id, part_id, measure, from_loop_id, loop_id, user_id
     )
 

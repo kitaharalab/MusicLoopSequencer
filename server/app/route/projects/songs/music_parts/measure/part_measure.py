@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, make_response
-from sqls import delete_song_details
+from sqls import delete_loop_log, delete_song_details, get_loop_id
 from verify import require_auth
 
 part_measure = Blueprint("part_measure", __name__)
@@ -56,7 +56,8 @@ def delete_sound(uid, projectid, songid, partid, measureid):
     #     req = request.args
     #     fix = req.get("fix")
     # if fix -> int(measure/fix_len) ~ int(measure/fix_len) + fix_len to delete
-
+    loop_id = get_loop_id(songid, partid, measureid + 1)
+    delete_loop_log(projectid, songid, partid, measureid, loop_id, uid)
     delete_song_details(songid, partid, measureid + 1)
     return make_response(jsonify({"message": "delete"}))
 

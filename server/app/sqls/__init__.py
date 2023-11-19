@@ -1,6 +1,18 @@
 from .connection import get_connection
 from .excitement_curve import add_excitement_curve, get_excitement_curve
-from .log import play_loop_log, play_song_log
+from .log import (
+    check_song_loop_log,
+    create_project_log,
+    delete_loop_log,
+    insert_loop_log,
+    loop_mute_log,
+    loop_unmute_log,
+    open_project_log,
+    pause_song_log,
+    play_loop_log,
+    play_song_log,
+    stop_song_log,
+)
 from .loop import (
     get_loop_and_topics_from_part,
     get_loop_music_by_id,
@@ -19,6 +31,7 @@ from .song import (
 )
 from .song_details import (
     delete_song_details,
+    get_loop_id,
     get_song_details,
     get_song_loop_ids,
     update_song_details,
