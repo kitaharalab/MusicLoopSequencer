@@ -11,6 +11,7 @@ from .log import (
     pause_song_log,
     play_loop_log,
     play_song_log,
+    rest_log,
     stop_song_log,
 )
 from .loop import (
