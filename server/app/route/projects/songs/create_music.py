@@ -1,5 +1,6 @@
 from hmm_model.model import initialize_Hmm
 from util.connect_sound import connect_sound
+from util.const import fix_len
 from util.dtw import dtw
 from util.hmm import fix_Auto_Hmm, fix_Hmm, use_Auto_HMM, use_HMM
 
@@ -7,7 +8,7 @@ from .choose_sound import choose_sound
 
 
 # TODO: returnしてるsongIdは使ってないので修正
-def createMusic(array, projectid, user_id, structure=1, fix=0, fix_len=4):
+def createMusic(array, projectid, user_id, structure=1, fix=0):
     """楽曲の生成"""
     # 盛り上がり度を求める
     # self.excitement_array = self.model.chengeExcitement(array)
