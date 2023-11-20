@@ -95,7 +95,13 @@ def get_loop_id(song_id: int, part_id: int, measure: int) -> int:
 
 
 def update_song_details(
-    song_id: int, part_id: int, measure: int, loop_id: int, user_id: str
+    song_id: int,
+    part_id: int,
+    measure: int,
+    loop_id: int,
+    user_id: str,
+    fix: int = 0,
+    fix_length: int = 4,
 ):
     """楽曲において，ある小節における音素材を変更する
 
@@ -116,11 +122,20 @@ def update_song_details(
     # update
     with get_connection() as conn:
         with conn.cursor(cursor_factory=DictCursor) as cur:
-            cur.execute(
-                "UPDATE song_details SET loop_id=%s WHERE song_id=%s and part_id=%s and measure=%s",
-                (loop_id, song_id, part_id, measure),
-            )
-            conn.commit()
+            if fix == 0:
+                cur.execute(
+                    "UPDATE song_details SET loop_id=%s WHERE song_id=%s and part_id=%s and measure=%s",
+                    (loop_id, song_id, part_id, measure),
+                )
+            else:
+                start = (measure - 1) // fix_length * fix_length + 1
+                end = start + fix_length
+                for i in range(start, end):
+                    cur.execute(
+                        "UPDATE song_details SET loop_id=%s WHERE song_id=%s and part_id=%s and measure=%s",
+                        (loop_id, song_id, part_id, i),
+                    )
+        conn.commit()
 
 
 def delete_song_details(song_id: int, part_id: int, measure: int):
