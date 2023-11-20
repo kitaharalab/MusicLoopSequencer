@@ -1,10 +1,30 @@
 import { StarIcon } from "@chakra-ui/icons";
 import { Box, IconButton } from "@chakra-ui/react";
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 
-export default function Evaluation() {
+import { auth } from "../../components/authentication/firebase";
+
+export default function Evaluation({ projectId, songId }) {
   const [evaluation, setEvaluation] = useState(0);
   const EVALUATION_MAX = 5;
+
+  useEffect(() => {
+    // const idToken = auth.currentUser?.getIdToken();
+    // const url = `${
+    //   import.meta.env.VITE_SERVER_URL
+    // }/projects/${projectId}/songs/${songId}`;
+    // axios.get(url, {
+    //   headers: {
+    //     Authorization: `Bearer ${idToken}`,
+    //   },
+    // }).then((response) => {
+    //   const { data } = response;
+    //   setEvaluation(data.evaluation);
+    // });
+
+    setEvaluation(0);
+  }, []);
 
   return (
     <Box>
@@ -25,8 +45,27 @@ export default function Evaluation() {
                   stroke="gray.500"
                 />
               }
-              onClick={() => {
-                setEvaluation(value === evaluation ? 0 : value);
+              onClick={async () => {
+                const newEvaluation = value === evaluation ? 0 : value;
+                setEvaluation(newEvaluation);
+
+                if (songId === undefined || songId === null) {
+                  return;
+                }
+
+                const idToken = await auth.currentUser?.getIdToken();
+                const url = `${
+                  import.meta.env.VITE_SERVER_URL
+                }/projects/${projectId}/songs/${songId}`;
+                axios.post(
+                  url,
+                  { evaluation: newEvaluation },
+                  {
+                    headers: {
+                      Authorization: `Bearer ${idToken}`,
+                    },
+                  },
+                );
               }}
             />
           );

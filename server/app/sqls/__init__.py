@@ -27,6 +27,7 @@ from .song import (
     create_song,
     get_wav_data_from_song_id,
     sound_array_wrap,
+    update_song_evaluation,
     update_wav_data,
 )
 from .song_details import (
