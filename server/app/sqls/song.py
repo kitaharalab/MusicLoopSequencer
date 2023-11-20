@@ -116,3 +116,20 @@ def update_song_evaluation(song_id: int, evaluation: int) -> None:
                 (evaluation, song_id),
             )
             conn.commit()
+
+
+def get_song_evaluation(song_id: int) -> int:
+    response = None
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute(
+                """
+                SELECT evaluation
+                FROM songs
+                WHERE id = %s
+                """,
+                (song_id,),
+            )
+            result = cur.fetchone()
+            response = dict(result)["evaluation"] if result is not None else None
+    return response

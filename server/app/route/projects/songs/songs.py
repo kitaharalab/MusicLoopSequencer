@@ -3,13 +3,13 @@ import os
 
 from flask import Blueprint, jsonify, make_response, request, send_file
 from psycopg2.extras import DictCursor
-from sqls import add_excitement_curve
-from sqls import create_song as add_song
 from sqls import (
+    add_excitement_curve,
     get_connection,
     get_excitement_curve,
     get_parts,
     get_song_details,
+    get_song_evaluation,
     get_song_loop_ids,
     get_wav_data_from_song_id,
     loop_mute_log,
@@ -20,6 +20,7 @@ from sqls import (
     stop_song_log,
     update_song_evaluation,
 )
+from sqls import create_song as add_song
 from verify import require_auth
 
 from .create_music import createMusic
@@ -96,8 +97,13 @@ def get_infomation_song(projectid, songid):
 
     loop_ids_by_part = get_song_loop_ids(songid)
     excitement_curve = get_excitement_curve(songid)
+    evaluation = get_song_evaluation(songid)
 
-    response = {"parts": [], "excitement_curve": excitement_curve}
+    response = {
+        "parts": [],
+        "excitement_curve": excitement_curve,
+        "evaluation": evaluation,
+    }
     for part in parts:
         response["parts"].append(
             {
