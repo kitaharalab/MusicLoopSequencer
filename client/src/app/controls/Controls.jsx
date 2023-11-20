@@ -107,7 +107,7 @@ export default function Controls({ projectId }) {
         <Spacer />
         <AudioControls projectId={projectId} />
         <Spacer />
-        <Evaluation />
+        <Evaluation projectId={projectId} songId={songId} />
       </Flex>
     </FormControl>
   );
