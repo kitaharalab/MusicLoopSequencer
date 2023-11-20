@@ -69,7 +69,7 @@ function SignInModal({ isOpen, onOpen, onClose, setUser }) {
 function Project() {
   const [projects, setProjects] = useState(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(auth.currentUser);
 
   async function createNewProject() {
     const url = `${import.meta.env.VITE_SERVER_URL}/projects`;
