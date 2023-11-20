@@ -18,6 +18,7 @@ import {
   ModalHeader,
   ModalCloseButton,
   ModalBody,
+  Spinner,
 } from "@chakra-ui/react";
 import axios from "axios";
 import {
@@ -66,7 +67,7 @@ function SignInModal({ isOpen, onOpen, onClose, setUser }) {
 }
 
 function Project() {
-  const [projects, setProjects] = useState([]);
+  const [projects, setProjects] = useState(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [user, setUser] = useState(null);
 
@@ -154,27 +155,31 @@ function Project() {
         setUser={setUser}
       />
 
-      <SimpleGrid minChildWidth="30vw" spacing={4} marginTop={2}>
-        {projects.length === 0 ? (
-          <Card>
-            <CardHeader>プロジェクトをまだ作っていないようです👀</CardHeader>
-            <CardBody>
-              <Box>
-                <Text>サインインしてプロジェクトを作成してみましょう</Text>
-              </Box>
-              {!user && <Button variant="link">サインインはこちら</Button>}
-            </CardBody>
-          </Card>
-        ) : (
-          projects?.map(({ id, name }) => (
-            <Card key={id} width="30vw">
-              <Link to={`App?projectid=${id}`}>
-                <CardHeader>{name}</CardHeader>
-              </Link>
+      {projects === null ? (
+        <Spinner />
+      ) : (
+        <SimpleGrid minChildWidth="30vw" spacing={4} marginTop={2}>
+          {projects.length === 0 ? (
+            <Card>
+              <CardHeader>プロジェクトをまだ作っていないようです👀</CardHeader>
+              <CardBody>
+                <Box>
+                  <Text>サインインしてプロジェクトを作成してみましょう</Text>
+                </Box>
+                {!user && <Button variant="link">サインインはこちら</Button>}
+              </CardBody>
             </Card>
-          ))
-        )}
-      </SimpleGrid>
+          ) : (
+            projects?.map(({ id, name }) => (
+              <Card key={id} width="30vw">
+                <Link to={`App?projectid=${id}`}>
+                  <CardHeader>{name}</CardHeader>
+                </Link>
+              </Card>
+            ))
+          )}
+        </SimpleGrid>
+      )}
     </Box>
   );
 }
