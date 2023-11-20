@@ -26,9 +26,14 @@ export default async function insertSound(
     bassList,
     drumsList, // 盛り上がり度曲線のパラメーターを格納した配列をJSONデータにする
   };
+  const modeParam = {
+    fix: import.meta.env.VITE_MODE_FIX,
+    structure: import.meta.env.VITE_MODE_STRUCTURE,
+    adapt: import.meta.env.VITE_MODE_ADAPT,
+  };
 
   const idToken = await auth.currentUser?.getIdToken();
-  const response = await axios.post(url, data, {
+  const response = await axios.post(url, modeParam, {
     headers: {
       Authorization: `Bearer ${idToken}`,
     },
