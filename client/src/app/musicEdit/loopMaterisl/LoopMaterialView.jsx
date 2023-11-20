@@ -119,8 +119,16 @@ function Content({
               const deleteUrl = `${
                 import.meta.env.VITE_SERVER_URL
               }/projects/${projectId}/songs/${songId}/parts/${part}/measures/${measure}`;
+              const url = new URL(deleteUrl);
+              url.searchParams.append("fix", import.meta.env.VITE_MODE_FIX);
+              url.searchParams.append(
+                "structure",
+                import.meta.env.VITE_MODE_STRUCTURE,
+              );
+              url.searchParams.append("adapt", import.meta.env.VITE_MODE_ADAPT);
+
               const idToken = await auth.currentUser?.getIdToken();
-              await axios.delete(deleteUrl, {
+              await axios.delete(url, {
                 headers: {
                   Authorization: `Bearer ${idToken}`,
                 },
