@@ -56,7 +56,7 @@ function App() {
 
   return (
     <>
-      <Header projectName={projectId} />
+      <Header projectName={projectId} projectId={projectId} songId={songId} />
       <Controls projectId={projectId} />
 
       <Box className="excitement-curve-container" paddingY={4} height="40vh">

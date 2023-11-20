@@ -3,8 +3,9 @@ import os
 
 from flask import Blueprint, jsonify, make_response, request, send_file
 from psycopg2.extras import DictCursor
+from sqls import add_excitement_curve
+from sqls import create_song as add_song
 from sqls import (
-    add_excitement_curve,
     get_connection,
     get_excitement_curve,
     get_parts,
@@ -16,11 +17,11 @@ from sqls import (
     loop_unmute_log,
     pause_song_log,
     play_song_log,
+    rest_log,
     sound_array_wrap,
     stop_song_log,
     update_song_evaluation,
 )
-from sqls import create_song as add_song
 from verify import require_auth
 
 from .create_music import createMusic
@@ -124,6 +125,11 @@ def log(uid, projectid, songid):
     params = request.get_json()
     is_mute = params.get("mute", None)
     evaluation = params.get("evaluation", None)
+    rest = params.get("rest", None)
+
+    if rest is not None:
+        rest_log(projectid, songid, uid, rest)
+        return make_response(jsonify({"message": "rest log"}))
 
     if evaluation is not None:
         update_song_evaluation(songid, evaluation)

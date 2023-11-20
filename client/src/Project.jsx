@@ -170,7 +170,11 @@ function Project() {
                 <Box>
                   <Text>サインインしてプロジェクトを作成してみましょう</Text>
                 </Box>
-                {!user && <Button variant="link">サインインはこちら</Button>}
+                {!user && (
+                  <Button variant="link" onClick={onOpen}>
+                    サインインはこちら
+                  </Button>
+                )}
               </CardBody>
             </Card>
           ) : (
