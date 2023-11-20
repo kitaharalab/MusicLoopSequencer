@@ -10,20 +10,24 @@ export default function Evaluation({ projectId, songId }) {
   const EVALUATION_MAX = 5;
 
   useEffect(() => {
-    // const idToken = auth.currentUser?.getIdToken();
-    // const url = `${
-    //   import.meta.env.VITE_SERVER_URL
-    // }/projects/${projectId}/songs/${songId}`;
-    // axios.get(url, {
-    //   headers: {
-    //     Authorization: `Bearer ${idToken}`,
-    //   },
-    // }).then((response) => {
-    //   const { data } = response;
-    //   setEvaluation(data.evaluation);
-    // });
+    async function getEvaluation() {
+      if (songId === undefined || songId === null) {
+        return;
+      }
+      const idToken = await auth.currentUser?.getIdToken();
+      const url = `${
+        import.meta.env.VITE_SERVER_URL
+      }/projects/${projectId}/songs/${songId}`;
+      const { data } = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+        },
+      });
+      const { evaluation: currentEvaluation } = data;
+      setEvaluation(currentEvaluation);
+    }
 
-    setEvaluation(0);
+    getEvaluation();
   }, []);
 
   return (
