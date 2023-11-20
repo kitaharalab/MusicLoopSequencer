@@ -89,21 +89,21 @@ function Project() {
     setProjects([...projects, data]);
   }
 
-  useEffect(() => {
-    async function getProjects() {
-      const url = `${import.meta.env.VITE_SERVER_URL}/projects`;
-      const idToken = await auth.currentUser?.getIdToken();
-      const response = await axios
-        .get(url, {
-          headers: {
-            Authorization: `Bearer ${idToken}`,
-          },
-        })
-        .catch(() => ({ data: [] }));
-      const { data } = response;
-      setProjects(data);
-    }
+  async function getProjects() {
+    const url = `${import.meta.env.VITE_SERVER_URL}/projects`;
+    const idToken = await auth.currentUser?.getIdToken();
+    const response = await axios
+      .get(url, {
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+        },
+      })
+      .catch(() => ({ data: [] }));
+    const { data } = response;
+    setProjects(data);
+  }
 
+  useEffect(() => {
     getProjects();
 
     const unsubscribe = onAuthStateChanged(auth, (authUser) => {
@@ -112,6 +112,10 @@ function Project() {
 
     return unsubscribe;
   }, []);
+
+  useEffect(() => {
+    getProjects();
+  }, [user]);
 
   return (
     <Box id="project">
