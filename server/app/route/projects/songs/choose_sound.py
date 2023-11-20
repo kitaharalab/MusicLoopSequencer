@@ -5,13 +5,12 @@ from sqls import (
     get_topic_id_ns,
     get_topic_preferences,
 )
+from util.const import excitement_len, fix_len, topic_n
 
 part_name2index = {"Drums": 0, "Bass": 1, "Synth": 2, "Sequence": 3}
 
 
-def choose_sound(
-    excitement_array, hmm_array, user_id, excitement_len=32, fix_len=4, topic_n=4
-):
+def choose_sound(excitement_array, hmm_array, user_id):
     """使用する音素材を選択する"""
     sound_list = list()
     for i in range(excitement_len):
@@ -19,9 +18,7 @@ def choose_sound(
         binary = binary[::-1]
         excitement = excitement_array[i]
         if i % fix_len == 0:
-            random_sound_list_by_part_excitement = choose_sound_randomly(
-                user_id, topic_n
-            )
+            random_sound_list_by_part_excitement = choose_sound_randomly(user_id)
         block_sound = list()
         for part in range(4):
             if binary[part] == "1":
@@ -36,7 +33,7 @@ def choose_sound(
 
 
 # TODO: 音素材のファイル名とwavデータとidをデータベースから取得したい
-def choose_sound_randomly(user_id, topic_n):
+def choose_sound_randomly(user_id):
     """音素材をランダムに選択する"""
     random_sound_list = list()
 
