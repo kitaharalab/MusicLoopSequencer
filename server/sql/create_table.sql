@@ -60,6 +60,7 @@ CREATE TABLE
     songs (
         id serial PRIMARY KEY,
         project_id INTEGER NOT NULL,
+        evaluation INTEGER NOT NULL DEFAULT 0,
         wave_data bytea NOT NULL,
         FOREIGN KEY (project_id) REFERENCES projects (id)
     );
@@ -116,7 +117,7 @@ CREATE TABLE
         EVENT TEXT NOT NULL,
         user_id TEXT NOT NULL,
         project_id INTEGER NOT NULL,
-        song_id INTEGER NOT NULL,
+        song_id INTEGER,
         part_id INTEGER,
         measure INTEGER,
         loop_id INTEGER,

@@ -12,6 +12,7 @@ import * as d3 from "d3";
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
+import { auth } from "../../components/authentication/firebase";
 import { setLoopPositions } from "../../redux/musicDataSlice";
 import { setSelectedLoop } from "../../redux/soundsSlice";
 
@@ -72,6 +73,27 @@ export default function LoopTable({ projectId, measure }) {
     const { dataset } = event.target;
     const part = JSON.parse(dataset.part);
     const measureId = JSON.parse(dataset.measure) - 1;
+    const loopId =
+      dataset.loop !== undefined ? JSON.parse(dataset.loop) : undefined;
+
+    if (loopId !== undefined) {
+      // start log
+      const url = new URL(
+        `/projects/${projectId}/songs/${songId}/parts/${part}/measures/${measureId}/musicloops/${loopId}`,
+        import.meta.env.VITE_SERVER_URL,
+      );
+      const idToken = await auth.currentUser?.getIdToken();
+      axios.post(
+        url,
+        { check: true },
+        {
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        },
+      );
+      // end log
+    }
 
     const newSelectMeasurePart = {
       measure: measureId,
@@ -140,6 +162,7 @@ export default function LoopTable({ projectId, measure }) {
                     data-part={partId}
                     data-measure={i + 1}
                     data-exist={exist}
+                    data-loop={loopId}
                     onClick={handleOnClickMeasurePart}
                     height="30px"
                   />

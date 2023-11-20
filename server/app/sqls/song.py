@@ -102,3 +102,17 @@ def update_wav_data(song_id: int, wav_data: bytes) -> None:
                 (wav_data, song_id),
             )
             conn.commit()
+
+
+def update_song_evaluation(song_id: int, evaluation: int) -> None:
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute(
+                """
+                UPDATE songs
+                SET evaluation = %s
+                WHERE id = %s
+                """,
+                (evaluation, song_id),
+            )
+            conn.commit()
