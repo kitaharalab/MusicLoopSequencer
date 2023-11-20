@@ -22,12 +22,22 @@ export default async function createMusic(projectid, linesY, max) {
     rawCurve: linesY,
     curveMax: max,
   };
+  const modeParam = {
+    fix: import.meta.env.VITE_MODE_FIX,
+    structure: import.meta.env.VITE_MODE_STRUCTURE,
+    adapt: import.meta.env.VITE_MODE_ADAPT,
+  };
+
   const idToken = await auth.currentUser?.getIdToken();
-  const response = await axios.post(url, data, {
-    headers: {
-      Authorization: `Bearer ${idToken}`,
+  const response = await axios.post(
+    url,
+    { ...data, ...modeParam },
+    {
+      headers: {
+        Authorization: `Bearer ${idToken}`,
+      },
     },
-  });
+  );
   const { data: responseData } = response;
 
   return responseData;
