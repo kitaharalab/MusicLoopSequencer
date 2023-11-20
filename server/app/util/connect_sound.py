@@ -25,6 +25,8 @@ def connect_sound(sound_list_by_mesure_part, projectid, mode, songid):
                 block_sound = sound
             else:
                 block_sound = block_sound.overlay(sound)
+        if block_sound is None:
+            block_sound = AudioSegment.silent()
         output_sound = output_sound + block_sound
 
     wav_data = io.BytesIO()
