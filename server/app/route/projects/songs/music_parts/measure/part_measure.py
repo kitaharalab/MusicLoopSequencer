@@ -1,5 +1,13 @@
-from flask import Blueprint, jsonify, make_response
-from sqls import delete_loop_log, delete_song_details, get_loop_id
+from flask import Blueprint, jsonify, make_response, request
+from sqls import (
+    delete_loop_log,
+    delete_song_details,
+    get_loop_id,
+    get_parts,
+    get_song_loop_ids,
+    update_wav_data,
+)
+from util.connect_sound import connect_sound
 from verify import require_auth
 
 part_measure = Blueprint("part_measure", __name__)
@@ -53,12 +61,24 @@ def get_infomation_of_inserted_sound(projectid, songid, partid, measureid):
 )
 @require_auth
 def delete_sound(uid, projectid, songid, partid, measureid):
-    #     req = request.args
-    #     fix = req.get("fix")
+    req = request.args
+    fix_req = req.get("fix")
+    fix = int(fix_req) if fix_req is not None else 0
     # if fix -> int(measure/fix_len) ~ int(measure/fix_len) + fix_len to delete
     loop_id = get_loop_id(songid, partid, measureid + 1)
     delete_loop_log(projectid, songid, partid, measureid, loop_id, uid)
-    delete_song_details(songid, partid, measureid + 1)
+    delete_song_details(songid, partid, measureid + 1, fix=fix)
+
+    parts = get_parts()
+    # part_name2index = {"Drums": 0, "Bass": 1, "Synth": 2, "Sequence": 3}
+    parts = sorted(parts, key=lambda x: x["id"])
+    song_details = get_song_loop_ids(song_id=songid)
+    sound_ids_by_part_measure = [song_details[part["id"]] for part in parts]
+    sound_ids_by_measure_part = [list(arr) for arr in zip(*sound_ids_by_part_measure)]
+
+    _, wav_data = connect_sound(sound_ids_by_measure_part, projectid, "delete", songid)
+    update_wav_data(songid, wav_data)
+
     return make_response(jsonify({"message": "delete"}))
 
 
