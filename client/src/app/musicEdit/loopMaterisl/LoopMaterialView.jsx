@@ -179,47 +179,24 @@ export default function LoopMaterialView({ projectId, songId }) {
   const [width, setWidth] = useState(400);
   const { part, measure } = useSelector((store) => store.sounds);
   const [audio, setAudio] = useState();
-  const partsRef = useRef();
   const dispatch = useDispatch();
-
-  const getMusicParts = async () => {
-    if (songId === null || songId === undefined) {
-      return;
-    }
-
-    const url = `${
-      import.meta.env.VITE_SERVER_URL
-    }/projects/${projectId}/songs/${songId}`;
-    const { data } = await axios.get(url);
-    const { parts } = data;
-    partsRef.current = parts;
-  };
 
   useEffect(() => {
     setWidth(wrapperRef?.current?.clientWidth);
-    getMusicParts();
   }, [songId]);
 
   function handleInsertLoopMaterial(loopId, songId) {
-    if (part === null || measure === null || partsRef === null) {
+    if (part === null || measure === null) {
       return;
     }
 
     const insertLoop = async () => {
-      const music = await insertSound(
-        projectId,
-        songId,
-        part,
-        measure,
-        loopId,
-        partsRef.current,
-      );
+      const music = await insertSound(projectId, songId, part, measure, loopId);
 
       flushSync(() => {
         dispatch(setSongId(undefined));
       });
       dispatch(setSongId(music.songId));
-      getMusicParts();
     };
 
     insertLoop();
