@@ -7,6 +7,7 @@ from sqls import (
     update_wav_data,
 )
 from util.connect_sound import connect_sound
+from util.const import fix_len, topic_n
 from util.topic import update_topic_ratio
 from verify import require_auth
 
@@ -29,18 +30,19 @@ def insert_sound(uid, projectid, songid, partid, measureid, musicloopid):
     # part_name2index = {"Drums": 0, "Bass": 1, "Synth": 2, "Sequence": 3}
     parts = sorted(parts, key=lambda x: x["id"])
 
-    # TODO: パラメータの取得
-    req = request.args
-    # fix = req.get("fix")
-    adapt = req.get("adapt")
-
-    # TODO: fixが1のときは4小節ごとに音素材を入れる
-    #         for i in range(4):
-    #             sound_array[int(int(measureid) / 4) * 4 + i][3 - int(partid)] = int(
-    #                 musicloopid
-    #             )
-    #
-    update_song_details(songid, partid, int(measureid) + 1, musicloopid, uid)
+    fix_req = params.get("fix")
+    fix = int(fix_req) if fix_req is not None else 0
+    adapt_req = params.get("adapt")
+    adapt = int(adapt_req) if adapt_req is not None else 0
+    update_song_details(
+        songid,
+        partid,
+        measureid + 1,
+        musicloopid,
+        uid,
+        fix=fix,
+        fix_length=fix_len,
+    )
     song_details = get_song_loop_ids(song_id=songid)
 
     # 0:drums
@@ -50,29 +52,12 @@ def insert_sound(uid, projectid, songid, partid, measureid, musicloopid):
     sound_ids_by_part_measure = [song_details[part["id"]] for part in parts]
     """sound_array[part_id][measure] = loop_id"""
     sound_ids_by_measure_part = [list(arr) for arr in zip(*sound_ids_by_part_measure)]
-    print(song_details[partid][measureid])
-    print(partid, measureid, musicloopid)
-    print(sound_ids_by_measure_part[measureid][partid - 1])
 
     if adapt == 1:
-        update_topic_ratio(partid, musicloopid, uid)
+        update_topic_ratio(partid, musicloopid, uid, topic_n=topic_n)
 
     _, wav_data = connect_sound(sound_ids_by_measure_part, projectid, "insert", songid)
     update_wav_data(songid, wav_data)
-
-    # TODO:
-    #     sound_array = rewrite_music_data(
-    #     measureid,
-    #     partid,
-    #     musicloopid,
-    #     sound_array,
-    #     drums_list,
-    #     bass_list,
-    #     synth_list,
-    #     sequence_list,
-    #     fix,
-    #     adapt,
-    # )
 
     response = {"songId": int(songid), "parts": []}
     for part in parts:
