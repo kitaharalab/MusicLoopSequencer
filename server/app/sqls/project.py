@@ -18,16 +18,11 @@ def add_project(project_name: str, user_id: str):
     return new_id
 
 
-def get_projects(isExperiment: bool = False):
+def get_projects(user_id: str):
     response = None
     with get_connection() as conn:
         with conn.cursor(cursor_factory=DictCursor) as cur:
-            if isExperiment:
-                cur.execute(
-                    "SELECT id, name FROM projects WHERE name LIKE 'Experiment%'"
-                )
-            else:
-                cur.execute("SELECT id, name FROM projects")
+            cur.execute("SELECT id, name FROM projects WHERE user_id = %s", (user_id,))
             result = cur.fetchall()
             response = [dict(row) for row in result]
     return response

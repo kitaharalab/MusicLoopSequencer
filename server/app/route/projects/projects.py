@@ -23,7 +23,7 @@ def create_project(uid):
     if open_project:
         open_project_log(param["id"], uid)
         return make_response(jsonify({"message": "open project"}))
-    
+
     title = param.get("title", None)
     title = title if title is not None else "Untitled"
     new_project_id = add_project(title, uid)
@@ -38,13 +38,9 @@ def open_project(project_id: int, user_id: str):
 
 # TODO: ユーザーの認証でそのユーザーのプロジェクトだけ取る
 @projects.route("/projects", methods=["GET"])
-def get_infomation_of_projects():
-    isExperimentParam = request.args.get("experiment")
-    isExperiment = (
-        json.loads(isExperimentParam) if isExperimentParam is not None else False
-    )
-
-    response = get_projects(isExperiment)
+@require_auth
+def get_information_of_projects(user_id):
+    response = get_projects(user_id)
 
     return make_response(jsonify(response))
 

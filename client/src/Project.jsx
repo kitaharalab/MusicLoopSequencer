@@ -10,57 +10,107 @@ import {
   Text,
   Flex,
   Spacer,
+  useDisclosure,
+  Button,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
 } from "@chakra-ui/react";
 import axios from "axios";
+import {
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  signInWithPopup,
+} from "firebase/auth";
 import React, { useEffect, useState } from "react";
+import { flushSync } from "react-dom";
 
 import Link from "../components/Link/Link";
 
 import { auth } from "./components/authentication/firebase";
 
+function SignInModal({ isOpen, onOpen, onClose, setUser }) {
+  const [isPending, setPending] = useState(false);
+  const googleProvider = new GoogleAuthProvider();
+  googleProvider.setCustomParameters({
+    prompt: "select_account",
+  });
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} isCentered>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>サインインする</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <Button
+            disabled={isPending}
+            onClick={async () => {
+              flushSync(() => {
+                setPending(true);
+              });
+              const result = await signInWithPopup(auth, googleProvider);
+              setUser(result?.user);
+              onClose();
+            }}
+          >
+            Sign in with Google
+          </Button>
+        </ModalBody>
+      </ModalContent>
+    </Modal>
+  );
+}
+
 function Project() {
-  const [done, setDone] = useState(false);
-  const [sample, _setSample] = useState(null);
   const [projects, setProjects] = useState([]);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [user, setUser] = useState(null);
 
   async function createNewProject() {
     const url = `${import.meta.env.VITE_SERVER_URL}/projects`;
     const idToken = await auth.currentUser?.getIdToken();
-    const response = await axios.post(
-      url,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${idToken}`,
+    const response = await axios
+      .post(
+        url,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
         },
-      },
-    );
+      )
+      .catch(() => ({ data: [] }));
     const { data } = response;
     setProjects([...projects, data]);
   }
 
   useEffect(() => {
-    let ignore = false;
-    function makeLink() {
-      if (done) {
-        return;
-      }
+    async function getProjects() {
+      const url = `${import.meta.env.VITE_SERVER_URL}/projects`;
+      const idToken = await auth.currentUser?.getIdToken();
+      const response = await axios
+        .get(url, {
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        })
+        .catch(() => ({ data: [] }));
+      const { data } = response;
+      setProjects(data);
+    }
 
-      axios
-        .get(`${import.meta.env.VITE_SERVER_URL}/projects`)
-        .then((response) => {
-          const { data } = response;
-          setProjects(data);
-          setDone(true);
-        });
-    }
-    if (!ignore) {
-      makeLink();
-    }
-    return () => {
-      ignore = true;
-    };
-  }, [sample]);
+    getProjects();
+
+    const unsubscribe = onAuthStateChanged(auth, (authUser) => {
+      setUser(authUser);
+    });
+
+    return unsubscribe;
+  }, []);
 
   return (
     <Box id="project">
@@ -70,13 +120,19 @@ function Project() {
             <Box>
               <IconButton
                 type="button"
-                onClick={() => createNewProject()}
+                onClick={() => {
+                  if (!auth.currentUser) {
+                    onOpen();
+                  } else {
+                    createNewProject();
+                  }
+                }}
                 icon={<AddIcon />}
                 width="25%"
                 alignSelf="center"
               />
             </Box>
-            <Text color="white">create new project</Text>
+            <Text color="white">プロジェクトを作る</Text>
           </CardBody>
         </Card>
         <Spacer />
@@ -91,15 +147,33 @@ function Project() {
         </Card>
       </Flex>
 
+      <SignInModal
+        isOpen={isOpen}
+        onClose={onClose}
+        onOpen={onOpen}
+        setUser={setUser}
+      />
+
       <SimpleGrid minChildWidth="30vw" spacing={4} marginTop={2}>
-        {projects?.map(({ id, name }) => (
-          <Card key={id} width="30vw">
-            {/* TODO: idに対応したプロジェクトの値 */}
-            <Link to={`App?projectid=${id}`}>
-              <CardHeader>{name}</CardHeader>
-            </Link>
+        {projects.length === 0 ? (
+          <Card>
+            <CardHeader>プロジェクトをまだ作っていないようです👀</CardHeader>
+            <CardBody>
+              <Box>
+                <Text>サインインしてプロジェクトを作成してみましょう</Text>
+              </Box>
+              {!user && <Button variant="link">サインインはこちら</Button>}
+            </CardBody>
           </Card>
-        ))}
+        ) : (
+          projects?.map(({ id, name }) => (
+            <Card key={id} width="30vw">
+              <Link to={`App?projectid=${id}`}>
+                <CardHeader>{name}</CardHeader>
+              </Link>
+            </Card>
+          ))
+        )}
       </SimpleGrid>
     </Box>
   );
