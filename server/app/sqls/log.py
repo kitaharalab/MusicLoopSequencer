@@ -21,6 +21,8 @@ class LogEvent(Enum):
     CHECK_SONG_LOOP = auto()
     LOOP_MUTE = auto()
     LOOP_UNMUTE = auto()
+    REST = auto()
+    REST_END = auto()
 
 
 # EVENT TEXT NOT NULL,
@@ -262,3 +264,17 @@ def loop_mute_log(project_id: int, song_id: int, user_id: str):
 
 def loop_unmute_log(project_id: int, song_id: int, user_id: str):
     loop_mute_log_base(LogEvent.LOOP_UNMUTE, project_id, song_id, user_id)
+
+
+def rest_log(project_id: int, song_id: int, user_id: str, restEvent: bool = True):
+    sql = """
+    insert into operation_logs (event, project_id, song_id, user_id) values (%s, %s, %s, %s);
+    """
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            restEvent = LogEvent.REST if restEvent else LogEvent.REST_END
+            cur.execute(
+                sql,
+                (restEvent.name, project_id, song_id, user_id),
+            )
+            conn.commit()
