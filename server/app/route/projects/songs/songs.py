@@ -37,12 +37,14 @@ def create_song(uid, projectid):
     data = request.get_json()  # WebページからのJSONデータを受け取る．
     curves = data["curves"]
 
-    # req = request.args
-    # fix = req.get("fix")
-    # structure = req.get("structure")
+    fix_req = data.get("fix")
+    fix = int(fix_req) if fix_req is not None else 0
+    structure_req = data.get("structure")
+    structure = int(structure_req) if structure_req is not None else 0
 
-    array, songid, section_array, wav_data_bytes = createMusic(curves, projectid, uid)
-    # array, songid, section_array = createMusic(curves, projectid, fix, structure)
+    array, songid, section_array, wav_data_bytes = createMusic(
+        curves, projectid, uid, structure=structure, fix=fix
+    )
 
     array = name_to_id(array)
 
