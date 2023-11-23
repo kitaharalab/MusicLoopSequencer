@@ -5,8 +5,8 @@ import { useSelector } from "react-redux";
 export default function ScatterPlot({
   width,
   height,
-  handleInsertLoopMaterial,
   handleOnClick,
+  setInsertLoopId,
 }) {
   const [selectId, setSelectId] = useState();
   const loopPositions = useSelector((state) => state.musicData.loopPositions);
@@ -48,18 +48,10 @@ export default function ScatterPlot({
             onClick={() => {
               const reSelect = selectId === id;
               setSelectId(reSelect ? undefined : id);
+              setInsertLoopId(id);
               if (!reSelect) {
                 handleOnClick(id);
               }
-            }}
-            onContextMenu={(event) => {
-              event.preventDefault();
-              if (selectId !== id) {
-                return;
-              }
-
-              handleInsertLoopMaterial(id);
-              setSelectId(undefined);
             }}
           />
         );

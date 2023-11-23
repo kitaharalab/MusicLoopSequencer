@@ -22,6 +22,7 @@ import {
   BiSolidVolumeMute,
   BiRefresh,
   BiSolidTrashAlt,
+  BiPlus,
 } from "react-icons/bi";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -63,38 +64,27 @@ function ZoomableChart({ children, width, height, zoomState }) {
   );
 }
 
-function Chart({
-  width,
-  height,
-  zoomState,
-  handleInsertLoopMaterial,
-  handleOnClick,
-}) {
+function Chart({ width, height, zoomState, handleOnClick, setInsertLoopId }) {
   return (
     <ZoomableChart width={width} height={height} zoomState={zoomState}>
       <ScatterPlot
         width={width}
         height={width}
-        handleInsertLoopMaterial={handleInsertLoopMaterial}
         handleOnClick={handleOnClick}
+        setInsertLoopId={setInsertLoopId}
       />
     </ZoomableChart>
   );
 }
 
-function Content({
-  projectId,
-  songId,
-  width,
-  height,
-  handleInsertLoopMaterial,
-  handlePlayAudio,
-}) {
+function Content({ projectId, songId, width, height, handlePlayAudio }) {
   const [isMute, setIsMute] = useState(false);
   const [zoomTransform, setZoomTransform] = useState(d3.zoomIdentity);
   const { measure, part } = useSelector((store) => store.sounds);
   const zoomState = { zoomTransform, setZoomTransform };
 
+  const [insertLoopId, setInsertLoopId] = useState();
+  const insertToast = useToast();
   const dispatch = useDispatch();
 
   function handleOnClick(id) {
@@ -102,6 +92,36 @@ function Content({
       handlePlayAudio(id);
     }
   }
+
+  const insertLoop = async (loopId) => {
+    const inserting = insertSound(projectId, songId, part, measure, loopId);
+    insertToast.promise(inserting, {
+      success: {
+        title: "Inserted",
+        description: "Loop material inserted successfully",
+        position: "bottom-left",
+        isClosable: true,
+      },
+      error: {
+        title: "Error",
+        description: "Loop material insertion failed",
+        position: "bottom-left",
+        isClosable: true,
+      },
+      loading: {
+        title: "Inserting",
+        description: "Loop material is being inserted",
+        position: "bottom-left",
+        isClosable: false,
+      },
+    });
+    const music = await inserting;
+
+    flushSync(() => {
+      dispatch(setSongId(undefined));
+    });
+    dispatch(setSongId(music.songId));
+  };
 
   return (
     <>
@@ -111,6 +131,12 @@ function Content({
         </Center>
         <Spacer />
         <ButtonGroup>
+          <IconButton
+            icon={<Icon as={BiPlus} />}
+            onClick={() => {
+              insertLoop(insertLoopId);
+            }}
+          />
           <IconButton
             icon={<Icon as={BiSolidTrashAlt} />}
             onClick={async () => {
@@ -174,8 +200,8 @@ function Content({
           width={width}
           height={height}
           zoomState={zoomState}
-          handleInsertLoopMaterial={handleInsertLoopMaterial}
           handleOnClick={handleOnClick}
+          setInsertLoopId={setInsertLoopId}
         />
       </Box>
     </>
@@ -190,49 +216,9 @@ export default function LoopMaterialView({ projectId, songId }) {
   const [audio, setAudio] = useState();
   const dispatch = useDispatch();
 
-  const insertToast = useToast();
-
   useEffect(() => {
     setWidth(wrapperRef?.current?.clientWidth);
   }, [songId]);
-
-  function handleInsertLoopMaterial(loopId, songId) {
-    if (part === null || measure === null) {
-      return;
-    }
-
-    const insertLoop = async () => {
-      const inserting = insertSound(projectId, songId, part, measure, loopId);
-      insertToast.promise(inserting, {
-        success: {
-          title: "Inserted",
-          description: "Loop material inserted successfully",
-          position: "bottom-left",
-          isClosable: true,
-        },
-        error: {
-          title: "Error",
-          description: "Loop material insertion failed",
-          position: "bottom-left",
-          isClosable: true,
-        },
-        loading: {
-          title: "Inserting",
-          description: "Loop material is being inserted",
-          position: "bottom-left",
-          isClosable: false,
-        },
-      });
-      const music = await inserting;
-
-      flushSync(() => {
-        dispatch(setSongId(undefined));
-      });
-      dispatch(setSongId(music.songId));
-    };
-
-    insertLoop();
-  }
 
   function handlePlayAudio(id, part) {
     async function getAndPlayMusicLoop() {
@@ -254,9 +240,6 @@ export default function LoopMaterialView({ projectId, songId }) {
             height={width}
             projectId={projectId}
             songId={songId}
-            handleInsertLoopMaterial={(id) => {
-              handleInsertLoopMaterial(id, songId);
-            }}
             handlePlayAudio={(id) => {
               handlePlayAudio(id, part);
             }}
