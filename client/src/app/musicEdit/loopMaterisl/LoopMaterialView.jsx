@@ -10,6 +10,7 @@ import {
   Card,
   CardBody,
   Divider,
+  useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
 import * as d3 from "d3";
@@ -189,6 +190,8 @@ export default function LoopMaterialView({ projectId, songId }) {
   const [audio, setAudio] = useState();
   const dispatch = useDispatch();
 
+  const insertToast = useToast();
+
   useEffect(() => {
     setWidth(wrapperRef?.current?.clientWidth);
   }, [songId]);
@@ -199,7 +202,28 @@ export default function LoopMaterialView({ projectId, songId }) {
     }
 
     const insertLoop = async () => {
-      const music = await insertSound(projectId, songId, part, measure, loopId);
+      const inserting = insertSound(projectId, songId, part, measure, loopId);
+      insertToast.promise(inserting, {
+        success: {
+          title: "Inserted",
+          description: "Loop material inserted successfully",
+          position: "bottom-left",
+          isClosable: true,
+        },
+        error: {
+          title: "Error",
+          description: "Loop material insertion failed",
+          position: "bottom-left",
+          isClosable: true,
+        },
+        loading: {
+          title: "Inserting",
+          description: "Loop material is being inserted",
+          position: "bottom-left",
+          isClosable: false,
+        },
+      });
+      const music = await inserting;
 
       flushSync(() => {
         dispatch(setSongId(undefined));
