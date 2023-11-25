@@ -11,6 +11,7 @@ import {
   CardBody,
   Divider,
   useToast,
+  theme,
 } from "@chakra-ui/react";
 import axios from "axios";
 import * as d3 from "d3";
@@ -45,7 +46,7 @@ function ZoomableChart({ children, width, height, zoomState }) {
   useEffect(() => {
     const zoom = d3
       .zoom()
-      .scaleExtent([1, 20])
+      .scaleExtent([0.5, 20])
       .on("zoom", (event) => {
         setZoomTransform(event.transform);
       });
@@ -54,24 +55,41 @@ function ZoomableChart({ children, width, height, zoomState }) {
   }, []);
 
   return (
-    <svg width={width} height={height} ref={svgRef}>
-      <g
-        transform={`translate(${zoomTransform?.x},${zoomTransform?.y}) scale(${zoomTransform?.k})`}
-      >
-        {children}
-      </g>
-    </svg>
+    <Box backgroundColor="gray.50">
+      <svg width={width} height={height} viewBox="0 0 1000 1000" ref={svgRef}>
+        <g
+          transform={`translate(${zoomTransform?.x},${zoomTransform?.y}) scale(${zoomTransform?.k})`}
+        >
+          {children}
+        </g>
+      </svg>
+    </Box>
   );
 }
 
-function Chart({ width, height, zoomState, handleOnClick, setInsertLoopId }) {
+function Chart({
+  width,
+  height,
+  zoomState,
+  handleOnClick,
+  setInsertLoopId,
+  part,
+}) {
+  const partColors = {
+    1: theme.colors.red[200],
+    2: theme.colors.yellow[200],
+    3: theme.colors.green[200],
+    4: theme.colors.blue[200],
+  };
+
   return (
     <ZoomableChart width={width} height={height} zoomState={zoomState}>
       <ScatterPlot
-        width={width}
-        height={width}
+        width={1000}
+        height={1000}
         handleOnClick={handleOnClick}
         setInsertLoopId={setInsertLoopId}
+        partColor={partColors[part]}
       />
     </ZoomableChart>
   );
@@ -202,6 +220,7 @@ function Content({ projectId, songId, width, height, handlePlayAudio }) {
           zoomState={zoomState}
           handleOnClick={handleOnClick}
           setInsertLoopId={setInsertLoopId}
+          part={part}
         />
       </Box>
     </>
