@@ -1,20 +1,20 @@
 import io
 
 from pydub import AudioSegment
-from sqls import get_loop_wav_from_loop_ids_by_mesure_part
+from sqls import get_loop_wav_from_loop_ids_by_measure_part
 
 
-def connect_sound(sound_list_by_mesure_part, projectid, mode, songid):
+def connect_sound(sound_list_by_measure_part, project_id, mode, song_id):
     """音素材を繋げる"""
-    loop_wavs_by_measure_part = get_loop_wav_from_loop_ids_by_mesure_part(
-        sound_list_by_mesure_part
+    loop_wav_by_measure_part = get_loop_wav_from_loop_ids_by_measure_part(
+        sound_list_by_measure_part
     )
     output_sound = AudioSegment.silent()
     output_sound = output_sound[0:0]
 
-    for loop_wavs_by_part in loop_wavs_by_measure_part:
+    for loop_wav_by_part in loop_wav_by_measure_part:
         block_sound = None
-        for loop_wav in loop_wavs_by_part:
+        for loop_wav in loop_wav_by_part:
             if loop_wav is None:
                 continue
 
@@ -35,4 +35,4 @@ def connect_sound(sound_list_by_mesure_part, projectid, mode, songid):
         wav_data, format="wav"
     )
     wav_data_bytes = wav_data.getvalue()
-    return songid, wav_data_bytes
+    return song_id, wav_data_bytes
