@@ -6,6 +6,7 @@ import {
   Th,
   Td,
   Tbody,
+  useTheme,
 } from "@chakra-ui/react";
 import axios from "axios";
 import * as d3 from "d3";
@@ -52,6 +53,16 @@ export default function LoopTable({ projectId, measure }) {
     };
   }, [songId]);
 
+  const [partsInfo, setPartsInfo] = useState([]);
+
+  useEffect(() => {
+    const url = `${import.meta.env.VITE_SERVER_URL}/parts`;
+    axios.get(url).then((response) => {
+      const { data } = response;
+      setPartsInfo(data.map(({ id, name }) => ({ id, name })));
+    });
+  }, []);
+
   if (parts === undefined) {
     return <div>loading</div>;
   }
@@ -62,10 +73,15 @@ export default function LoopTable({ projectId, measure }) {
 
   const measureRange = [...Array(measure)].map((_, i) => i);
 
-  const baseColor = ["red.200", "yellow.200", "green.200", "blue.200"];
+  const theme = useTheme();
+  const baseColor = partsInfo.map(
+    ({ name }) => theme.colors.part.light[name.toLowerCase()],
+  );
   const colorScale = d3.scaleOrdinal().range(baseColor);
 
-  const borderColor = ["red.400", "yellow.400", "green.400", "blue.400"];
+  const borderColor = partsInfo.map(
+    ({ name }) => theme.colors.part.dark[name.toLowerCase()],
+  );
   const borderColorScale = d3.scaleOrdinal().range(borderColor);
 
   const colorFilter = (select) => (select ? null : "contrast(60%)");

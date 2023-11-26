@@ -88,7 +88,7 @@ function Chart({
   const theme = useTheme();
 
   const partName = parts.find(({ id }) => id === part)?.name?.toLowerCase();
-  const partColor = partName ? theme.colors.part[partName] : "red";
+  const partColor = partName ? theme.colors.part.light[partName] : "red";
 
   return (
     <ZoomableChart width={width} height={height} zoomState={zoomState}>
