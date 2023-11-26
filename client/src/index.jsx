@@ -15,6 +15,7 @@ import ExperimentProjects from "./experiment/Projects";
 import LoopSequencer from "./experiment/project/LoopSequencer";
 import { store } from "./redux/store";
 import reportWebVitals from "./reportWebVitals";
+import theme from "./theme";
 
 const router = createBrowserRouter([
   {
@@ -34,7 +35,9 @@ const router = createBrowserRouter([
         path: "App",
         element: (
           <Provider store={store}>
-            <App />
+            <ChakraProvider theme={theme}>
+              <App />
+            </ChakraProvider>
           </Provider>
         ),
         loader: async ({ request }) => {
