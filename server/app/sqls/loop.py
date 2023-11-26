@@ -74,27 +74,40 @@ def get_loop_and_topics_from_part(part_id: int):
     return response
 
 
-def get_loop_wav_from_loop_ids_by_mesure_part(loop_ids_by_mesure_part: list):
-    sql = """
+def get_loop_wav_from_loop_ids_by_mesure_part(loop_ids_by_measure_part: list):
+    loop_ids = set()
+    for loop_ids_by_part in loop_ids_by_measure_part:
+        for loop_id in loop_ids_by_part:
+            if loop_id is None or loop_id == "null":
+                continue
+            loop_ids.add(int(loop_id))
+
+    in_sql = ",".join([f"'{str(loop_id)}'" for loop_id in loop_ids])
+    sql = f"""
     SELECT id, data
     FROM loops
-    where id=%s
+    where id in({in_sql});
     """
-    response = []
+
+    wav_data_by_id = dict()
+    wav_query_result = None
     with get_connection() as conn:
         with conn.cursor(cursor_factory=DictCursor) as cur:
-            for loop_ids_by_part in loop_ids_by_mesure_part:
-                response.append([])
-                for loop_id in loop_ids_by_part:
-                    if loop_id is None or loop_id == "null":
-                        response[-1].append(None)
-                        continue
-                    cur.execute(sql, (int(loop_id),))
-                    result = cur.fetchone()
-                    if result is not None:
-                        response[-1].append(dict(result)["data"].tobytes())
-                    else:
-                        response[-1].append(None)
+            cur.execute(sql, tuple(loop_ids))
+            wav_query_result = [dict(row) for row in cur.fetchall()]
+
+    for row in wav_query_result:
+        wav_data_by_id[row["id"]] = row["data"].tobytes()
+
+    response = []
+    for loop_ids_by_part in loop_ids_by_measure_part:
+        response.append([])
+        for loop_id in loop_ids_by_part:
+            if loop_id is None or loop_id == "null":
+                response[-1].append(None)
+                continue
+
+            response[-1].append(wav_data_by_id[loop_id])
 
     return response
 
