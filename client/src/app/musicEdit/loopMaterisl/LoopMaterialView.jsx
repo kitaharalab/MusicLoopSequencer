@@ -10,6 +10,8 @@ import {
   Card,
   CardBody,
   Divider,
+  useToast,
+  useTheme,
 } from "@chakra-ui/react";
 import axios from "axios";
 import * as d3 from "d3";
@@ -21,6 +23,7 @@ import {
   BiSolidVolumeMute,
   BiRefresh,
   BiSolidTrashAlt,
+  BiPlus,
 } from "react-icons/bi";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -43,7 +46,7 @@ function ZoomableChart({ children, width, height, zoomState }) {
   useEffect(() => {
     const zoom = d3
       .zoom()
-      .scaleExtent([1, 20])
+      .scaleExtent([0.5, 20])
       .on("zoom", (event) => {
         setZoomTransform(event.transform);
       });
@@ -52,13 +55,15 @@ function ZoomableChart({ children, width, height, zoomState }) {
   }, []);
 
   return (
-    <svg width={width} height={height} ref={svgRef}>
-      <g
-        transform={`translate(${zoomTransform?.x},${zoomTransform?.y}) scale(${zoomTransform?.k})`}
-      >
-        {children}
-      </g>
-    </svg>
+    <Box backgroundColor="gray.50">
+      <svg width={width} height={height} viewBox="0 0 1000 1000" ref={svgRef}>
+        <g
+          transform={`translate(${zoomTransform?.x},${zoomTransform?.y}) scale(${zoomTransform?.k})`}
+        >
+          {children}
+        </g>
+      </svg>
+    </Box>
   );
 }
 
@@ -66,34 +71,46 @@ function Chart({
   width,
   height,
   zoomState,
-  handleInsertLoopMaterial,
   handleOnClick,
+  setInsertLoopId,
+  part,
 }) {
+  const [parts, setParts] = useState([]);
+
+  useEffect(() => {
+    const url = `${import.meta.env.VITE_SERVER_URL}/parts`;
+    axios.get(url).then((response) => {
+      const { data } = response;
+      setParts(data.map(({ id, name }) => ({ id, name })));
+    });
+  }, []);
+
+  const theme = useTheme();
+
+  const partName = parts.find(({ id }) => id === part)?.name?.toLowerCase();
+  const partColor = partName ? theme.colors.part.light[partName] : "red";
+
   return (
     <ZoomableChart width={width} height={height} zoomState={zoomState}>
       <ScatterPlot
-        width={width}
-        height={width}
-        handleInsertLoopMaterial={handleInsertLoopMaterial}
+        width={1000}
+        height={1000}
         handleOnClick={handleOnClick}
+        setInsertLoopId={setInsertLoopId}
+        partColor={partColor}
       />
     </ZoomableChart>
   );
 }
 
-function Content({
-  projectId,
-  songId,
-  width,
-  height,
-  handleInsertLoopMaterial,
-  handlePlayAudio,
-}) {
+function Content({ projectId, songId, width, height, handlePlayAudio }) {
   const [isMute, setIsMute] = useState(false);
   const [zoomTransform, setZoomTransform] = useState(d3.zoomIdentity);
   const { measure, part } = useSelector((store) => store.sounds);
   const zoomState = { zoomTransform, setZoomTransform };
 
+  const [insertLoopId, setInsertLoopId] = useState();
+  const insertToast = useToast();
   const dispatch = useDispatch();
 
   function handleOnClick(id) {
@@ -101,6 +118,36 @@ function Content({
       handlePlayAudio(id);
     }
   }
+
+  const insertLoop = async (loopId) => {
+    const inserting = insertSound(projectId, songId, part, measure, loopId);
+    insertToast.promise(inserting, {
+      success: {
+        title: "Inserted",
+        description: "Loop material inserted successfully",
+        position: "bottom-left",
+        isClosable: true,
+      },
+      error: {
+        title: "Error",
+        description: "Loop material insertion failed",
+        position: "bottom-left",
+        isClosable: true,
+      },
+      loading: {
+        title: "Inserting",
+        description: "Loop material is being inserted",
+        position: "bottom-left",
+        isClosable: false,
+      },
+    });
+    const music = await inserting;
+
+    flushSync(() => {
+      dispatch(setSongId(undefined));
+    });
+    dispatch(setSongId(music.songId));
+  };
 
   return (
     <>
@@ -110,6 +157,12 @@ function Content({
         </Center>
         <Spacer />
         <ButtonGroup>
+          <IconButton
+            icon={<Icon as={BiPlus} />}
+            onClick={() => {
+              insertLoop(insertLoopId);
+            }}
+          />
           <IconButton
             icon={<Icon as={BiSolidTrashAlt} />}
             onClick={async () => {
@@ -173,8 +226,9 @@ function Content({
           width={width}
           height={height}
           zoomState={zoomState}
-          handleInsertLoopMaterial={handleInsertLoopMaterial}
           handleOnClick={handleOnClick}
+          setInsertLoopId={setInsertLoopId}
+          part={part}
         />
       </Box>
     </>
@@ -192,23 +246,6 @@ export default function LoopMaterialView({ projectId, songId }) {
   useEffect(() => {
     setWidth(wrapperRef?.current?.clientWidth);
   }, [songId]);
-
-  function handleInsertLoopMaterial(loopId, songId) {
-    if (part === null || measure === null) {
-      return;
-    }
-
-    const insertLoop = async () => {
-      const music = await insertSound(projectId, songId, part, measure, loopId);
-
-      flushSync(() => {
-        dispatch(setSongId(undefined));
-      });
-      dispatch(setSongId(music.songId));
-    };
-
-    insertLoop();
-  }
 
   function handlePlayAudio(id, part) {
     async function getAndPlayMusicLoop() {
@@ -230,9 +267,6 @@ export default function LoopMaterialView({ projectId, songId }) {
             height={width}
             projectId={projectId}
             songId={songId}
-            handleInsertLoopMaterial={(id) => {
-              handleInsertLoopMaterial(id, songId);
-            }}
             handlePlayAudio={(id) => {
               handlePlayAudio(id, part);
             }}

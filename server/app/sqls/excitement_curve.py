@@ -52,9 +52,14 @@ def get_excitement_curve(song_id: int):
 
 
 def add_excitement_curve(song_id: int, curve: list[int], max_value: int):
-    add_curve_sql = """
+    insert_curve_values = [[song_id, i, value] for i, value in enumerate(curve)]
+    insert_curve_values = sum(insert_curve_values, [])
+    insert_curve_values_sql = ",".join(
+        ["(%s, %s, %s)" for i, value in enumerate(curve)]
+    )
+    add_curve_sql = f"""
     INSERT INTO excitement_curve (song_id, index, value)
-    VALUES (%s, %s, %s)
+    VALUES {insert_curve_values_sql}
     """
     add_curve_info_sql = """
     INSERT INTO excitement_curve_info (song_id, length, max_value)
@@ -63,7 +68,6 @@ def add_excitement_curve(song_id: int, curve: list[int], max_value: int):
 
     with get_connection() as conn:
         with conn.cursor(cursor_factory=DictCursor) as cur:
-            for i, value in enumerate(curve):
-                cur.execute(add_curve_sql, (song_id, i, value))
+            cur.execute(add_curve_sql, tuple(insert_curve_values))
             cur.execute(add_curve_info_sql, (song_id, len(curve), max_value))
             conn.commit()
