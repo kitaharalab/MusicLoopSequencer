@@ -1,12 +1,12 @@
 import io
 
 from pydub import AudioSegment
-from sqls import get_loop_wav_from_loop_ids_by_mesure_part
+from sqls import get_loop_wav_from_loop_ids_by_measure_part
 
 
 def connect_sound(sound_list_by_mesure_part, projectid, mode, songid):
     """音素材を繋げる"""
-    loop_wavs_by_measure_part = get_loop_wav_from_loop_ids_by_mesure_part(
+    loop_wavs_by_measure_part = get_loop_wav_from_loop_ids_by_measure_part(
         sound_list_by_mesure_part
     )
     output_sound = AudioSegment.silent()

@@ -74,7 +74,7 @@ def get_loop_and_topics_from_part(part_id: int):
     return response
 
 
-def get_loop_wav_from_loop_ids_by_mesure_part(loop_ids_by_measure_part: list):
+def get_loop_wav_from_loop_ids_by_measure_part(loop_ids_by_measure_part: list):
     loop_ids = set()
     for loop_ids_by_part in loop_ids_by_measure_part:
         for loop_id in loop_ids_by_part:
