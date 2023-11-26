@@ -57,22 +57,35 @@ export default function Controls({ projectId }) {
 
   async function handleCreateMusic() {
     flushSync(() => setCreating(true));
-    const music = await createMusic(
+    const creatingMusic = createMusic(
       projectId,
       lines,
       max,
       auth.currentUser?.uid,
     );
+    songCreatedToast.promise(creatingMusic, {
+      success: {
+        title: "created song",
+        status: "success",
+        position: "bottom-left",
+        isClosable: true,
+      },
+      error: {
+        title: "failed to create song",
+        status: "error",
+        position: "bottom-left",
+      },
+      loading: {
+        title: "creating song",
+        status: "info",
+        position: "bottom-left",
+      },
+    });
+    const music = await creatingMusic.finally(() => setCreating(false));
+
     const { songId: newSongId } = music;
     dispatch(setSongId(newSongId));
     setSongHistory([...songHistory, { name: newSongId, id: newSongId }]);
-    songCreatedToast({
-      title: "created song",
-      status: "success",
-      position: "bottom-left",
-      isClosable: true,
-    });
-    setCreating(false);
   }
 
   return (
