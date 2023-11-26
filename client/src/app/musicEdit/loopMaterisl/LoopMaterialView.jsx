@@ -11,7 +11,7 @@ import {
   CardBody,
   Divider,
   useToast,
-  theme,
+  useTheme,
 } from "@chakra-ui/react";
 import axios from "axios";
 import * as d3 from "d3";
@@ -75,12 +75,20 @@ function Chart({
   setInsertLoopId,
   part,
 }) {
-  const partColors = {
-    1: theme.colors.red[200],
-    2: theme.colors.yellow[200],
-    3: theme.colors.green[200],
-    4: theme.colors.blue[200],
-  };
+  const [parts, setParts] = useState([]);
+
+  useEffect(() => {
+    const url = `${import.meta.env.VITE_SERVER_URL}/parts`;
+    axios.get(url).then((response) => {
+      const { data } = response;
+      setParts(data.map(({ id, name }) => ({ id, name })));
+    });
+  }, []);
+
+  const theme = useTheme();
+
+  const partName = parts.find(({ id }) => id === part)?.name?.toLowerCase();
+  const partColor = partName ? theme.colors.part.light[partName] : "red";
 
   return (
     <ZoomableChart width={width} height={height} zoomState={zoomState}>
@@ -89,7 +97,7 @@ function Chart({
         height={1000}
         handleOnClick={handleOnClick}
         setInsertLoopId={setInsertLoopId}
-        partColor={partColors[part]}
+        partColor={partColor}
       />
     </ZoomableChart>
   );
