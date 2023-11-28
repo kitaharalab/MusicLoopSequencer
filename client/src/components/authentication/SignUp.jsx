@@ -22,7 +22,7 @@ import React, { useEffect, useState } from "react";
 import { flushSync } from "react-dom";
 import { Navigate } from "react-router-dom";
 
-import Link from "../../../components/Link/Link";
+import Link from "../Link/Link";
 
 import { auth } from "./firebase";
 

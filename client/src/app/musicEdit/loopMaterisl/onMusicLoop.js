@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { auth } from "../../../components/authentication/firebase";
+import { auth } from "@/components/authentication/firebase";
 
 export default async function onMusicLoop(
   projectId,

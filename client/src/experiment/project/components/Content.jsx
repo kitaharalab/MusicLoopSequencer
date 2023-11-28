@@ -9,19 +9,20 @@ import {
   Grid,
   GridItem,
 } from "@chakra-ui/react";
-import Controls from "@src/app/controls/Controls";
-import LoopTable from "@src/app/musicEdit/LoopTable";
-import MusicInstrumentTable from "@src/app/musicEdit/MusicInstrumentTable";
-import ZoomedExcitementCurve from "@src/app/musicEdit/ZoomedExcitementCurve";
-import LoopMaterialView from "@src/app/musicEdit/loopMaterisl/LoopMaterialView";
-import TopicView from "@src/app/musicEdit/topic/TopicView";
-import { setLine, setMax } from "@src/redux/linesSlice";
-import { setSongId } from "@src/redux/songIdSlice";
 import axios from "axios";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import ExcitementCurve from "./ExcitementCurve";
+
+import Controls from "@/app/controls/Controls";
+import LoopTable from "@/app/musicEdit/LoopTable";
+import MusicInstrumentTable from "@/app/musicEdit/MusicInstrumentTable";
+import ZoomedExcitementCurve from "@/app/musicEdit/ZoomedExcitementCurve";
+import LoopMaterialView from "@/app/musicEdit/loopMaterisl/LoopMaterialView";
+import TopicView from "@/app/musicEdit/topic/TopicView";
+import { setLine, setMax } from "@/redux/linesSlice";
+import { setSongId } from "@/redux/songIdSlice";
 
 export default function Content({ projectId }) {
   const dispatch = useDispatch();

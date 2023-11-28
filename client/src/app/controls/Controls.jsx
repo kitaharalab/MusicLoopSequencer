@@ -13,12 +13,12 @@ import React, { useEffect, useState } from "react";
 import { flushSync } from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
 
-import { auth } from "../../components/authentication/firebase";
-import createMusic from "../../createMusic";
-import { setSongId } from "../../redux/songIdSlice";
-
 import AudioControls from "./AudioControls";
 import Evaluation from "./Evaluation";
+
+import { auth } from "@/components/authentication/firebase";
+import createMusic from "@/createMusic";
+import { setSongId } from "@/redux/songIdSlice";
 
 export default function Controls({ projectId }) {
   const dispatch = useDispatch();

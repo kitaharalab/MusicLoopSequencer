@@ -3,7 +3,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
-import { auth } from "../../components/authentication/firebase";
+import { auth } from "@/components/authentication/firebase";
 
 export default function AudioControls({ projectId }) {
   const [audio, setAudio] = useState();

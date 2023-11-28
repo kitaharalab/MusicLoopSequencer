@@ -27,12 +27,13 @@ import {
 } from "react-icons/bi";
 import { useDispatch, useSelector } from "react-redux";
 
-import { auth } from "../../../components/authentication/firebase";
-import { setSongId } from "../../../redux/songIdSlice";
-
 import ScatterPlot from "./ScatterPlot";
 import insertSound from "./insertSound";
 import onMusicLoop from "./onMusicLoop";
+
+import deleteLoop from "@/api/deleteLoop";
+import { auth } from "@/components/authentication/firebase";
+import { setSongId } from "@/redux/songIdSlice";
 
 function ZoomableChart({ children, width, height, zoomState }) {
   const { zoomTransform, setZoomTransform } = zoomState;
@@ -111,6 +112,7 @@ function Content({ projectId, songId, width, height, handlePlayAudio }) {
 
   const [insertLoopId, setInsertLoopId] = useState();
   const insertToast = useToast();
+  const deleteToast = useToast();
   const dispatch = useDispatch();
 
   function handleOnClick(id) {
@@ -149,6 +151,35 @@ function Content({ projectId, songId, width, height, handlePlayAudio }) {
     dispatch(setSongId(music.songId));
   };
 
+  async function onDeleteLoop() {
+    if (part == null || measure == null) {
+      return;
+    }
+    const deleting = deleteLoop(projectId, songId, measure, part);
+    deleteToast.promise(deleting, {
+      success: {
+        title: "Deleted",
+        description: "Loop material deleted successfully",
+        position: "bottom-left",
+        isClosable: true,
+      },
+      error: {
+        title: "Error",
+        description: "Loop material deletion failed",
+        position: "bottom-left",
+        isClosable: true,
+      },
+      loading: {
+        title: "Deleting",
+        description: "Loop material is being deleted",
+        position: "bottom-left",
+        isClosable: false,
+      },
+    });
+
+    await deleting;
+  }
+
   return (
     <>
       <Flex alignContent="center" marginBottom={4}>
@@ -166,26 +197,7 @@ function Content({ projectId, songId, width, height, handlePlayAudio }) {
           <IconButton
             icon={<Icon as={BiSolidTrashAlt} />}
             onClick={async () => {
-              if (part == null || measure == null) {
-                return;
-              }
-              const deleteUrl = `${
-                import.meta.env.VITE_SERVER_URL
-              }/projects/${projectId}/songs/${songId}/parts/${part}/measures/${measure}`;
-              const url = new URL(deleteUrl);
-              url.searchParams.append("fix", import.meta.env.VITE_MODE_FIX);
-              url.searchParams.append(
-                "structure",
-                import.meta.env.VITE_MODE_STRUCTURE,
-              );
-              url.searchParams.append("adapt", import.meta.env.VITE_MODE_ADAPT);
-
-              const idToken = await auth.currentUser?.getIdToken();
-              await axios.delete(url, {
-                headers: {
-                  Authorization: `Bearer ${idToken}`,
-                },
-              });
+              await onDeleteLoop();
 
               flushSync(() => {
                 dispatch(setSongId(undefined));
