@@ -13,11 +13,11 @@ import * as d3 from "d3";
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
-import { auth } from "../../components/authentication/firebase";
-import { setLoopPositions } from "../../redux/musicDataSlice";
-import { setSelectedLoop } from "../../redux/soundsSlice";
-
 import selectBlock from "./selectBlock";
+
+import { auth } from "@/components/authentication/firebase";
+import { setLoopPositions } from "@/redux/musicDataSlice";
+import { setSelectedLoop } from "@/redux/soundsSlice";
 
 export default function LoopTable({ projectId, measure }) {
   const songId = useSelector((state) => state.songId.songId);

@@ -29,8 +29,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { flushSync } from "react-dom";
 
-import Link from "../components/Link/Link";
-
+import Link from "./components/Link/Link";
 import { auth } from "./components/authentication/firebase";
 
 function SignInModal({ isOpen, onOpen, onClose, setUser }) {

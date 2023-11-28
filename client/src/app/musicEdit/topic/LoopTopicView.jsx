@@ -1,6 +1,7 @@
 /* eslint-disable import/no-unresolved */
-import BarChartContent from "@components/chart/BarChartContent";
 import React from "react";
+
+import BarChartContent from "@/components/chart/BarChartContent";
 
 export default function LoopTopicView({ data, width, height, padding }) {
   return (
