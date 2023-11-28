@@ -1,6 +1,7 @@
 /* eslint-disable import/no-unresolved */
-import StackedBarChartContent from "@components/chart/StackedBarChartContent";
 import React from "react";
+
+import StackedBarChartContent from "@/components/chart/StackedBarChartContent";
 
 export default function TopicPreferenceView({ data, width, height, padding }) {
   return (

@@ -6,13 +6,7 @@ import { defineConfig } from "vite";
 // https://vitejs.dev/config/
 export default defineConfig({
   resolve: {
-    alias: [
-      {
-        find: "@components",
-        replacement: path.resolve(__dirname, "components"),
-      },
-      { find: "@src", replacement: path.resolve(__dirname, "src") },
-    ],
+    alias: [{ find: "@", replacement: path.resolve(__dirname, "src") }],
   },
   plugins: [react()],
 });

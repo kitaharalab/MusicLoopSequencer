@@ -10,7 +10,7 @@ import {
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 
-import Link from "../../components/Link/Link";
+import Link from "@/components/Link/Link";
 
 export default function Projects() {
   const [sample, _setSample] = useState(null);

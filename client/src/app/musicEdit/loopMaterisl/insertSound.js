@@ -1,13 +1,13 @@
 import axios from "axios";
 
-import { auth } from "../../../components/authentication/firebase";
+import { auth } from "@/components/authentication/firebase";
 
 export default async function insertSound(
   projectId,
   songId,
   partId,
   measureId,
-  musicLoopId
+  musicLoopId,
 ) {
   // TODO: partIdはindexが入ってるので，idに変換する必要がある．
   const url = new URL(
