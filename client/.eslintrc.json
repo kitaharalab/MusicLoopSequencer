@@ -33,5 +33,13 @@
         "alphabetize": { "order": "asc" }
       }
     ]
+  },
+  "settings": {
+    "import/resolver": {
+      "alias": {
+        "map": [["~", "./client/src"]],
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
+    }
   }
 }
