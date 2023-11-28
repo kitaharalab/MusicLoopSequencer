@@ -151,6 +151,35 @@ function Content({ projectId, songId, width, height, handlePlayAudio }) {
     dispatch(setSongId(music.songId));
   };
 
+  async function onDeleteLoop() {
+    if (part == null || measure == null) {
+      return;
+    }
+    const deleting = deleteLoop(projectId, songId, measure, part);
+    deleteToast.promise(deleting, {
+      success: {
+        title: "Deleted",
+        description: "Loop material deleted successfully",
+        position: "bottom-left",
+        isClosable: true,
+      },
+      error: {
+        title: "Error",
+        description: "Loop material deletion failed",
+        position: "bottom-left",
+        isClosable: true,
+      },
+      loading: {
+        title: "Deleting",
+        description: "Loop material is being deleted",
+        position: "bottom-left",
+        isClosable: false,
+      },
+    });
+
+    await deleting;
+  }
+
   return (
     <>
       <Flex alignContent="center" marginBottom={4}>
@@ -168,32 +197,7 @@ function Content({ projectId, songId, width, height, handlePlayAudio }) {
           <IconButton
             icon={<Icon as={BiSolidTrashAlt} />}
             onClick={async () => {
-              if (part == null || measure == null) {
-                return;
-              }
-              const deleting = deleteLoop();
-              deleteToast.promise(deleting, {
-                success: {
-                  title: "Deleted",
-                  description: "Loop material deleted successfully",
-                  position: "bottom-left",
-                  isClosable: true,
-                },
-                error: {
-                  title: "Error",
-                  description: "Loop material deletion failed",
-                  position: "bottom-left",
-                  isClosable: true,
-                },
-                loading: {
-                  title: "Deleting",
-                  description: "Loop material is being deleted",
-                  position: "bottom-left",
-                  isClosable: false,
-                },
-              });
-
-              await deleting;
+              await onDeleteLoop();
 
               flushSync(() => {
                 dispatch(setSongId(undefined));
