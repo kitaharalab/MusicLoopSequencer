@@ -8,12 +8,12 @@ import {
   Tbody,
   useTheme,
 } from "@chakra-ui/react";
-import axios from "axios";
 import * as d3 from "d3";
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import getParts from "@/api/getParts";
+import getSongDetail from "@/api/getSongDetail";
 import { sendCheckSongLoopLog } from "@/api/log";
 import selectBlock from "@/api/selectBlock";
 import { setLoopPositions } from "@/redux/musicDataSlice";
@@ -32,21 +32,11 @@ export default function LoopTable({ projectId, measure }) {
   );
 
   useEffect(() => {
-    if (songId === null || songId === undefined) {
-      return () => {
-        dispatch(setLoopPositions([]));
-      };
+    async function updateSongDetail() {
+      const songDetail = await getSongDetail(projectId, songId);
+      setParts(songDetail);
     }
-
-    const url = `${
-      import.meta.env.VITE_SERVER_URL
-    }/projects/${projectId}/songs/${songId}`;
-    axios
-      .get(url) // サーバーから音素材の配列を受け取った後，then部分を実行する．
-      .then((response) => {
-        const { data } = response;
-        setParts(data.parts);
-      });
+    updateSongDetail();
 
     return () => {
       dispatch(setLoopPositions([]));
