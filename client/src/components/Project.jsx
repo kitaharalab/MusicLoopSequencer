@@ -9,7 +9,6 @@ import {
   IconButton,
   Text,
   Flex,
-  Spacer,
   useDisclosure,
   Button,
   Modal,
