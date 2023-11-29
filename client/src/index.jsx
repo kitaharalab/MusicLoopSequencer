@@ -5,10 +5,10 @@ import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 
-import App from "./App";
-import Project from "./Project";
 import { auth } from "./api/authentication/firebase";
+import App from "./components/App";
 import Header from "./components/Header";
+import Project from "./components/Project";
 import SignIn from "./components/authentication/SignIn";
 import SignUp from "./components/authentication/SignUp";
 import ExperimentProjects from "./experiment/Projects";
