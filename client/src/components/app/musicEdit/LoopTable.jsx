@@ -13,7 +13,7 @@ import * as d3 from "d3";
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
-import { auth } from "@/api/authentication/firebase";
+import { sendCheckSongLoopLog } from "@/api/log";
 import selectBlock from "@/api/selectBlock";
 import { setLoopPositions } from "@/redux/musicDataSlice";
 import { setSelectedLoop } from "@/redux/soundsSlice";
@@ -92,22 +92,7 @@ export default function LoopTable({ projectId, measure }) {
       dataset.loop !== undefined ? JSON.parse(dataset.loop) : undefined;
 
     if (loopId !== undefined) {
-      // start log
-      const url = new URL(
-        `/projects/${projectId}/songs/${songId}/parts/${part}/measures/${measureId}/musicloops/${loopId}`,
-        import.meta.env.VITE_SERVER_URL,
-      );
-      const idToken = await auth.currentUser?.getIdToken();
-      axios.post(
-        url,
-        { check: true },
-        {
-          headers: {
-            Authorization: `Bearer ${idToken}`,
-          },
-        },
-      );
-      // end log
+      sendCheckSongLoopLog(projectId, songId, part, measureId, loopId);
     }
 
     const newSelectMeasurePart = {
