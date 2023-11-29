@@ -9,8 +9,6 @@ import { auth } from "./api/authentication/firebase";
 import App from "./components/App";
 import Header from "./components/Header";
 import Project from "./components/Project";
-import SignIn from "./components/authentication/SignIn";
-import SignUp from "./components/authentication/SignUp";
 import { store } from "./redux/store";
 import reportWebVitals from "./reportWebVitals";
 import theme from "./theme";
