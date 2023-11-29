@@ -16,8 +16,8 @@ import { useDispatch, useSelector } from "react-redux";
 import AudioControls from "./AudioControls";
 import Evaluation from "./Evaluation";
 
-import { auth } from "@/components/authentication/firebase";
-import createMusic from "@/createMusic";
+import { auth } from "@/api/authentication/firebase";
+import createMusic from "@/api/createMusic";
 import { setSongId } from "@/redux/songIdSlice";
 
 export default function Controls({ projectId }) {

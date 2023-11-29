@@ -24,7 +24,7 @@ import { Navigate } from "react-router-dom";
 
 import Link from "../Link/Link";
 
-import { auth } from "./firebase";
+import { auth } from "@/api/authentication/firebase";
 
 export default function SignUp() {
   const [user, setUser] = useState(null);

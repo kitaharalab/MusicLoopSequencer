@@ -16,7 +16,7 @@ import React, { useEffect, useState } from "react";
 import { flushSync } from "react-dom";
 import { Navigate } from "react-router-dom";
 
-import { auth } from "./firebase";
+import { auth } from "@/api/authentication/firebase";
 
 export default function SignIn() {
   const [user, setUser] = useState(null);

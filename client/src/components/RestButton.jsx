@@ -12,7 +12,7 @@ import {
 import axios from "axios";
 import React from "react";
 
-import { auth } from "./authentication/firebase";
+import { auth } from "@/api/authentication/firebase";
 
 export default function RestButton({ projectId, songId }) {
   const { isOpen, onOpen, onClose } = useDisclosure();

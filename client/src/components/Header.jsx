@@ -7,7 +7,7 @@ import {
 } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 
-import { auth } from "./authentication/firebase";
+import { auth } from "@/api/authentication/firebase";
 
 export default function Header() {
   const [user, setUser] = useState(null);

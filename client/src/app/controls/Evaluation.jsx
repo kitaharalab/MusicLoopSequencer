@@ -3,7 +3,7 @@ import { Box, IconButton } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 
-import { auth } from "../../components/authentication/firebase";
+import { auth } from "@/api/authentication/firebase";
 
 export default function Evaluation({ projectId, songId }) {
   const [evaluation, setEvaluation] = useState(0);
