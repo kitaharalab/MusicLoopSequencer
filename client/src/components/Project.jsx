@@ -19,7 +19,6 @@ import {
   ModalBody,
   Spinner,
 } from "@chakra-ui/react";
-import axios from "axios";
 import {
   GoogleAuthProvider,
   onAuthStateChanged,
@@ -32,6 +31,7 @@ import { auth } from "../api/authentication/firebase";
 
 import Link from "./Link/Link";
 
+import createProject from "@/api/createProject";
 import getProjects from "@/api/getProjects";
 
 function SignInModal({ isOpen, onOpen, onClose, setUser }) {
@@ -73,21 +73,8 @@ function Project() {
   const [user, setUser] = useState(auth.currentUser);
 
   async function createNewProject() {
-    const url = `${import.meta.env.VITE_SERVER_URL}/projects`;
-    const idToken = await auth.currentUser?.getIdToken();
-    const response = await axios
-      .post(
-        url,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${idToken}`,
-          },
-        },
-      )
-      .catch(() => ({ data: [] }));
-    const { data } = response;
-    setProjects([...projects, data]);
+    const newProjectId = await createProject();
+    setProjects([...projects, newProjectId]);
   }
 
   async function updateProjects() {
