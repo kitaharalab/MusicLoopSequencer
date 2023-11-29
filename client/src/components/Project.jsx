@@ -9,7 +9,6 @@ import {
   IconButton,
   Text,
   Flex,
-  Spacer,
   useDisclosure,
   Button,
   Modal,
@@ -29,8 +28,9 @@ import {
 import React, { useEffect, useState } from "react";
 import { flushSync } from "react-dom";
 
-import { auth } from "./api/authentication/firebase";
-import Link from "./components/Link/Link";
+import { auth } from "../api/authentication/firebase";
+
+import Link from "./Link/Link";
 
 function SignInModal({ isOpen, onOpen, onClose, setUser }) {
   const [isPending, setPending] = useState(false);
@@ -138,16 +138,6 @@ function Project() {
             </Box>
             <Text color="white">プロジェクトを作る</Text>
           </CardBody>
-        </Card>
-        <Spacer />
-        <Card bgColor="darkslategrey" align="center" width="30vw">
-          <Link to="/experiment">
-            <CardBody>
-              <CardHeader>
-                <Text color="white">experiment</Text>
-              </CardHeader>
-            </CardBody>
-          </Link>
         </Card>
       </Flex>
 
