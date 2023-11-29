@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { auth } from "./authentication/firebase";
+import { auth } from "../authentication/firebase";
 
 export default async function getProjects() {
   const url = `${import.meta.env.VITE_SERVER_URL}/projects`;
