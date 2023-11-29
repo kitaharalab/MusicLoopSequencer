@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 import { auth } from "@/api/authentication/firebase";
+import getSongAudio from "@/api/getSongAudio";
 
 export default function AudioControls({ projectId }) {
   const [audio, setAudio] = useState();
@@ -15,36 +16,24 @@ export default function AudioControls({ projectId }) {
   }/projects/${projectId}/songs/${songId}/wav`;
 
   useEffect(() => {
-    audio?.pause();
-    if (songId === undefined || songId === null) {
-      return () => {};
+    async function updateSongAudio() {
+      if (songId === undefined || songId === null) {
+        return;
+      }
+
+      const { url, audio: newAudio } = await getSongAudio(projectId, songId);
+      if (!url || !newAudio) {
+        return;
+      }
+
+      audio?.pause();
+      window.URL.revokeObjectURL(audioUrl);
+      setAudioUrl(url);
+      setAudio(newAudio);
     }
 
-    const url = `${
-      import.meta.env.VITE_SERVER_URL
-    }/projects/${projectId}/songs/${songId}/wav/`;
-    axios
-      .get(url, {
-        responseType: "blob",
-        headers: { "Content-Type": "audio/wav" },
-      })
-      .then((response) => {
-        if (response.status !== 200) {
-          return;
-        }
-
-        const { data } = response;
-        const songUrl = window.URL.createObjectURL(
-          new Blob([data], { type: "audio/wav" }),
-        );
-        setAudioUrl(songUrl);
-
-        const songAudio = new Audio(songUrl);
-        setAudio(songAudio);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    audio?.pause();
+    updateSongAudio();
 
     return () => {
       window.URL.revokeObjectURL(audioUrl);
