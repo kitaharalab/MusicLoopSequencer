@@ -11,8 +11,6 @@ import Header from "./components/Header";
 import Project from "./components/Project";
 import SignIn from "./components/authentication/SignIn";
 import SignUp from "./components/authentication/SignUp";
-import ExperimentProjects from "./experiment/Projects";
-import LoopSequencer from "./experiment/project/LoopSequencer";
 import { store } from "./redux/store";
 import reportWebVitals from "./reportWebVitals";
 import theme from "./theme";
