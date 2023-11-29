@@ -29,8 +29,8 @@ import {
 import React, { useEffect, useState } from "react";
 import { flushSync } from "react-dom";
 
+import { auth } from "./api/authentication/firebase";
 import Link from "./components/Link/Link";
-import { auth } from "./components/authentication/firebase";
 
 function SignInModal({ isOpen, onOpen, onClose, setUser }) {
   const [isPending, setPending] = useState(false);

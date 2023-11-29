@@ -16,7 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import AudioControls from "./AudioControls";
 import Evaluation from "./Evaluation";
 
-import { auth } from "@/components/authentication/firebase";
+import { auth } from "@/api/authentication/firebase";
 import createMusic from "@/createMusic";
 import { setSongId } from "@/redux/songIdSlice";
 

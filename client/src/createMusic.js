@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { auth } from "./components/authentication/firebase";
+import { auth } from "@/api/authentication/firebase";
 
 export default async function createMusic(projectid, linesY, max) {
   const excitementArray = new Array(32);

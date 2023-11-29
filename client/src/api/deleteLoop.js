@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { auth } from "@/components/authentication/firebase";
+import { auth } from "./authentication/firebase";
 
 export default async function deleteLoop(projectId, songId, measure, part) {
   if (measure == null || part == null) {

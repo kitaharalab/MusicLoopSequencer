@@ -7,10 +7,10 @@ import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 
 import App from "./App";
 import Project from "./Project";
+import { auth } from "./api/authentication/firebase";
 import Header from "./components/Header";
 import SignIn from "./components/authentication/SignIn";
 import SignUp from "./components/authentication/SignUp";
-import { auth } from "./components/authentication/firebase";
 import ExperimentProjects from "./experiment/Projects";
 import LoopSequencer from "./experiment/project/LoopSequencer";
 import { store } from "./redux/store";

@@ -15,7 +15,7 @@ import { useSelector, useDispatch } from "react-redux";
 
 import selectBlock from "./selectBlock";
 
-import { auth } from "@/components/authentication/firebase";
+import { auth } from "@/api/authentication/firebase";
 import { setLoopPositions } from "@/redux/musicDataSlice";
 import { setSelectedLoop } from "@/redux/soundsSlice";
 

@@ -31,8 +31,8 @@ import ScatterPlot from "./ScatterPlot";
 import insertSound from "./insertSound";
 import onMusicLoop from "./onMusicLoop";
 
+import { auth } from "@/api/authentication/firebase";
 import deleteLoop from "@/api/deleteLoop";
-import { auth } from "@/components/authentication/firebase";
 import { setSongId } from "@/redux/songIdSlice";
 
 function ZoomableChart({ children, width, height, zoomState }) {
