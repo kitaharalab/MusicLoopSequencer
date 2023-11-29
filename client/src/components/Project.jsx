@@ -32,6 +32,8 @@ import { auth } from "../api/authentication/firebase";
 
 import Link from "./Link/Link";
 
+import getProjects from "@/api/getProjects";
+
 function SignInModal({ isOpen, onOpen, onClose, setUser }) {
   const [isPending, setPending] = useState(false);
   const googleProvider = new GoogleAuthProvider();
@@ -88,22 +90,13 @@ function Project() {
     setProjects([...projects, data]);
   }
 
-  async function getProjects() {
-    const url = `${import.meta.env.VITE_SERVER_URL}/projects`;
-    const idToken = await auth.currentUser?.getIdToken();
-    const response = await axios
-      .get(url, {
-        headers: {
-          Authorization: `Bearer ${idToken}`,
-        },
-      })
-      .catch(() => ({ data: [] }));
-    const { data } = response;
+  async function updateProjects() {
+    const data = await getProjects();
     setProjects(data);
   }
 
   useEffect(() => {
-    getProjects();
+    updateProjects();
 
     const unsubscribe = onAuthStateChanged(auth, (authUser) => {
       setUser(authUser);
@@ -113,7 +106,7 @@ function Project() {
   }, []);
 
   useEffect(() => {
-    getProjects();
+    updateProjects();
   }, [user]);
 
   return (
