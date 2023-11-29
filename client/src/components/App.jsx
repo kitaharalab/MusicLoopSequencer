@@ -15,14 +15,14 @@ import { useDispatch, useSelector } from "react-redux";
 // import useSound from "use-sound";
 import { useSearchParams } from "react-router-dom";
 
-import Header from "../app/Header";
-import Controls from "../app/controls/Controls";
-import ExcitementCurve from "../app/excitementCurve/ExcitementCurve";
-import LoopTable from "../app/musicEdit/LoopTable";
-import MusicInstrumentTable from "../app/musicEdit/MusicInstrumentTable";
-import ZoomedExcitementCurve from "../app/musicEdit/ZoomedExcitementCurve";
-import LoopMaterialView from "../app/musicEdit/loopMaterisl/LoopMaterialView";
-import TopicView from "../app/musicEdit/topic/TopicView";
+import Header from "./app/Header";
+import Controls from "./app/controls/Controls";
+import ExcitementCurve from "./app/excitementCurve/ExcitementCurve";
+import LoopTable from "./app/musicEdit/LoopTable";
+import MusicInstrumentTable from "./app/musicEdit/MusicInstrumentTable";
+import ZoomedExcitementCurve from "./app/musicEdit/ZoomedExcitementCurve";
+import LoopMaterialView from "./app/musicEdit/loopMaterisl/LoopMaterialView";
+import TopicView from "./app/musicEdit/topic/TopicView";
 import { setSongId } from "../redux/songIdSlice";
 
 function App() {
