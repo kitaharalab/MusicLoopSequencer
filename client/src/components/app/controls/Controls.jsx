@@ -24,12 +24,10 @@ export default function Controls({ projectId }) {
   const { lines, max } = useSelector((state) => state.lines1);
   const songId = useSelector((state) => state.songId.songId);
   const [songHistory, setSongHistory] = useState([]);
-  const [_asdf, setasdf] = useState([0]);
   const songCreatedToast = useToast();
   const [creating, setCreating] = useState(false);
 
   const handleSelectedSongChange = (e) => {
-    setasdf(e.target.value);
     const selectSongId = parseInt(e.target.value, 10);
     dispatch(setSongId(selectSongId));
   };
