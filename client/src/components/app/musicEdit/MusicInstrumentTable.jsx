@@ -7,18 +7,19 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
-import axios from "axios";
 import React, { useEffect, useState } from "react";
+
+import getParts from "@/api/getParts";
 
 export default function MusicInstrumentTable() {
   const [partName, setPartName] = useState([]);
 
   useEffect(() => {
-    const url = `${import.meta.env.VITE_SERVER_URL}/parts`;
-    axios.get(url).then((response) => {
-      const { data } = response;
-      setPartName(data.map(({ name }) => name));
-    });
+    async function setPartNames() {
+      const partData = await getParts();
+      setPartName(partData?.map(({ name }) => name));
+    }
+    setPartNames();
   }, []);
 
   return (
@@ -33,11 +34,12 @@ export default function MusicInstrumentTable() {
           </Tr>
         </Thead>
         <Tbody>
-          {partName.map((name) => (
-            <Tr key={name} height="30px">
-              <Td textAlign="center">{name}</Td>
-            </Tr>
-          ))}
+          {partName &&
+            partName.map((name) => (
+              <Tr key={name} height="30px">
+                <Td textAlign="center">{name}</Td>
+              </Tr>
+            ))}
         </Tbody>
       </Table>
     </TableContainer>

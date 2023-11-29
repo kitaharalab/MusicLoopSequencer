@@ -8,14 +8,14 @@ import {
   Tbody,
   useTheme,
 } from "@chakra-ui/react";
-import axios from "axios";
 import * as d3 from "d3";
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
-import selectBlock from "./selectBlock";
-
-import { auth } from "@/components/authentication/firebase";
+import getParts from "@/api/getParts";
+import { sendCheckSongLoopLog } from "@/api/log";
+import selectBlock from "@/api/selectBlock";
+import { getSongDetail } from "@/api/song";
 import { setLoopPositions } from "@/redux/musicDataSlice";
 import { setSelectedLoop } from "@/redux/soundsSlice";
 
@@ -32,21 +32,11 @@ export default function LoopTable({ projectId, measure }) {
   );
 
   useEffect(() => {
-    if (songId === null || songId === undefined) {
-      return () => {
-        dispatch(setLoopPositions([]));
-      };
+    async function updateSongDetail() {
+      const songDetail = await getSongDetail(projectId, songId);
+      setParts(songDetail);
     }
-
-    const url = `${
-      import.meta.env.VITE_SERVER_URL
-    }/projects/${projectId}/songs/${songId}`;
-    axios
-      .get(url) // サーバーから音素材の配列を受け取った後，then部分を実行する．
-      .then((response) => {
-        const { data } = response;
-        setParts(data.parts);
-      });
+    updateSongDetail();
 
     return () => {
       dispatch(setLoopPositions([]));
@@ -56,11 +46,11 @@ export default function LoopTable({ projectId, measure }) {
   const [partsInfo, setPartsInfo] = useState([]);
 
   useEffect(() => {
-    const url = `${import.meta.env.VITE_SERVER_URL}/parts`;
-    axios.get(url).then((response) => {
-      const { data } = response;
-      setPartsInfo(data.map(({ id, name }) => ({ id, name })));
-    });
+    async function initPartsInfo() {
+      const partData = await getParts();
+      setPartsInfo(partData);
+    }
+    initPartsInfo();
   }, []);
 
   if (parts === undefined) {
@@ -93,22 +83,7 @@ export default function LoopTable({ projectId, measure }) {
       dataset.loop !== undefined ? JSON.parse(dataset.loop) : undefined;
 
     if (loopId !== undefined) {
-      // start log
-      const url = new URL(
-        `/projects/${projectId}/songs/${songId}/parts/${part}/measures/${measureId}/musicloops/${loopId}`,
-        import.meta.env.VITE_SERVER_URL,
-      );
-      const idToken = await auth.currentUser?.getIdToken();
-      axios.post(
-        url,
-        { check: true },
-        {
-          headers: {
-            Authorization: `Bearer ${idToken}`,
-          },
-        },
-      );
-      // end log
+      sendCheckSongLoopLog(projectId, songId, part, measureId, loopId);
     }
 
     const newSelectMeasurePart = {
