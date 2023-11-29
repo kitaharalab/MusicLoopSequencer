@@ -13,9 +13,9 @@ import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import getParts from "@/api/getParts";
-import getSongDetail from "@/api/getSongDetail";
 import { sendCheckSongLoopLog } from "@/api/log";
 import selectBlock from "@/api/selectBlock";
+import { getSongDetail } from "@/api/song";
 import { setLoopPositions } from "@/redux/musicDataSlice";
 import { setSelectedLoop } from "@/redux/soundsSlice";
 

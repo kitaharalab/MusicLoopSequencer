@@ -31,8 +31,7 @@ import { auth } from "../api/authentication/firebase";
 
 import Link from "./Link/Link";
 
-import createProject from "@/api/createProject";
-import getProjects from "@/api/getProjects";
+import { createProject, getProjects } from "@/api/project";
 
 function SignInModal({ isOpen, onOpen, onClose, setUser }) {
   const [isPending, setPending] = useState(false);

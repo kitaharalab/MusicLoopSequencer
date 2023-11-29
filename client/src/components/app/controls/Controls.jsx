@@ -15,8 +15,8 @@ import AudioControls from "./AudioControls";
 import Evaluation from "./Evaluation";
 
 import { auth } from "@/api/authentication/firebase";
-import createMusic from "@/api/createMusic";
-import getSongs from "@/api/getSongs";
+import { createMusic } from "@/api/song";
+import { getSongs } from "@/api/project";
 import { setSongId } from "@/redux/songIdSlice";
 
 export default function Controls({ projectId }) {

@@ -29,10 +29,8 @@ import { useDispatch, useSelector } from "react-redux";
 
 import ScatterPlot from "./ScatterPlot";
 
-import deleteLoop from "@/api/deleteLoop";
-import insertSound from "@/api/insertSound";
 import { sendLoopMuteLog } from "@/api/log";
-import onMusicLoop from "@/api/onMusicLoop";
+import { onMusicLoop, insertSound, deleteLoop } from "@/api/loop";
 import { setSongId } from "@/redux/songIdSlice";
 
 function ZoomableChart({ children, width, height, zoomState }) {

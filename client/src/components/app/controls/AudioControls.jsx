@@ -2,8 +2,8 @@ import { Button, ButtonGroup } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
-import getSongAudio from "@/api/getSongAudio";
 import { sendSongPauseLog, sendSongPlayLog, sendSongStopLog } from "@/api/log";
+import { getSongAudio } from "@/api/song";
 
 export default function AudioControls({ projectId }) {
   const [audio, setAudio] = useState();
