@@ -37,3 +37,20 @@ export async function sendSongStopLog(projectId, songId) {
     { headers: { Authorization: `Bearer ${idToken}` } },
   );
 }
+
+export async function sendLoopMuteLog(projectId, songId, isMute) {
+  const url = `${
+    import.meta.env.VITE_SERVER_URL
+  }/projects/${projectId}/songs/${songId}`;
+
+  const idToken = await auth.currentUser?.getIdToken();
+  axios.post(
+    url,
+    { mute: isMute },
+    {
+      headers: {
+        Authorization: `Bearer ${idToken}`,
+      },
+    },
+  );
+}
