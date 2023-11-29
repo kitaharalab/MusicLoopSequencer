@@ -13,6 +13,7 @@ import * as d3 from "d3";
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
+import getParts from "@/api/getParts";
 import { sendCheckSongLoopLog } from "@/api/log";
 import selectBlock from "@/api/selectBlock";
 import { setLoopPositions } from "@/redux/musicDataSlice";
@@ -55,11 +56,11 @@ export default function LoopTable({ projectId, measure }) {
   const [partsInfo, setPartsInfo] = useState([]);
 
   useEffect(() => {
-    const url = `${import.meta.env.VITE_SERVER_URL}/parts`;
-    axios.get(url).then((response) => {
-      const { data } = response;
-      setPartsInfo(data.map(({ id, name }) => ({ id, name })));
-    });
+    async function initPartsInfo() {
+      const partData = await getParts();
+      setPartsInfo(partData);
+    }
+    initPartsInfo();
   }, []);
 
   if (parts === undefined) {
