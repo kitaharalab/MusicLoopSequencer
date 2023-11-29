@@ -7,8 +7,6 @@ import {
   Select,
   useToast,
 } from "@chakra-ui/react";
-import axios from "axios";
-import { onAuthStateChanged, getAuth } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 import { flushSync } from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -17,7 +15,8 @@ import AudioControls from "./AudioControls";
 import Evaluation from "./Evaluation";
 
 import { auth } from "@/api/authentication/firebase";
-import createMusic from "@/api/createMusic";
+import { createMusic } from "@/api/song";
+import { getSongs } from "@/api/project";
 import { setSongId } from "@/redux/songIdSlice";
 
 export default function Controls({ projectId }) {
@@ -25,26 +24,21 @@ export default function Controls({ projectId }) {
   const { lines, max } = useSelector((state) => state.lines1);
   const songId = useSelector((state) => state.songId.songId);
   const [songHistory, setSongHistory] = useState([]);
-  const [_asdf, setasdf] = useState([0]);
-  // TODO: projectIdの対応関係
-  const baseUrl = `${import.meta.env.VITE_SERVER_URL}/projects/${projectId}`;
   const songCreatedToast = useToast();
   const [creating, setCreating] = useState(false);
 
   const handleSelectedSongChange = (e) => {
-    setasdf(e.target.value);
     const selectSongId = parseInt(e.target.value, 10);
     dispatch(setSongId(selectSongId));
   };
 
   useEffect(() => {
-    // 現在のプロジェクトで作られた曲の履歴を取得
-    const songHistoryURL = `${baseUrl}/songs`;
-    axios.get(songHistoryURL).then((response) => {
-      // setasdf(1234);
-      const { data } = response;
-      setSongHistory(data.map(({ id }) => ({ name: id, id })));
-    });
+    async function getSongsFromProject() {
+      const songs = await getSongs(projectId);
+      setSongHistory(songs);
+    }
+
+    getSongsFromProject();
   }, []);
 
   useEffect(() => {

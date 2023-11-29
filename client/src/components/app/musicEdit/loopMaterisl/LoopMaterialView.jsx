@@ -29,10 +29,8 @@ import { useDispatch, useSelector } from "react-redux";
 
 import ScatterPlot from "./ScatterPlot";
 
-import { auth } from "@/api/authentication/firebase";
-import deleteLoop from "@/api/deleteLoop";
-import insertSound from "@/api/insertSound";
-import onMusicLoop from "@/api/onMusicLoop";
+import { sendLoopMuteLog } from "@/api/log";
+import { onMusicLoop, insertSound, deleteLoop } from "@/api/loop";
 import { setSongId } from "@/redux/songIdSlice";
 
 function ZoomableChart({ children, width, height, zoomState }) {
@@ -208,20 +206,10 @@ function Content({ projectId, songId, width, height, handlePlayAudio }) {
           <IconButton
             icon={<Icon as={isMute ? BiSolidVolumeMute : BiVolumeFull} />}
             onClick={async () => {
-              const logUrl = `${
-                import.meta.env.VITE_SERVER_URL
-              }/projects/${projectId}/songs/${songId}`;
-              const idToken = await auth.currentUser?.getIdToken();
-              axios.post(
-                logUrl,
-                { mute: !isMute },
-                {
-                  headers: {
-                    Authorization: `Bearer ${idToken}`,
-                  },
-                },
-              );
-              setIsMute(!isMute);
+              const mute = !isMute;
+
+              setIsMute(mute);
+              sendLoopMuteLog(projectId, songId, mute);
             }}
           />
           <IconButton

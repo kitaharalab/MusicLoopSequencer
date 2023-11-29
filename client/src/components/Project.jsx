@@ -19,7 +19,6 @@ import {
   ModalBody,
   Spinner,
 } from "@chakra-ui/react";
-import axios from "axios";
 import {
   GoogleAuthProvider,
   onAuthStateChanged,
@@ -31,6 +30,8 @@ import { flushSync } from "react-dom";
 import { auth } from "../api/authentication/firebase";
 
 import Link from "./Link/Link";
+
+import { createProject, getProjects } from "@/api/project";
 
 function SignInModal({ isOpen, onOpen, onClose, setUser }) {
   const [isPending, setPending] = useState(false);
@@ -71,39 +72,17 @@ function Project() {
   const [user, setUser] = useState(auth.currentUser);
 
   async function createNewProject() {
-    const url = `${import.meta.env.VITE_SERVER_URL}/projects`;
-    const idToken = await auth.currentUser?.getIdToken();
-    const response = await axios
-      .post(
-        url,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${idToken}`,
-          },
-        },
-      )
-      .catch(() => ({ data: [] }));
-    const { data } = response;
-    setProjects([...projects, data]);
+    const newProjectId = await createProject();
+    setProjects([...projects, newProjectId]);
   }
 
-  async function getProjects() {
-    const url = `${import.meta.env.VITE_SERVER_URL}/projects`;
-    const idToken = await auth.currentUser?.getIdToken();
-    const response = await axios
-      .get(url, {
-        headers: {
-          Authorization: `Bearer ${idToken}`,
-        },
-      })
-      .catch(() => ({ data: [] }));
-    const { data } = response;
+  async function updateProjects() {
+    const data = await getProjects();
     setProjects(data);
   }
 
   useEffect(() => {
-    getProjects();
+    updateProjects();
 
     const unsubscribe = onAuthStateChanged(auth, (authUser) => {
       setUser(authUser);
@@ -113,7 +92,7 @@ function Project() {
   }, []);
 
   useEffect(() => {
-    getProjects();
+    updateProjects();
   }, [user]);
 
   return (
