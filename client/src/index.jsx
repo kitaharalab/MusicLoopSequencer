@@ -59,29 +59,6 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/experiment",
-    element: (
-      <>
-        <Header />
-        <Outlet />
-      </>
-    ),
-    children: [
-      {
-        path: "/experiment",
-        element: <ExperimentProjects />,
-      },
-      {
-        path: ":projectId",
-        element: (
-          <Provider store={store}>
-            <LoopSequencer />
-          </Provider>
-        ),
-      },
-    ],
-  },
-  {
     path: "/signin",
     element: <SignIn />,
   },

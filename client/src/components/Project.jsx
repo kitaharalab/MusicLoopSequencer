@@ -140,16 +140,6 @@ function Project() {
             <Text color="white">プロジェクトを作る</Text>
           </CardBody>
         </Card>
-        <Spacer />
-        <Card bgColor="darkslategrey" align="center" width="30vw">
-          <Link to="/experiment">
-            <CardBody>
-              <CardHeader>
-                <Text color="white">experiment</Text>
-              </CardHeader>
-            </CardBody>
-          </Link>
-        </Card>
       </Flex>
 
       <SignInModal
