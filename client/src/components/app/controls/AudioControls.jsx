@@ -1,19 +1,14 @@
 import { Button, ButtonGroup } from "@chakra-ui/react";
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
-import { auth } from "@/api/authentication/firebase";
 import getSongAudio from "@/api/getSongAudio";
+import { sendSongPauseLog, sendSongPlayLog, sendSongStopLog } from "@/api/log";
 
 export default function AudioControls({ projectId }) {
   const [audio, setAudio] = useState();
   const [audioUrl, setAudioUrl] = useState();
   const songId = useSelector((state) => state.songId.songId);
-
-  const audioLogUrl = `${
-    import.meta.env.VITE_SERVER_URL
-  }/projects/${projectId}/songs/${songId}/wav`;
 
   useEffect(() => {
     async function updateSongAudio() {
@@ -45,14 +40,9 @@ export default function AudioControls({ projectId }) {
     <ButtonGroup>
       <Button
         type="button"
-        onClick={async () => {
-          const idToken = await auth.currentUser?.getIdToken();
-          axios.post(
-            audioLogUrl,
-            { play: true },
-            { headers: { Authorization: `Bearer ${idToken}` } },
-          );
+        onClick={() => {
           audio?.play();
+          sendSongPlayLog(projectId, songId);
         }}
       >
         play
@@ -60,33 +50,23 @@ export default function AudioControls({ projectId }) {
 
       <Button
         type="button"
-        onClick={async () => {
-          const idToken = await auth.currentUser?.getIdToken();
-          axios.post(
-            audioLogUrl,
-            { pause: true },
-            { headers: { Authorization: `Bearer ${idToken}` } },
-          );
+        onClick={() => {
           audio?.pause();
+          sendSongPauseLog(projectId, songId);
         }}
       >
         pause
       </Button>
       <Button
         type="button"
-        onClick={async () => {
+        onClick={() => {
           if (!audio) {
             return;
           }
 
-          const idToken = await auth.currentUser?.getIdToken();
-          axios.post(
-            audioLogUrl,
-            { stop: true },
-            { headers: { Authorization: `Bearer ${idToken}` } },
-          );
           audio.pause();
           audio.currentTime = 0;
+          sendSongStopLog(projectId, songId);
         }}
       >
         stop
