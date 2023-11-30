@@ -23,6 +23,7 @@ export default function LoopTable({ projectId, measure }) {
   const songId = useSelector((state) => state.songId.songId);
   const [parts, setParts] = useState();
   const dispatch = useDispatch();
+  const theme = useTheme();
   const initSelectMeasurePart = {
     measure: null,
     part: null,
@@ -63,7 +64,6 @@ export default function LoopTable({ projectId, measure }) {
 
   const measureRange = [...Array(measure)].map((_, i) => i);
 
-  const theme = useTheme();
   const baseColor = partsInfo.map(
     ({ name }) => theme.colors.part.light[name.toLowerCase()],
   );
@@ -114,20 +114,28 @@ export default function LoopTable({ projectId, measure }) {
   }
 
   return (
-    <TableContainer>
+    <TableContainer height="100%" overflowX="unset" overflowY="unset">
       <Table
-        size="sm"
         style={{
           borderCollapse: "separate",
           borderSpacing: "5px",
           width: `${measure * 32}px`,
         }}
-        layout="fixed"
       >
         <Thead>
           <Tr>
+            <Th
+              textAlign="center"
+              padding={0}
+              position="sticky"
+              left={0}
+              zIndex="docked"
+              bgColor="white"
+            >
+              楽器名
+            </Th>
             {measureRange.map((i) => (
-              <Th key={i} textAlign="center">
+              <Th key={i} textAlign="center" padding={0}>
                 {i + 1}
               </Th>
             ))}
@@ -135,7 +143,10 @@ export default function LoopTable({ projectId, measure }) {
         </Thead>
         <Tbody>
           {parts?.map(({ partId, sounds }) => (
-            <Tr key={partId}>
+            <Tr key={partId} bgColor="white">
+              <Td position="sticky" left={0} zIndex="docked" bgColor="white">
+                {partsInfo.find(({ id }) => id === partId).name}
+              </Td>
               {sounds.map((loopId, i) => {
                 const exist = loopId != null;
                 const isSelect =
@@ -145,9 +156,9 @@ export default function LoopTable({ projectId, measure }) {
                 return (
                   <Td
                     key={`${partId}-${i}`}
-                    bgColor={exist ? colorScale(partId) : "white"}
+                    bgColor={exist || isSelect ? colorScale(partId) : "white"}
                     borderColor={borderColorScale(partId)}
-                    borderWidth={isSelect ? 3 : 0}
+                    borderWidth={isSelect ? 3 : 1}
                     borderRadius="8px"
                     filter={colorFilter(isSelect || !exist)}
                     data-part={partId}
@@ -155,7 +166,6 @@ export default function LoopTable({ projectId, measure }) {
                     data-exist={exist}
                     data-loop={loopId}
                     onClick={handleOnClickMeasurePart}
-                    height="30px"
                   />
                 );
               })}
