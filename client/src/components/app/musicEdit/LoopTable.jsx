@@ -127,7 +127,7 @@ export default function LoopTable({ projectId, measure }) {
         <Thead>
           <Tr>
             {measureRange.map((i) => (
-              <Th key={i} textAlign="center">
+              <Th key={i} textAlign="center" padding={0}>
                 {i + 1}
               </Th>
             ))}
