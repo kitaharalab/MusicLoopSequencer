@@ -114,7 +114,7 @@ export default function LoopTable({ projectId, measure }) {
   }
 
   return (
-    <TableContainer height="100%">
+    <TableContainer height="100%" overflowX="unset" overflowY="unset">
       <Table
         style={{
           borderCollapse: "separate",
@@ -124,7 +124,14 @@ export default function LoopTable({ projectId, measure }) {
       >
         <Thead>
           <Tr>
-            <Th textAlign="center" padding={0}>
+            <Th
+              textAlign="center"
+              padding={0}
+              position="sticky"
+              left={0}
+              zIndex="docked"
+              bgColor="white"
+            >
               楽器名
             </Th>
             {measureRange.map((i) => (
@@ -136,8 +143,10 @@ export default function LoopTable({ projectId, measure }) {
         </Thead>
         <Tbody>
           {parts?.map(({ partId, sounds }) => (
-            <Tr key={partId}>
-              <Td>{partsInfo.find(({ id }) => id === partId).name}</Td>
+            <Tr key={partId} bgColor="white">
+              <Td position="sticky" left={0} zIndex="docked" bgColor="white">
+                {partsInfo.find(({ id }) => id === partId).name}
+              </Td>
               {sounds.map((loopId, i) => {
                 const exist = loopId != null;
                 const isSelect =
