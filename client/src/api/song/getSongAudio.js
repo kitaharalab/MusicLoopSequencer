@@ -20,7 +20,7 @@ export default async function getSongAudio(projectId, songId) {
     });
 
   if (!response || response.status !== 200) {
-    return null;
+    return { url: null, audio: null };
   }
 
   const { data } = response;
