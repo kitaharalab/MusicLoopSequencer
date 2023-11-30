@@ -1,6 +1,7 @@
 from psycopg2.extras import DictCursor
 
 from .connection import get_connection
+from cache import cache
 
 
 def get_loop_positions_by_part(part_id: int):
@@ -51,6 +52,7 @@ def get_loop_topic_by_id(loop_id: int):
     return response
 
 
+@cache.memoize()
 def get_loop_and_topics_from_part(part_id: int):
     sql = """
     SELECT
@@ -92,12 +94,12 @@ def get_loop_wav_from_loop_ids_by_measure_part(loop_ids_by_measure_part: list):
     wav_data_by_id = dict()
     wav_query_result = None
     with get_connection() as conn:
-        with conn.cursor(cursor_factory=DictCursor) as cur:
+        with conn.cursor() as cur:
             cur.execute(sql, tuple(loop_ids))
-            wav_query_result = [dict(row) for row in cur.fetchall()]
+            wav_query_result = [list(row) for row in cur.fetchall()]
 
     for row in wav_query_result:
-        wav_data_by_id[row["id"]] = row["data"].tobytes()
+        wav_data_by_id[row[0]] = row[1].tobytes()
 
     response = []
     for loop_ids_by_part in loop_ids_by_measure_part:
