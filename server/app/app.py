@@ -13,6 +13,7 @@ from route.projects.songs.music_parts import song_parts
 from route.projects.songs.music_parts.measure import part_measure
 from route.projects.songs.music_parts.measure.music_loop import mesure_music_loop
 from route.topic import topic
+from cache import cache
 
 cred = credentials.Certificate("./credentials.json")
 firebase_app = firebase_admin.initialize_app(cred)
@@ -31,6 +32,7 @@ app.register_blueprint(mesure_music_loop)
 app.register_blueprint(topic)
 app.register_blueprint(music_loop)
 
+cache.init_app(app)
 
 # INFO: OLD, パス名から実際の音声データを取ってくるときの処理
 # def give_chord(sound_list):
