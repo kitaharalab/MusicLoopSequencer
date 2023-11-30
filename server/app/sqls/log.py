@@ -38,7 +38,7 @@ def create_song_log(project_id: int, song_id: int, user_id: str):
     insert into operation_logs (event, project_id, song_id, user_id) values (%s, %s, %s, %s);
     """
     with get_connection() as conn:
-        with conn.cursor(cursor_factory=DictCursor) as cur:
+        with conn.cursor() as cur:
             cur.execute(
                 sql,
                 (LogEvent.CREATE_SONG.name, project_id, song_id, user_id),
@@ -64,7 +64,7 @@ def change_loop_log(
     """
 
     with get_connection() as conn:
-        with conn.cursor(cursor_factory=DictCursor) as cur:
+        with conn.cursor() as cur:
             cur.execute(
                 sql,
                 (
@@ -127,7 +127,7 @@ def play_song_log(project_id: int, song_id: int, user_id: str):
     insert into operation_logs (event, project_id, song_id, user_id) values (%s, %s, %s, %s);
     """
     with get_connection() as conn:
-        with conn.cursor(cursor_factory=DictCursor) as cur:
+        with conn.cursor() as cur:
             cur.execute(
                 sql,
                 (LogEvent.PLAY_SONG.name, project_id, song_id, user_id),
@@ -140,7 +140,7 @@ def pause_song_log(project_id: int, song_id: int, user_id: str):
     insert into operation_logs (event, project_id, song_id, user_id) values (%s, %s, %s, %s);
     """
     with get_connection() as conn:
-        with conn.cursor(cursor_factory=DictCursor) as cur:
+        with conn.cursor() as cur:
             cur.execute(
                 sql,
                 (LogEvent.PAUSE_SONG.name, project_id, song_id, user_id),
@@ -153,7 +153,7 @@ def stop_song_log(project_id: int, song_id: int, user_id: str):
     insert into operation_logs (event, project_id, song_id, user_id) values (%s, %s, %s, %s);
     """
     with get_connection() as conn:
-        with conn.cursor(cursor_factory=DictCursor) as cur:
+        with conn.cursor() as cur:
             cur.execute(
                 sql,
                 (LogEvent.STOP_SONG.name, project_id, song_id, user_id),
@@ -172,7 +172,7 @@ def play_loop_log(
     """
 
     with get_connection() as conn:
-        with conn.cursor(cursor_factory=DictCursor) as cur:
+        with conn.cursor() as cur:
             cur.execute(
                 sql,
                 (
@@ -192,7 +192,7 @@ def create_project_log(project_id: int, user_id: str):
     insert into operation_logs (event, project_id, user_id) values (%s, %s, %s);
     """
     with get_connection() as conn:
-        with conn.cursor(cursor_factory=DictCursor) as cur:
+        with conn.cursor() as cur:
             cur.execute(
                 sql,
                 (LogEvent.CREATE_PROJECT.name, project_id, user_id),
@@ -205,7 +205,7 @@ def open_project_log(project_id: int, user_id: str):
     insert into operation_logs (event, project_id, user_id) values (%s, %s, %s);
     """
     with get_connection() as conn:
-        with conn.cursor(cursor_factory=DictCursor) as cur:
+        with conn.cursor() as cur:
             cur.execute(
                 sql,
                 (LogEvent.OPEN_PROJECT.name, project_id, user_id),
@@ -229,7 +229,7 @@ def check_song_loop_log(
     """
 
     with get_connection() as conn:
-        with conn.cursor(cursor_factory=DictCursor) as cur:
+        with conn.cursor() as cur:
             cur.execute(
                 sql,
                 (
@@ -250,7 +250,7 @@ def loop_mute_log_base(event: LogEvent, project_id: int, song_id: int, user_id: 
     insert into operation_logs (event, project_id, song_id, user_id) values (%s, %s, %s, %s);
     """
     with get_connection() as conn:
-        with conn.cursor(cursor_factory=DictCursor) as cur:
+        with conn.cursor() as cur:
             cur.execute(
                 sql,
                 (event.name, project_id, song_id, user_id),
@@ -271,7 +271,7 @@ def rest_log(project_id: int, song_id: int, user_id: str, restEvent: bool = True
     insert into operation_logs (event, project_id, song_id, user_id) values (%s, %s, %s, %s);
     """
     with get_connection() as conn:
-        with conn.cursor(cursor_factory=DictCursor) as cur:
+        with conn.cursor() as cur:
             restEvent = LogEvent.REST if restEvent else LogEvent.REST_END
             cur.execute(
                 sql,

@@ -19,7 +19,7 @@ def create_song(song_loop_id_by_part, project_id, user_id, wav_data_bytes):
     create_song_log(project_id, song_id, user_id)
 
     with get_connection() as conn:
-        with conn.cursor(cursor_factory=DictCursor) as cur:
+        with conn.cursor() as cur:
             for part_id, loop_items in song_loop_id_by_part.items():
                 for mesure1, loop_id in enumerate(loop_items):
                     cur.execute(
@@ -92,7 +92,7 @@ def get_wav_data_from_song_id(song_id: int) -> bytes:
 
 def update_wav_data(song_id: int, wav_data: bytes) -> None:
     with get_connection() as conn:
-        with conn.cursor(cursor_factory=DictCursor) as cur:
+        with conn.cursor() as cur:
             cur.execute(
                 """
                 UPDATE songs
@@ -106,7 +106,7 @@ def update_wav_data(song_id: int, wav_data: bytes) -> None:
 
 def update_song_evaluation(song_id: int, evaluation: int) -> None:
     with get_connection() as conn:
-        with conn.cursor(cursor_factory=DictCursor) as cur:
+        with conn.cursor() as cur:
             cur.execute(
                 """
                 UPDATE songs
