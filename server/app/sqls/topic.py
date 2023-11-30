@@ -2,8 +2,10 @@ from psycopg2.extras import DictCursor
 
 from .connection import get_connection
 from .part import get_parts
+from cache import cache
 
 
+@cache.memoize()
 def get_topic_id_ns():
     select_sql = """
         SELECT
@@ -22,6 +24,7 @@ def get_topic_id_ns():
     return response
 
 
+@cache.memoize()
 def get_topic_preferences(user_id: str):
     select_sql = """
         SELECT
