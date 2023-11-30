@@ -3,8 +3,10 @@ from typing import Any
 from psycopg2.extras import DictCursor
 
 from .connection import get_connection
+from cache import cache
 
 
+@cache.memoize()
 def get_parts() -> list[dict[str, Any]]:
     response = None
     with get_connection() as conn:

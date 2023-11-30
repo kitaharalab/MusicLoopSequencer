@@ -67,7 +67,7 @@ def add_excitement_curve(song_id: int, curve: list[int], max_value: int):
     """
 
     with get_connection() as conn:
-        with conn.cursor(cursor_factory=DictCursor) as cur:
+        with conn.cursor() as cur:
             cur.execute(add_curve_sql, tuple(insert_curve_values))
             cur.execute(add_curve_info_sql, (song_id, len(curve), max_value))
             conn.commit()

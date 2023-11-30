@@ -2,8 +2,10 @@ from psycopg2.extras import DictCursor
 
 from .connection import get_connection
 from .part import get_parts
+from cache import cache
 
 
+@cache.memoize()
 def get_topic_id_ns():
     select_sql = """
         SELECT
@@ -22,6 +24,7 @@ def get_topic_id_ns():
     return response
 
 
+@cache.memoize()
 def get_topic_preferences(user_id: str):
     select_sql = """
         SELECT
@@ -67,7 +70,7 @@ def add_topic_preferences(user_id: str):
     parts = get_parts()
     topic_id_ns = get_topic_id_ns()
     with get_connection() as conn:
-        with conn.cursor(cursor_factory=DictCursor) as cur:
+        with conn.cursor() as cur:
             for part in parts:
                 for topic_id_n in topic_id_ns:
                     for excitement in range(5):
@@ -104,7 +107,7 @@ def update_topic_preferences_from_topic_preferences(
         WHERE user_id = %s AND topic_id = %s AND part_id = %s AND excitement = %s
     """
     with get_connection() as conn:
-        with conn.cursor(cursor_factory=DictCursor) as cur:
+        with conn.cursor() as cur:
             for topic_preference in topic_preferences:
                 cur.execute(
                     update_sql,

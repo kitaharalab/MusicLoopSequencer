@@ -122,7 +122,7 @@ def update_song_details(
 
     # update
     with get_connection() as conn:
-        with conn.cursor(cursor_factory=DictCursor) as cur:
+        with conn.cursor() as cur:
             if fix == 0:
                 cur.execute(
                     "UPDATE song_details SET loop_id=%s WHERE song_id=%s and part_id=%s and measure=%s",
@@ -149,7 +149,7 @@ def delete_song_details(song_id: int, part_id: int, measure: int, fix: int = 0):
         AND measure=%s
     """
     with get_connection() as conn:
-        with conn.cursor(cursor_factory=DictCursor) as cur:
+        with conn.cursor() as cur:
             if fix == 0:
                 cur.execute(sql, (song_id, part_id, measure))
             else:

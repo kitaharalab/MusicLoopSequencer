@@ -2,6 +2,7 @@ import io
 
 from pydub import AudioSegment
 from sqls import get_loop_wav_from_loop_ids_by_measure_part
+from cache import cache
 
 
 def connect_sound(sound_list_by_measure_part, project_id, mode, song_id):
@@ -13,21 +14,8 @@ def connect_sound(sound_list_by_measure_part, project_id, mode, song_id):
     output_sound = output_sound[0:0]
 
     for loop_wav_by_part in loop_wav_by_measure_part:
-        block_sound = None
-        for loop_wav in loop_wav_by_part:
-            if loop_wav is None:
-                continue
-
-            wav_data = io.BytesIO(loop_wav)
-            sound = AudioSegment.from_file(wav_data, format="wav")
-
-            if block_sound is None:
-                block_sound = sound
-            else:
-                block_sound = block_sound.overlay(sound)
-        if block_sound is None:
-            block_sound = AudioSegment.silent()
-        output_sound = output_sound + block_sound
+        measure_sound = wav_overlay(loop_wav_by_part)
+        output_sound = output_sound + measure_sound
 
     wav_data = io.BytesIO()
     # 2Byte = 16bit
@@ -36,3 +24,29 @@ def connect_sound(sound_list_by_measure_part, project_id, mode, song_id):
     )
     wav_data_bytes = wav_data.getvalue()
     return song_id, wav_data_bytes
+
+
+@cache.memoize()
+def wav_overlay(loop_wav_by_part: list):
+    overlay = None
+    for loop_wav in loop_wav_by_part:
+        if loop_wav is None:
+            continue
+
+        sound = wav_to_audio_segment(loop_wav)
+
+        if overlay is None:
+            overlay = sound
+        else:
+            overlay = overlay.overlay(sound)
+    if overlay is None:
+        overlay = AudioSegment.silent()
+
+    return overlay
+
+
+@cache.memoize()
+def wav_to_audio_segment(wav_data):
+    wav_data = io.BytesIO(wav_data)
+    sound = AudioSegment.from_file(wav_data, format="wav")
+    return sound
