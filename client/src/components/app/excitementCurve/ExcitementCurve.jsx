@@ -75,12 +75,8 @@ export default function ExcitementCurve({ measure }) {
       resize();
     });
 
-    const canvas = canvasRef.current;
-    const ctx = canvas?.getContext("2d");
-    ctx.canvas.height = wrapperRef.current?.offsetHeight;
     const width = wrapperRef.current?.clientWidth ?? measure * 36;
     const canvasWidth = (width / measure) * measure;
-    ctx.canvas.width = canvasWidth;
     const initLine = new Array(canvasWidth);
     setLines(initLine.fill(0));
     resize();
