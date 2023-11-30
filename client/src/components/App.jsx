@@ -27,7 +27,7 @@ function App() {
       <Header projectName={projectId} projectId={projectId} songId={songId} />
       <Controls projectId={projectId} />
 
-      <Box className="excitement-curve-container" paddingY={4} height="40vh">
+      <Box className="excitement-curve-container" paddingY={4} height="30vh">
         <ExcitementCurve measure={32} />
       </Box>
 
@@ -41,7 +41,7 @@ function App() {
           <Box minWidth={{ base: "30%" }}>
             <LoopMaterialView projectId={projectId} songId={songId} />
           </Box>
-          <Card overflow="auto" width={{ base: "100%", md: "65%" }}>
+          <Card overflow="auto" width={{ base: "100%", lg: "65%" }}>
             <CardHeader>music</CardHeader>
             <Divider />
             <CardBody overflow="auto" height="100%" paddingLeft={0}>
