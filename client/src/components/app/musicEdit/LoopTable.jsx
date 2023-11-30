@@ -23,6 +23,7 @@ export default function LoopTable({ projectId, measure }) {
   const songId = useSelector((state) => state.songId.songId);
   const [parts, setParts] = useState();
   const dispatch = useDispatch();
+  const theme = useTheme();
   const initSelectMeasurePart = {
     measure: null,
     part: null,
@@ -63,7 +64,6 @@ export default function LoopTable({ projectId, measure }) {
 
   const measureRange = [...Array(measure)].map((_, i) => i);
 
-  const theme = useTheme();
   const baseColor = partsInfo.map(
     ({ name }) => theme.colors.part.light[name.toLowerCase()],
   );
@@ -122,10 +122,13 @@ export default function LoopTable({ projectId, measure }) {
           borderSpacing: "5px",
           width: `${measure * 32}px`,
         }}
-        layout="fixed"
+        // layout="fixed"
       >
         <Thead>
           <Tr>
+            <Th textAlign="center" padding={0}>
+              楽器名
+            </Th>
             {measureRange.map((i) => (
               <Th key={i} textAlign="center" padding={0}>
                 {i + 1}
@@ -136,6 +139,7 @@ export default function LoopTable({ projectId, measure }) {
         <Tbody>
           {parts?.map(({ partId, sounds }) => (
             <Tr key={partId}>
+              <Td>{partsInfo.find(({ id }) => id === partId).name}</Td>
               {sounds.map((loopId, i) => {
                 const exist = loopId != null;
                 const isSelect =
@@ -155,7 +159,6 @@ export default function LoopTable({ projectId, measure }) {
                     data-exist={exist}
                     data-loop={loopId}
                     onClick={handleOnClickMeasurePart}
-                    height="30px"
                   />
                 );
               })}
