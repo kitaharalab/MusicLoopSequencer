@@ -1,6 +1,6 @@
 import { Box, Flex, Card, CardBody, CardHeader } from "@chakra-ui/react";
 import React from "react";
-import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 
 import Header from "./app/Header";
@@ -9,16 +9,18 @@ import ExcitementCurve from "./app/excitementCurve/ExcitementCurve";
 import LoopTable from "./app/musicEdit/LoopTable";
 import LoopMaterialView from "./app/musicEdit/loopMaterisl/LoopMaterialView";
 
+import { setProjectId } from "@/redux/apiParamSlice";
+
 function App() {
   const [searchParams] = useSearchParams();
   const projectId = searchParams.get("projectid");
-
-  const songId = useSelector((state) => state.songId.songId);
+  const dispatch = useDispatch();
+  dispatch(setProjectId(projectId));
 
   return (
     <>
-      <Header projectName={projectId} projectId={projectId} songId={songId} />
-      <Controls projectId={projectId} />
+      <Header />
+      <Controls />
 
       <Card height="40vh" marginTop={3}>
         <CardHeader paddingBottom={0}>盛り上がり度曲線を描く</CardHeader>
@@ -37,12 +39,12 @@ function App() {
           flexWrap="wrap"
         >
           <Box minWidth={{ base: "30%" }}>
-            <LoopMaterialView projectId={projectId} songId={songId} />
+            <LoopMaterialView />
           </Box>
           <Card overflow="auto" width={{ base: "100%", lg: "65%" }}>
             <CardHeader>music</CardHeader>
             <CardBody overflow="auto" height="100%" paddingLeft={0}>
-              <LoopTable projectId={projectId} measure={32} />
+              <LoopTable measure={32} />
             </CardBody>
           </Card>
         </Flex>
