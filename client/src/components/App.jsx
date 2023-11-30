@@ -1,11 +1,4 @@
-import {
-  Box,
-  Flex,
-  Card,
-  CardBody,
-  CardHeader,
-  Divider,
-} from "@chakra-ui/react";
+import { Box, Flex, Card, CardBody, CardHeader } from "@chakra-ui/react";
 import React from "react";
 import { useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
@@ -27,11 +20,20 @@ function App() {
       <Header projectName={projectId} projectId={projectId} songId={songId} />
       <Controls projectId={projectId} />
 
-      <Box className="excitement-curve-container" paddingY={4} height="30vh">
-        <ExcitementCurve measure={32} />
-      </Box>
+      <Card height="50vh" marginTop={3}>
+        <CardHeader>盛り上がり度曲線を描く</CardHeader>
+        <CardBody height="100%">
+          <Box
+            className="excitement-curve-container"
+            paddingY={4}
+            height="100%"
+          >
+            <ExcitementCurve measure={32} />
+          </Box>
+        </CardBody>
+      </Card>
 
-      <Box>
+      <Box marginTop={3}>
         <Flex
           width="100%"
           height="100%"
@@ -43,7 +45,6 @@ function App() {
           </Box>
           <Card overflow="auto" width={{ base: "100%", lg: "65%" }}>
             <CardHeader>music</CardHeader>
-            <Divider />
             <CardBody overflow="auto" height="100%" paddingLeft={0}>
               <LoopTable projectId={projectId} measure={32} />
             </CardBody>
