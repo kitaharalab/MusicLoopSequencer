@@ -9,6 +9,7 @@ config = {
     "CACHE_TYPE": "FileSystemCache",
     "CACHE_DEFAULT_TIMEOUT": 300,
     "CACHE_DIR": CACHE_DIR,
+    "CACHE_THRESHOLD": 200,
 }
 
 cache = Cache(config=config)
