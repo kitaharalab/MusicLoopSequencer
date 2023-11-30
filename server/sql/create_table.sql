@@ -123,6 +123,7 @@ CREATE TABLE
         loop_id INTEGER,
         from_loop_id INTEGER,
         to_loop_id INTEGER,
+        active boolean,
         FOREIGN KEY (user_id) REFERENCES users (user_id),
         FOREIGN KEY (project_id) REFERENCES projects (id),
         FOREIGN KEY (song_id) REFERENCES songs (id),

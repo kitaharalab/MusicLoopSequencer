@@ -13,6 +13,7 @@ from .log import (
     play_song_log,
     rest_log,
     stop_song_log,
+    active_log,
 )
 from .loop import (
     get_loop_and_topics_from_part,
