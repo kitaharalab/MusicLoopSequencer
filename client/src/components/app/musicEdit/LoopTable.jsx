@@ -16,11 +16,12 @@ import getParts from "@/api/getParts";
 import { sendCheckSongLoopLog } from "@/api/log";
 import selectBlock from "@/api/selectBlock";
 import { getSongDetail } from "@/api/song";
+import { getApiParams, setMeasure, setPartId } from "@/redux/apiParamSlice";
 import { setLoopPositions } from "@/redux/musicDataSlice";
 import { setSelectedLoop } from "@/redux/soundsSlice";
 
-export default function LoopTable({ projectId, measure }) {
-  const songId = useSelector((state) => state.songId.songId);
+export default function LoopTable({ measure }) {
+  const { projectId, songId } = useSelector(getApiParams);
   const [parts, setParts] = useState();
   const dispatch = useDispatch();
   const theme = useTheme();
@@ -38,6 +39,7 @@ export default function LoopTable({ projectId, measure }) {
       setParts(songDetail);
     }
     updateSongDetail();
+    setSelectMeasurePart(initSelectMeasurePart);
 
     return () => {
       dispatch(setLoopPositions([]));
@@ -99,6 +101,8 @@ export default function LoopTable({ projectId, measure }) {
       selectSame ? initSelectMeasurePart : newSelectMeasurePart,
     );
 
+    dispatch(setMeasure(measureId + 1));
+    dispatch(setPartId(part));
     dispatch(
       setSelectedLoop(
         selectSame ? initSelectMeasurePart : newSelectMeasurePart,
