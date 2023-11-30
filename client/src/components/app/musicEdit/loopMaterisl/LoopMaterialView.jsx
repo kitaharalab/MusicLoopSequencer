@@ -230,10 +230,8 @@ function Content({ projectId, songId, handlePlayAudio }) {
 }
 
 export default function LoopMaterialView({ projectId, songId }) {
-  // const [audio, setAudio] = useState(null);
-  const { part, measure } = useSelector((store) => store.sounds);
+  const { part } = useSelector((store) => store.sounds);
   const [audio, setAudio] = useState();
-  const dispatch = useDispatch();
 
   function handlePlayAudio(id, part) {
     async function getAndPlayMusicLoop() {

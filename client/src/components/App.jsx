@@ -5,7 +5,6 @@ import {
   CardBody,
   CardHeader,
   Divider,
-  Spacer,
 } from "@chakra-ui/react";
 import React from "react";
 import { useSelector } from "react-redux";
