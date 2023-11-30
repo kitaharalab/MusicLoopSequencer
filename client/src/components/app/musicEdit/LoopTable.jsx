@@ -114,15 +114,13 @@ export default function LoopTable({ projectId, measure }) {
   }
 
   return (
-    <TableContainer>
+    <TableContainer height="100%">
       <Table
-        size="sm"
         style={{
           borderCollapse: "separate",
           borderSpacing: "5px",
           width: `${measure * 32}px`,
         }}
-        // layout="fixed"
       >
         <Thead>
           <Tr>
