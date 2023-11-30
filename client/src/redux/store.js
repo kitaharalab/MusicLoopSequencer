@@ -1,11 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
-import soundsSlice from "./soundsSlice";
-import linesSlice from "./linesSlice";
+
+import apiParamSlice from "./apiParamSlice";
 import blockCanvasSlice from "./blockCanvasSlice";
+import linesSlice from "./linesSlice";
 import musicDataSlice from "./musicDataSlice";
-import songIdSlice from "./songIdSlice";
 import musicLoopSlice from "./musicLoopSlice";
+import songIdSlice from "./songIdSlice";
 import soundDataSlice from "./soundDataSlice";
+import soundsSlice from "./soundsSlice";
 
 export const store = configureStore({
   reducer: {
@@ -16,5 +18,6 @@ export const store = configureStore({
     songId: songIdSlice,
     musicLoop: musicLoopSlice,
     soundData: soundDataSlice,
+    apiParams: apiParamSlice,
   },
 });
