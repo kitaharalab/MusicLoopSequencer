@@ -34,10 +34,8 @@ function App() {
 
       <Box>
         <Flex width="100%" height="100%">
-          <Box marginRight={4} boxSize="xs">
-            <Box className="music-loops-container">
-              <LoopMaterialView projectId={projectId} songId={songId} />
-            </Box>
+          <Box marginRight={4} boxSize="sm">
+            <LoopMaterialView projectId={projectId} songId={songId} />
           </Box>
           <Spacer />
           <Box overflowX="auto">

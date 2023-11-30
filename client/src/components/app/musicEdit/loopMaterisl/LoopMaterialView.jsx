@@ -33,7 +33,7 @@ import { sendLoopMuteLog } from "@/api/log";
 import { onMusicLoop, insertSound, deleteLoop } from "@/api/loop";
 import { setSongId } from "@/redux/songIdSlice";
 
-function ZoomableChart({ children, width, height, zoomState }) {
+function ZoomableChart({ width, height, children, zoomState }) {
   const { zoomTransform, setZoomTransform } = zoomState;
   const svgRef = useRef();
   const reset =
@@ -55,7 +55,7 @@ function ZoomableChart({ children, width, height, zoomState }) {
 
   return (
     <Box backgroundColor="gray.50">
-      <svg width={width} height={height} viewBox="0 0 1000 1000" ref={svgRef}>
+      <svg viewBox={`0 0 ${width} ${height}`} ref={svgRef}>
         <g
           transform={`translate(${zoomTransform?.x},${zoomTransform?.y}) scale(${zoomTransform?.k})`}
         >
@@ -66,14 +66,7 @@ function ZoomableChart({ children, width, height, zoomState }) {
   );
 }
 
-function Chart({
-  width,
-  height,
-  zoomState,
-  handleOnClick,
-  setInsertLoopId,
-  part,
-}) {
+function Chart({ zoomState, handleOnClick, setInsertLoopId, part }) {
   const [parts, setParts] = useState([]);
 
   useEffect(() => {
@@ -89,11 +82,14 @@ function Chart({
   const partName = parts.find(({ id }) => id === part)?.name?.toLowerCase();
   const partColor = partName ? theme.colors.part.light[partName] : "red";
 
+  const svgWidth = 500;
+  const svgHeight = 500;
+
   return (
-    <ZoomableChart width={width} height={height} zoomState={zoomState}>
+    <ZoomableChart width={svgWidth} height={svgHeight} zoomState={zoomState}>
       <ScatterPlot
-        width={1000}
-        height={1000}
+        width={svgWidth}
+        height={svgHeight}
         handleOnClick={handleOnClick}
         setInsertLoopId={setInsertLoopId}
         partColor={partColor}
@@ -102,7 +98,7 @@ function Chart({
   );
 }
 
-function Content({ projectId, songId, width, height, handlePlayAudio }) {
+function Content({ projectId, songId, handlePlayAudio }) {
   const [isMute, setIsMute] = useState(false);
   const [zoomTransform, setZoomTransform] = useState(d3.zoomIdentity);
   const { measure, part } = useSelector((store) => store.sounds);
@@ -223,8 +219,6 @@ function Content({ projectId, songId, width, height, handlePlayAudio }) {
       <Divider />
       <Box>
         <Chart
-          width={width}
-          height={height}
           zoomState={zoomState}
           handleOnClick={handleOnClick}
           setInsertLoopId={setInsertLoopId}
@@ -237,15 +231,9 @@ function Content({ projectId, songId, width, height, handlePlayAudio }) {
 
 export default function LoopMaterialView({ projectId, songId }) {
   // const [audio, setAudio] = useState(null);
-  const wrapperRef = useRef();
-  const [width, setWidth] = useState(400);
   const { part, measure } = useSelector((store) => store.sounds);
   const [audio, setAudio] = useState();
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    setWidth(wrapperRef?.current?.clientWidth);
-  }, [songId]);
 
   function handlePlayAudio(id, part) {
     async function getAndPlayMusicLoop() {
@@ -259,19 +247,15 @@ export default function LoopMaterialView({ projectId, songId }) {
   }
 
   return (
-    <Card>
+    <Card minWidth="100%">
       <CardBody>
-        <Box ref={wrapperRef}>
-          <Content
-            width={width}
-            height={width}
-            projectId={projectId}
-            songId={songId}
-            handlePlayAudio={(id) => {
-              handlePlayAudio(id, part);
-            }}
-          />
-        </Box>
+        <Content
+          projectId={projectId}
+          songId={songId}
+          handlePlayAudio={(id) => {
+            handlePlayAudio(id, part);
+          }}
+        />
       </CardBody>
     </Card>
   );
