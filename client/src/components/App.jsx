@@ -6,8 +6,6 @@ import {
   CardHeader,
   Divider,
   Spacer,
-  Grid,
-  GridItem,
 } from "@chakra-ui/react";
 import React from "react";
 import { useSelector } from "react-redux";
@@ -17,7 +15,6 @@ import Header from "./app/Header";
 import Controls from "./app/controls/Controls";
 import ExcitementCurve from "./app/excitementCurve/ExcitementCurve";
 import LoopTable from "./app/musicEdit/LoopTable";
-import MusicInstrumentTable from "./app/musicEdit/MusicInstrumentTable";
 import LoopMaterialView from "./app/musicEdit/loopMaterisl/LoopMaterialView";
 
 function App() {
