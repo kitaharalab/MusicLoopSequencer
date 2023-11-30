@@ -81,9 +81,9 @@ export default function ExcitementCurve({ measure }) {
     const width = wrapperRef.current?.clientWidth ?? measure * 36;
     const canvasWidth = (width / measure) * measure;
     ctx.canvas.width = canvasWidth;
-    drawBackground(canvas, measure);
     const initLine = new Array(canvasWidth);
     setLines(initLine.fill(0));
+    resize();
 
     return window.removeEventListener("resize", () => {
       resize();
