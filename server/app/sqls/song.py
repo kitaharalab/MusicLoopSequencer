@@ -1,33 +1,44 @@
-from psycopg2.extras import DictCursor
+from psycopg2.extras import DictCursor, execute_values
+from psycopg2 import Binary
 
 from .connection import get_connection
 from .log import create_song_log
 from .part import get_parts
 
 
-def create_song(song_loop_id_by_part, project_id, user_id, wav_data_bytes):
+def add_new_song_wav(project_id: int, wav_data: bytes) -> int:
     song_id = 0
     with get_connection() as conn:
         with conn.cursor(cursor_factory=DictCursor) as cur:
             cur.execute(
                 "INSERT INTO songs (project_id, wave_data) VALUES (%s, %s) RETURNING id",
-                (project_id, wav_data_bytes),
+                (project_id, Binary(wav_data)),
             )
             song_id = cur.fetchone()[0]
             conn.commit()
+    return song_id
 
-    create_song_log(project_id, song_id, user_id)
+
+def add_song_details(song_id, song_loop_id_by_part):
+    insert_values = []
+    for part_id, loop_items in song_loop_id_by_part.items():
+        for measure, loop_id in enumerate(loop_items):
+            insert_values.append((song_id, part_id, measure + 1, loop_id))
 
     with get_connection() as conn:
         with conn.cursor() as cur:
-            for part_id, loop_items in song_loop_id_by_part.items():
-                for mesure1, loop_id in enumerate(loop_items):
-                    cur.execute(
-                        "INSERT INTO song_details (song_id, part_id, measure, loop_id) VALUES (%s, %s, %s, %s)",
-                        (song_id, part_id, mesure1 + 1, loop_id),
-                    )
+            execute_values(
+                cur,
+                "INSERT INTO song_details (song_id, part_id, measure, loop_id) VALUES %s",
+                insert_values,
+            )
             conn.commit()
 
+
+def create_song(song_loop_id_by_part, project_id, user_id, wav_data_bytes):
+    song_id = add_new_song_wav(project_id, wav_data_bytes)
+    create_song_log(project_id, song_id, user_id)
+    add_song_details(song_id, song_loop_id_by_part)
     return song_id
 
 
