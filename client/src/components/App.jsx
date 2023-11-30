@@ -21,13 +21,9 @@ function App() {
       <Controls projectId={projectId} />
 
       <Card height="40vh" marginTop={3}>
-        <CardHeader>盛り上がり度曲線を描く</CardHeader>
+        <CardHeader paddingBottom={0}>盛り上がり度曲線を描く</CardHeader>
         <CardBody height="100%">
-          <Box
-            className="excitement-curve-container"
-            paddingY={4}
-            height="100%"
-          >
+          <Box className="excitement-curve-container" height="100%">
             <ExcitementCurve measure={32} />
           </Box>
         </CardBody>
