@@ -34,7 +34,7 @@ function App() {
 
       <Box>
         <Flex width="100%" height="100%">
-          <Box marginRight={4}>
+          <Box marginRight={4} boxSize="xs">
             <Box className="music-loops-container">
               <LoopMaterialView projectId={projectId} songId={songId} />
             </Box>
