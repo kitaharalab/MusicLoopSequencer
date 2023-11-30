@@ -44,7 +44,7 @@ function App() {
           <Card overflow="auto" width={{ base: "100%", md: "65%" }}>
             <CardHeader>music</CardHeader>
             <Divider />
-            <CardBody overflow="auto" height="100%">
+            <CardBody overflow="auto" height="100%" paddingLeft={0}>
               <LoopTable projectId={projectId} measure={32} />
             </CardBody>
           </Card>
