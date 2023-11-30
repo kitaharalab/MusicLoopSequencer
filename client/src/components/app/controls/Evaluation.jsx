@@ -1,10 +1,13 @@
 import { StarIcon } from "@chakra-ui/icons";
 import { Box, IconButton } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 import { getEvaluation, sendEvaluation } from "@/api/evaluation";
+import { getApiParams } from "@/redux/apiParamSlice";
 
-export default function Evaluation({ projectId, songId }) {
+export default function Evaluation() {
+  const { projectId, songId } = useSelector(getApiParams);
   const [evaluation, setEvaluation] = useState(0);
   const EVALUATION_MAX = 5;
 
