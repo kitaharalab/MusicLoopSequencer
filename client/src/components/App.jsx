@@ -20,9 +20,7 @@ import Controls from "./app/controls/Controls";
 import ExcitementCurve from "./app/excitementCurve/ExcitementCurve";
 import LoopTable from "./app/musicEdit/LoopTable";
 import MusicInstrumentTable from "./app/musicEdit/MusicInstrumentTable";
-import ZoomedExcitementCurve from "./app/musicEdit/ZoomedExcitementCurve";
 import LoopMaterialView from "./app/musicEdit/loopMaterisl/LoopMaterialView";
-import TopicView from "./app/musicEdit/topic/TopicView";
 
 import { setSongId } from "@/redux/songIdSlice";
 
@@ -31,15 +29,10 @@ function App() {
   const projectId = searchParams.get("projectid");
 
   const dispatch = useDispatch();
-  // TODO: projectIdの対応関係
   const baseUrl = `${import.meta.env.VITE_SERVER_URL}/projects/${projectId}`;
-  const musicEditAreaWidth = 300;
 
   const songId = useSelector((state) => state.songId.songId);
 
-  // TODO
-  // const [done1, setDone] = useState(false);
-  // const [_play, { _stop, _pause }] = useSound(Sound);
 
   // 読み込まれて最初にやりたいこと
   useEffect(() => {
