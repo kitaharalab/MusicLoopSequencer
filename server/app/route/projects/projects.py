@@ -8,6 +8,7 @@ from sqls import (
     get_project_song_ids,
     get_projects,
     open_project_log,
+    active_log,
 )
 from verify import require_auth
 
@@ -51,3 +52,15 @@ def get_infomation_of_project(projectid):
     song_ids = get_project_song_ids(projectid)
     response = {"song_ids": song_ids, "project": project_info}
     return make_response(jsonify(response))
+
+
+@projects.route("/projects/<int:project_id>/log/active", methods=["POST"])
+@require_auth
+def logs(uid, project_id):
+    data = request.get_json()
+    active = data.get("active", None)
+    if active is not None:
+        active_log(uid, project_id, active)
+        return make_response(jsonify({"message": f"logging active: {active}"}))
+
+    return make_response(jsonify({"message": "failed logging active"})), 400

@@ -23,6 +23,8 @@ class LogEvent(Enum):
     LOOP_UNMUTE = auto()
     REST = auto()
     REST_END = auto()
+    ACTIVE = auto()
+    INACTIVE = auto()
 
 
 # EVENT TEXT NOT NULL,
@@ -276,5 +278,19 @@ def rest_log(project_id: int, song_id: int, user_id: str, restEvent: bool = True
             cur.execute(
                 sql,
                 (restEvent.name, project_id, song_id, user_id),
+            )
+            conn.commit()
+
+
+def active_log(user_id: str, project_id: int, active: bool):
+    event = LogEvent.ACTIVE if active else LogEvent.INACTIVE
+    sql = """
+    insert into operation_logs (event, user_id, project_id, active) values (%s, %s, %s, %s);
+    """
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                sql,
+                (event.name, user_id, project_id, active),
             )
             conn.commit()
