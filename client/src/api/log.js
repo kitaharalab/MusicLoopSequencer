@@ -55,7 +55,13 @@ export async function sendLoopMuteLog(projectId, songId, isMute) {
   );
 }
 
-export async function sendCheckSongLoopLog(projectId, songId, part, measureId, loopId) {
+export async function sendCheckSongLoopLog(
+  projectId,
+  songId,
+  part,
+  measureId,
+  loopId,
+) {
   const url = new URL(
     `/projects/${projectId}/songs/${songId}/parts/${part}/measures/${measureId}/musicloops/${loopId}`,
     import.meta.env.VITE_SERVER_URL,
@@ -64,6 +70,20 @@ export async function sendCheckSongLoopLog(projectId, songId, part, measureId, l
   axios.post(
     url,
     { check: true },
+    {
+      headers: {
+        Authorization: `Bearer ${idToken}`,
+      },
+    },
+  );
+}
+
+export async function sendActiveLog(projectId, active) {
+  const url = new URL(`/projects/${projectId}/log/active`, import.meta.env.VITE_SERVER_URL);
+  const idToken = await auth.currentUser?.getIdToken();
+  axios.post(
+    url,
+    { active },
     {
       headers: {
         Authorization: `Bearer ${idToken}`,
