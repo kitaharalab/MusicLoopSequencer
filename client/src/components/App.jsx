@@ -9,10 +9,8 @@ import {
   Grid,
   GridItem,
 } from "@chakra-ui/react";
-import axios from "axios";
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-// import useSound from "use-sound";
+import React from "react";
+import { useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 
 import Header from "./app/Header";
@@ -22,31 +20,11 @@ import LoopTable from "./app/musicEdit/LoopTable";
 import MusicInstrumentTable from "./app/musicEdit/MusicInstrumentTable";
 import LoopMaterialView from "./app/musicEdit/loopMaterisl/LoopMaterialView";
 
-import { setSongId } from "@/redux/songIdSlice";
-
 function App() {
   const [searchParams] = useSearchParams();
   const projectId = searchParams.get("projectid");
 
-  const dispatch = useDispatch();
-  const baseUrl = `${import.meta.env.VITE_SERVER_URL}/projects/${projectId}`;
-
   const songId = useSelector((state) => state.songId.songId);
-
-
-  // 読み込まれて最初にやりたいこと
-  useEffect(() => {
-    // 現在のプロジェクトで作られた曲の履歴を取得
-    const songHistoryURL = `${baseUrl}/songs`;
-    axios
-      .get(songHistoryURL) // サーバーから音素材の配列を受け取った後，then部分を実行する．
-      .then((response) => {
-        // setDone(true);
-        const { data } = response;
-        const lastSongId = data[data.length - 1]?.id;
-        dispatch(setSongId(lastSongId));
-      });
-  }, []);
 
   return (
     <>
