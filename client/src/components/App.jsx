@@ -20,7 +20,7 @@ function App() {
       <Header projectName={projectId} projectId={projectId} songId={songId} />
       <Controls projectId={projectId} />
 
-      <Card height="50vh" marginTop={3}>
+      <Card height="40vh" marginTop={3}>
         <CardHeader>盛り上がり度曲線を描く</CardHeader>
         <CardBody height="100%">
           <Box
