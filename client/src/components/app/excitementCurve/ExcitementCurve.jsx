@@ -57,21 +57,38 @@ export default function ExcitementCurve({ measure }) {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [lines, setLines] = useState([]);
 
-  useEffect(() => {
-    // resize
+  function resize() {
     const canvas = canvasRef.current;
+    if (!canvas) {
+      return;
+    }
     const ctx = canvas?.getContext("2d");
     ctx.canvas.height = wrapperRef.current.offsetHeight;
     const width = wrapperRef.current.clientWidth ?? measure * 36;
     const canvasWidth = (width / measure) * measure;
     ctx.canvas.width = canvasWidth;
+    drawBackground(canvas, measure);
+  }
 
-    // canvas init
+  useEffect(() => {
+    window.addEventListener("resize", () => {
+      resize();
+    });
+
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext("2d");
+    ctx.canvas.height = wrapperRef.current?.offsetHeight;
+    const width = wrapperRef.current?.clientWidth ?? measure * 36;
+    const canvasWidth = (width / measure) * measure;
+    ctx.canvas.width = canvasWidth;
     drawBackground(canvas, measure);
     const initLine = new Array(canvasWidth);
     setLines(initLine.fill(0));
-    dispatch(setMax({ max: wrapperRef.current?.clientHeight ?? 100 }));
-  }, [wrapperRef.current?.clientWidth, wrapperRef.current?.clientHeight]);
+
+    return window.removeEventListener("resize", () => {
+      resize();
+    });
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -79,19 +96,37 @@ export default function ExcitementCurve({ measure }) {
     drawLine(canvas, lines);
   }, [lines]);
 
-  const startDraw = ({ nativeEvent }) => {
-    setDrawing(true);
-    const { offsetX, offsetY } = nativeEvent;
+  function updatePosition(x, y) {
     const height = canvasRef.current.clientHeight;
     const curve = {
-      x: Math.floor(offsetX),
-      y: Math.floor(offsetY),
+      x: Math.floor(x),
+      y: Math.floor(y),
     };
 
-    const newline = lines.map((y, i) => (i === offsetX ? height - curve.y : y));
+    const newline = lines.map((lineY, i) =>
+      i === x ? height - curve.y : lineY,
+    );
     setLines(newline);
 
-    setPosition({ x: offsetX, y: offsetY });
+    setPosition({ x, y });
+  }
+
+  const startDraw = (event) => {
+    setDrawing(true);
+
+    if (!event.clientX) {
+      if (event.targetTouches.length > 1) {
+        return;
+      }
+      const rect = event.target.getBoundingClientRect();
+      const x = event.targetTouches[0].clientX - rect.left;
+      const y = event.targetTouches[0].clientY - rect.top;
+      updatePosition(x, y);
+      return;
+    }
+
+    const { offsetX, offsetY } = event.nativeEvent;
+    updatePosition(offsetX, offsetY);
   };
 
   const draw = ({ nativeEvent }) => {
@@ -140,6 +175,9 @@ export default function ExcitementCurve({ measure }) {
         onMouseDown={startDraw}
         onMouseUp={stopDraw}
         onMouseMove={draw}
+        onTouchStart={startDraw}
+        onTouchEnd={stopDraw}
+        onTouchMove={draw}
       />
     </Box>
   );
