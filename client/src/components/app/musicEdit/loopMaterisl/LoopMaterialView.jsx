@@ -176,7 +176,7 @@ function Content({ projectId, songId, handlePlayAudio }) {
 
   return (
     <>
-      <Flex alignContent="center" marginBottom={4}>
+      <Flex alignContent="center" marginBottom={4} flexWrap="wrap">
         <Center>
           <Text>Preview</Text>
         </Center>
@@ -247,8 +247,8 @@ export default function LoopMaterialView({ projectId, songId }) {
   }
 
   return (
-    <Card minWidth="100%">
-      <CardBody>
+    <Card minWidth="100%" height="100%">
+      <CardBody height="100%">
         <Content
           projectId={projectId}
           songId={songId}
