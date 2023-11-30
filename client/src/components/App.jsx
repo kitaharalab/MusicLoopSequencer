@@ -48,14 +48,7 @@ function App() {
               <CardHeader>music</CardHeader>
               <Divider />
               <CardBody overflow="auto">
-                <Grid templateColumns="repeat(10, 1fr)">
-                  <GridItem>
-                    <MusicInstrumentTable />
-                  </GridItem>
-                  <GridItem>
-                    <LoopTable projectId={projectId} measure={32} />
-                  </GridItem>
-                </Grid>
+                <LoopTable projectId={projectId} measure={32} />
               </CardBody>
             </Card>
           </Box>
