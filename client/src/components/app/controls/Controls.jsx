@@ -15,8 +15,8 @@ import AudioControls from "./AudioControls";
 import Evaluation from "./Evaluation";
 
 import { auth } from "@/api/authentication/firebase";
-import { createMusic } from "@/api/song";
 import { getSongs } from "@/api/project";
+import { createMusic } from "@/api/song";
 import { setSongId } from "@/redux/songIdSlice";
 
 export default function Controls({ projectId }) {
@@ -53,7 +53,7 @@ export default function Controls({ projectId }) {
     flushSync(() => setCreating(true));
     const creatingMusic = createMusic(
       projectId,
-      lines,
+      lines.filter((y) => y),
       max,
       auth.currentUser?.uid,
     );
