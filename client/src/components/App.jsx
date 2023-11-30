@@ -67,37 +67,21 @@ function App() {
       <Box>
         <Flex width="100%" height="100%">
           <Box marginRight={4}>
-            <Card>
-              <CardHeader>Topics</CardHeader>
-              <Divider />
-              <CardBody>
-                <Flex flexDirection="column" width={musicEditAreaWidth}>
-                  <Box className="music-loops-container">
-                    <LoopMaterialView projectId={projectId} songId={songId} />
-                  </Box>
-                  <TopicView projectId={projectId} />
-                </Flex>
-              </CardBody>
-            </Card>
+            <Box className="music-loops-container">
+              <LoopMaterialView projectId={projectId} songId={songId} />
+            </Box>
           </Box>
           <Spacer />
           <Box overflowX="auto">
             <Card>
               <CardHeader>music</CardHeader>
               <Divider />
-              <CardBody>
-                <Grid
-                  templateRows="repeat(2, 1fr)"
-                  templateColumns="repeat(10, 1fr)"
-                >
-                  <GridItem />
-                  <GridItem colSpan={9}>
-                    <ZoomedExcitementCurve />
-                  </GridItem>
+              <CardBody overflow="auto">
+                <Grid templateColumns="repeat(10, 1fr)">
                   <GridItem>
                     <MusicInstrumentTable />
                   </GridItem>
-                  <GridItem colSpan={9}>
+                  <GridItem>
                     <LoopTable projectId={projectId} measure={32} />
                   </GridItem>
                 </Grid>
