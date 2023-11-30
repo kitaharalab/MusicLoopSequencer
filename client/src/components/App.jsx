@@ -33,20 +33,22 @@ function App() {
       </Box>
 
       <Box>
-        <Flex width="100%" height="100%">
-          <Box marginRight={4} boxSize="sm">
+        <Flex
+          width="100%"
+          height="100%"
+          justifyContent="space-between"
+          flexWrap="wrap"
+        >
+          <Box minWidth={{ base: "30%" }}>
             <LoopMaterialView projectId={projectId} songId={songId} />
           </Box>
-          <Spacer />
-          <Box overflowX="auto">
-            <Card>
-              <CardHeader>music</CardHeader>
-              <Divider />
-              <CardBody overflow="auto">
-                <LoopTable projectId={projectId} measure={32} />
-              </CardBody>
-            </Card>
-          </Box>
+          <Card overflow="auto" width={{ base: "100%", md: "65%" }}>
+            <CardHeader>music</CardHeader>
+            <Divider />
+            <CardBody overflow="auto" height="100%">
+              <LoopTable projectId={projectId} measure={32} />
+            </CardBody>
+          </Card>
         </Flex>
       </Box>
     </>
