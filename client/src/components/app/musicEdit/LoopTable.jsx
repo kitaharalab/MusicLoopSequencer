@@ -145,9 +145,9 @@ export default function LoopTable({ projectId, measure }) {
                 return (
                   <Td
                     key={`${partId}-${i}`}
-                    bgColor={exist ? colorScale(partId) : "white"}
+                    bgColor={exist || isSelect ? colorScale(partId) : "white"}
                     borderColor={borderColorScale(partId)}
-                    borderWidth={isSelect ? 3 : 0}
+                    borderWidth={isSelect ? 3 : 1}
                     borderRadius="8px"
                     filter={colorFilter(isSelect || !exist)}
                     data-part={partId}
