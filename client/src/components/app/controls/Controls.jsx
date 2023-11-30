@@ -17,12 +17,13 @@ import Evaluation from "./Evaluation";
 import { auth } from "@/api/authentication/firebase";
 import { getSongs } from "@/api/project";
 import { createMusic } from "@/api/song";
-import { setSongId } from "@/redux/songIdSlice";
+import { getProjectId, getSongId, setSongId } from "@/redux/apiParamSlice";
 
-export default function Controls({ projectId }) {
-  const dispatch = useDispatch();
+export default function Controls() {
+  const projectId = useSelector(getProjectId);
+  const songId = useSelector(getSongId);
   const { lines, max } = useSelector((state) => state.lines1);
-  const songId = useSelector((state) => state.songId.songId);
+  const dispatch = useDispatch();
   const [songHistory, setSongHistory] = useState([]);
   const songCreatedToast = useToast();
   const [creating, setCreating] = useState(false);
@@ -36,6 +37,9 @@ export default function Controls({ projectId }) {
     async function getSongsFromProject() {
       const songs = await getSongs(projectId);
       setSongHistory(songs);
+      if (songs.length > 0) {
+        dispatch(setSongId(songs[songs.length - 1].id));
+      }
     }
 
     getSongsFromProject();

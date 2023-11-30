@@ -31,7 +31,7 @@ import ScatterPlot from "./ScatterPlot";
 
 import { sendLoopMuteLog } from "@/api/log";
 import { onMusicLoop, insertSound, deleteLoop } from "@/api/loop";
-import { setSongId } from "@/redux/songIdSlice";
+import { getApiParams, setSongId } from "@/redux/apiParamSlice";
 
 function ZoomableChart({ width, height, children, zoomState }) {
   const { zoomTransform, setZoomTransform } = zoomState;
@@ -98,10 +98,10 @@ function Chart({ zoomState, handleOnClick, setInsertLoopId, part }) {
   );
 }
 
-function Content({ projectId, songId, handlePlayAudio }) {
+function Content({ handlePlayAudio }) {
   const [isMute, setIsMute] = useState(false);
   const [zoomTransform, setZoomTransform] = useState(d3.zoomIdentity);
-  const { measure, part } = useSelector((store) => store.sounds);
+  const { projectId, songId, measure, partId } = useSelector(getApiParams);
   const zoomState = { zoomTransform, setZoomTransform };
 
   const [insertLoopId, setInsertLoopId] = useState();
@@ -116,7 +116,7 @@ function Content({ projectId, songId, handlePlayAudio }) {
   }
 
   const insertLoop = async (loopId) => {
-    const inserting = insertSound(projectId, songId, part, measure, loopId);
+    const inserting = insertSound(projectId, songId, partId, measure, loopId);
     insertToast.promise(inserting, {
       success: {
         title: "Inserted",
@@ -146,10 +146,10 @@ function Content({ projectId, songId, handlePlayAudio }) {
   };
 
   async function onDeleteLoop() {
-    if (part == null || measure == null) {
+    if (partId == null || measure == null) {
       return;
     }
-    const deleting = deleteLoop(projectId, songId, measure, part);
+    const deleting = deleteLoop(projectId, songId, measure, partId);
     deleteToast.promise(deleting, {
       success: {
         title: "Deleted",
@@ -222,15 +222,15 @@ function Content({ projectId, songId, handlePlayAudio }) {
           zoomState={zoomState}
           handleOnClick={handleOnClick}
           setInsertLoopId={setInsertLoopId}
-          part={part}
+          part={partId}
         />
       </Box>
     </>
   );
 }
 
-export default function LoopMaterialView({ projectId, songId }) {
-  const { part } = useSelector((store) => store.sounds);
+export default function LoopMaterialView() {
+  const { projectId, songId, partId } = useSelector(getApiParams);
   const [audio, setAudio] = useState();
 
   function handlePlayAudio(id, part) {
@@ -251,7 +251,7 @@ export default function LoopMaterialView({ projectId, songId }) {
           projectId={projectId}
           songId={songId}
           handlePlayAudio={(id) => {
-            handlePlayAudio(id, part);
+            handlePlayAudio(id, partId);
           }}
         />
       </CardBody>

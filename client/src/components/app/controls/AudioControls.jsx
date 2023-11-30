@@ -4,11 +4,12 @@ import { useSelector } from "react-redux";
 
 import { sendSongPauseLog, sendSongPlayLog, sendSongStopLog } from "@/api/log";
 import { getSongAudio } from "@/api/song";
+import { getApiParams } from "@/redux/apiParamSlice";
 
-export default function AudioControls({ projectId }) {
+export default function AudioControls() {
   const [audio, setAudio] = useState();
   const [audioUrl, setAudioUrl] = useState();
-  const songId = useSelector((state) => state.songId.songId);
+  const { projectId, songId } = useSelector(getApiParams);
 
   useEffect(() => {
     async function updateSongAudio() {
