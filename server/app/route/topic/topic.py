@@ -1,11 +1,12 @@
 from flask import Blueprint, jsonify, make_response
+from util import const
 
 topic = Blueprint("topic", __name__)
 
 
 @topic.route("/topic", methods=["GET"])
 def get_topic_preference():
-    ratio_topic = load_topic_preference()
+    ratio_topic = load_topic_preference(const.topic_n)
     response = {"ratio-topic": ratio_topic}
 
     return make_response(jsonify(response))
