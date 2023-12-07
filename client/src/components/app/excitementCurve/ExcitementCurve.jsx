@@ -1,7 +1,10 @@
 import { Box } from "@chakra-ui/react";
+import * as d3 from "d3";
 import React, { useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
+import getExcitementCurve from "@/api/song/getExcitementCurve";
+import { getApiParams } from "@/redux/apiParamSlice";
 import { setLine, setMax } from "@/redux/linesSlice";
 
 function drawBackgroundOutline(canvas) {
@@ -56,6 +59,7 @@ export default function ExcitementCurve({ measure }) {
   const [drawing, setDrawing] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [lines, setLines] = useState([]);
+  const { projectId, songId } = useSelector(getApiParams);
 
   function resize() {
     const canvas = canvasRef.current;
@@ -68,6 +72,34 @@ export default function ExcitementCurve({ measure }) {
     const canvasWidth = (width / measure) * measure;
     ctx.canvas.width = canvasWidth;
     drawBackground(canvas, measure);
+    drawLine(canvas, lines);
+  }
+
+  async function setExcitementCurve() {
+    const width = wrapperRef.current?.clientWidth ?? measure * 36;
+    const height = wrapperRef.current?.offsetHeight ?? 300;
+    const canvasWidth = (width / measure) * measure;
+
+    const { curve, max } = await getExcitementCurve(projectId, songId).catch(
+      () => {
+        const initLine = new Array(canvasWidth).fill(0);
+        return { curve: initLine, max: 300 };
+      },
+    );
+
+    const xScale = d3
+      .scaleLinear()
+      .domain([0, canvasWidth])
+      .range([0, curve.length])
+      .nice();
+    const yScale = d3.scaleLinear().domain([0, max]).range([0, height]).nice();
+    const lines = Array(canvasWidth)
+      .fill(0)
+      .map((_, i) => yScale(curve[Math.floor(xScale(i))]));
+
+    setLines(lines);
+    dispatch(setMax({ max: height }));
+    dispatch(setLine({ lines }));
   }
 
   useEffect(() => {
@@ -75,16 +107,18 @@ export default function ExcitementCurve({ measure }) {
       resize();
     });
 
-    const width = wrapperRef.current?.clientWidth ?? measure * 36;
-    const canvasWidth = (width / measure) * measure;
-    const initLine = new Array(canvasWidth);
-    setLines(initLine.fill(0));
+    setExcitementCurve();
+
     resize();
 
     return window.removeEventListener("resize", () => {
       resize();
     });
   }, []);
+
+  useEffect(() => {
+    setExcitementCurve();
+  }, [songId]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
