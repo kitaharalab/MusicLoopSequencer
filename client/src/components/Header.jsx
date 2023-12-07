@@ -37,7 +37,7 @@ export default function Header() {
           padding={2}
           paddingX={4}
           background="purple.900"
-          borderRadius="20"
+          borderRadius="15"
           textColor="white"
         >
           Music Loop Sequencer
