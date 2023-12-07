@@ -10,7 +10,8 @@ from hmmlearn import hmm
 from pydub import AudioSegment
 
 fix_len = 4
-topic_n = 4
+topic_n = 3
+
 excitement_len = 32
 selected_constitution_determine = 1
 selected_fix_determine = 1

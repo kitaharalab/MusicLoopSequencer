@@ -1,5 +1,23 @@
 {
   "projects": {
-    "default": "project-musicloopsequencer"
-  }
+    "development": "project-musicloopsequencer",
+    "production": "loopsequencer"
+  },
+  "targets": {
+    "project-musicloopsequencer": {
+      "hosting": {
+        "development": [
+          "project-musicloopsequencer"
+        ]
+      }
+    },
+    "loopsequencer": {
+      "hosting": {
+        "production": [
+          "loopsequencer-kthelrab"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }
