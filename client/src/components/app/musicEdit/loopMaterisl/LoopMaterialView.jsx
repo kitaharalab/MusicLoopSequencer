@@ -238,7 +238,7 @@ export default function LoopMaterialView() {
       audio?.pause();
       const loop = await onMusicLoop(projectId, songId, part, id);
       setAudio(loop);
-      loop.volume = 0.3;
+      loop.volume = 0.5;
       loop.play();
     }
     getAndPlayMusicLoop();

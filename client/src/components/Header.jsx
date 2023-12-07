@@ -1,4 +1,4 @@
-import { Box, Button, Divider, Flex, Heading, Spacer } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Spacer, Text } from "@chakra-ui/react";
 import {
   onAuthStateChanged,
   signOut,
@@ -31,25 +31,33 @@ export default function Header() {
   }, []);
 
   return (
-    <Heading marginBottom={3}>
-      <Flex>
-        Music Loop Sequencer
+    <Heading marginBottom={3} paddingX={2}>
+      <Flex justifyContent="space-between" alignItems="center">
+        <Text
+          padding={2}
+          background="purple.900"
+          borderRadius="20"
+          textColor="white"
+        >
+          Music Loop Sequencer
+        </Text>
         <Spacer />
         {user === null || user === undefined ? (
           <Box>
             <Button onClick={handleClick}>sign in</Button>
           </Box>
         ) : (
-          <Button
-            onClick={() => {
-              signOut(auth);
-            }}
-          >
-            Sign Out
-          </Button>
+          <Box>
+            <Button
+              onClick={() => {
+                signOut(auth);
+              }}
+            >
+              Sign Out
+            </Button>
+          </Box>
         )}
       </Flex>
-      <Divider />
     </Heading>
   );
 }
