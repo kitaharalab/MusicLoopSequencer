@@ -36,7 +36,8 @@ export default function Controls() {
   useEffect(() => {
     async function getSongsFromProject() {
       const songs = await getSongs(projectId);
-      setSongHistory(songs);
+      const historysong = songs.filter(({ id, name }) => id != null && name);
+      setSongHistory(historysong);
       if (songs.length > 0) {
         dispatch(setSongId(songs[songs.length - 1].id));
       }
@@ -50,7 +51,11 @@ export default function Controls() {
       ...songHistory.map((h) => JSON.stringify(h)),
       JSON.stringify({ name: songId, id: songId }),
     ]);
-    setSongHistory([...historySet].map((h) => JSON.parse(h)));
+    setSongHistory(
+      [...historySet]
+        .map((h) => JSON.parse(h))
+        .filter(({ id, name }) => id != null && name),
+    );
   }, [songId]);
 
   async function handleCreateMusic() {
