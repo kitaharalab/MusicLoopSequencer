@@ -2,6 +2,7 @@ from psycopg2.extras import DictCursor
 
 from .connection import get_connection
 from util.const import EXCITEMENT_VALUE_MAX, EXCITEMENT_VALUE_MIN
+import json
 
 
 def get_excitement_curve_values(song_id: int):
@@ -49,6 +50,17 @@ def get_excitement_curve(song_id: int):
         "max_value": info["max_value"],
     }
 
+    return response
+
+
+def get_excitement_curve_preset():
+    data = None
+    with open("./sqls/excitement_curve_preset.json", "r") as f:
+        data = json.load(f)
+    response = {
+        "curve": data,
+        "max": 5,
+    }
     return response
 
 
