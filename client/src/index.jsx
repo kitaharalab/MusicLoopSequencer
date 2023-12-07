@@ -25,7 +25,11 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <Project />,
+        element: (
+          <Provider store={store}>
+            <Project />
+          </Provider>
+        ),
       },
       {
         path: "App",

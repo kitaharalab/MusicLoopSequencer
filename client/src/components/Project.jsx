@@ -26,12 +26,14 @@ import {
 } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 import { flushSync } from "react-dom";
+import { useDispatch } from "react-redux";
 
 import { auth } from "../api/authentication/firebase";
 
 import Link from "./Link/Link";
 
 import { createProject, getProjects } from "@/api/project";
+import { setProjectId, setSongId } from "@/redux/apiParamSlice";
 
 function SignInModal({ isOpen, onOpen, onClose, setUser }) {
   const [isPending, setPending] = useState(false);
@@ -70,6 +72,7 @@ function Project() {
   const [projects, setProjects] = useState(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [user, setUser] = useState(auth.currentUser);
+  const dispatch = useDispatch();
 
   async function createNewProject() {
     const newProjectId = await createProject();
@@ -87,6 +90,8 @@ function Project() {
     const unsubscribe = onAuthStateChanged(auth, (authUser) => {
       setUser(authUser);
     });
+    dispatch(setProjectId(undefined));
+    dispatch(setSongId(undefined));
 
     return unsubscribe;
   }, []);
