@@ -1,33 +1,50 @@
-from psycopg2.extras import DictCursor
+from psycopg2.extras import DictCursor  
 
 from .connection import get_connection
 from cache import cache
 
 
+@cache.memoize()
 def get_loop_id_from_id_chord(loop_id: int, chord: str):
-    get_name_sql = """
+    loop_name = get_loop_name_from_id(loop_id)
+    if loop_name is None:
+        return None
+    
+    loop_id_by_chord = get_loop_id_by_chord_from_name(loop_name)
+    return loop_id_by_chord.get(chord, None)
+
+@cache.memoize()
+def get_loop_name_from_id(loop_id: int):
+    sql = """
     SELECT name
     FROM loops
     where id=%s
     """
-    get_chord_loop_id_sql = """
-    SELECT id
+    response = None
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute(sql, (loop_id,))
+            result = cur.fetchone()
+            response = dict(result)["name"] if result is not None else None
+
+    return response
+
+@cache.memoize()
+def get_loop_id_by_chord_from_name(loop_name: str):
+    sql = """
+    SELECT id, chord
     FROM loops
-    where name=%s and chord=%s
+    where name=%s
     """
     response = None
     with get_connection() as conn:
         with conn.cursor(cursor_factory=DictCursor) as cur:
-            cur.execute(get_name_sql, (loop_id,))
-            result = cur.fetchone()
-            name = dict(result)["name"] if result is not None else None
-
-            cur.execute(get_chord_loop_id_sql, (name, chord))
-            result = cur.fetchone()
-            response = dict(result)["id"] if result is not None else None
+            cur.execute(sql, (loop_name,))
+            result = cur.fetchall()
+            data = [dict(row) for row in result]
+            response = {row["chord"]: row["id"] for row in data}
 
     return response
-
 
 def get_loop_positions_by_part(part_id: int):
     sql = """
@@ -108,20 +125,20 @@ def get_loop_wav_from_loop_ids_by_measure_part(loop_ids_by_measure_part: list):
             if loop_id is None or loop_id == "null":
                 continue
             loop_ids.add(int(loop_id))
-
-    in_sql = ",".join([f"'{str(loop_id)}'" for loop_id in loop_ids])
-    sql = f"""
+    
+    sql = """
     SELECT id, data
     FROM loops
-    where id in({in_sql});
+    where id in %s;
     """
 
     wav_data_by_id = dict()
     wav_query_result = None
     with get_connection() as conn:
         with conn.cursor() as cur:
-            cur.execute(sql, tuple(loop_ids))
+            cur.execute(sql, (tuple(loop_ids),))
             wav_query_result = [list(row) for row in cur.fetchall()]
+    
 
     for row in wav_query_result:
         wav_data_by_id[row[0]] = row[1].tobytes()
