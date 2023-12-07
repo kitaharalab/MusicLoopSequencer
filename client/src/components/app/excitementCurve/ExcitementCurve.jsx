@@ -16,10 +16,12 @@ function drawBackgroundOutline(canvas) {
   ctx.fill();
 }
 
-function drawBackgroundGrid(canvas, width, measure) {
+function drawBackgroundGrid(canvas, measure, division = 5) {
   const ctx = canvas.getContext("2d");
+  const width = canvas.clientWidth;
 
   const gridWidth = width / measure;
+  const gridHeight = canvas.clientHeight / division;
 
   for (let i = 0; i < measure; i++) {
     ctx.beginPath();
@@ -29,13 +31,46 @@ function drawBackgroundGrid(canvas, width, measure) {
     ctx.lineTo(gridWidth * i, canvas.height);
     ctx.stroke();
   }
+
+  for (let i = 0; i < division; i++) {
+    ctx.beginPath();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "rgba(0,0,0,0.1)";
+    ctx.moveTo(0, gridHeight * i);
+    ctx.lineTo(canvas.width, gridHeight * i);
+    ctx.stroke();
+  }
+}
+
+function drawLineGrid(canvas, line, measure, division = 5) {
+  if (!line || line.length === 0) {
+    return;
+  }
+  const ctx = canvas.getContext("2d");
+  const width = canvas.clientWidth;
+  const height = canvas.clientHeight;
+
+  const gridWidth = width / measure;
+  const gridHeight = height / division;
+  ctx.fillStyle = "rgba(0,0,0,0.1)";
+  for (let i = 0; i < measure; i++) {
+    const gridLine = line.slice(i * gridWidth, (i + 1) * gridWidth);
+    const gridLineAvg = gridLine.reduce((a, b) => a + b) / gridLine.length;
+    const gridRatio = Math.ceil((gridLineAvg / height) * division);
+    ctx.fillRect(
+      i * gridWidth,
+      (5 - gridRatio) * gridHeight,
+      gridWidth,
+      gridHeight,
+    );
+  }
 }
 
 function drawBackground(canvas, measure) {
   const ctx = canvas.getContext("2d");
   ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
   ctx.fill();
-  drawBackgroundGrid(canvas, canvas.clientWidth, measure);
+  drawBackgroundGrid(canvas, measure);
   drawBackgroundOutline(canvas);
 }
 
@@ -73,6 +108,7 @@ export default function ExcitementCurve({ measure }) {
     ctx.canvas.width = canvasWidth;
     drawBackground(canvas, measure);
     drawLine(canvas, lines);
+    drawLineGrid(canvas, lines, measure);
   }
 
   async function setExcitementCurve() {
@@ -124,6 +160,7 @@ export default function ExcitementCurve({ measure }) {
     const canvas = canvasRef.current;
     drawBackground(canvas, measure);
     drawLine(canvas, lines);
+    drawLineGrid(canvas, lines, measure);
   }, [lines]);
 
   function updatePosition(x, y) {
