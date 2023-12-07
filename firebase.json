@@ -1,18 +1,7 @@
 {
   "hosting": [
     {
-      "target": "development",
-      "public": "client/dist",
-      "ignore": [
-        "firebase.json",
-        "**/.*",
-        "**/node_modules/**",
-        "**/server/**"
-      ],
-      "rewrites": [{ "source": "/**", "destination": "/index.html" }]
-    },
-    {
-      "target": "production",
+      "target": "app",
       "public": "client/dist",
       "ignore": [
         "firebase.json",
