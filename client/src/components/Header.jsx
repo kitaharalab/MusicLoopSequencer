@@ -35,6 +35,7 @@ export default function Header() {
       <Flex justifyContent="space-between" alignItems="center">
         <Text
           padding={2}
+          paddingX={4}
           background="purple.900"
           borderRadius="20"
           textColor="white"

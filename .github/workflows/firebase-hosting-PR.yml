@@ -25,8 +25,22 @@ jobs:
           VITE_MODE_STRUCTURE: ${{vars.VITE_MODE_STRUCTURE}}
           VITE_MODE_ADAPT: ${{vars.VITE_MODE_ADAPT}}
           VITE_MODE_EXPERIMENTAL: ${{vars.VITE_MODE_EXPERIMENTAL}}
-      - uses: FirebaseExtended/action-hosting-deploy@v0
+      - name: deploy to vdslab
+        id: deploy-to-vdslab
+        if: github.repository == 'vdslab/musicloopsequencer'
+        uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEVELOP }}"
           projectId: project-musicloopsequencer
+
+      - name: deploy to loopsequencer
+        id: deploy-to-loopsequencer
+        if: steps.deploy-to-vdslab.conclusion == 'skipped'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_LOOPSEQUENCER }}"
+          channelId: live
+          projectId: loopsequencer
+          target: production
