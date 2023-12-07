@@ -53,7 +53,6 @@ function VisibleChangeModal({ projectId }) {
     <Modal
       isOpen={isOpen}
       onClose={() => {
-        console.log("log");
         sendActiveLog(projectId, true);
         onClose();
       }}

@@ -1,6 +1,8 @@
 from psycopg2.extras import DictCursor
 
 from .connection import get_connection
+from util.const import EXCITEMENT_VALUE_MAX, EXCITEMENT_VALUE_MIN
+import json
 
 
 def get_excitement_curve_values(song_id: int):
@@ -51,11 +53,26 @@ def get_excitement_curve(song_id: int):
     return response
 
 
+def get_excitement_curve_preset():
+    data = None
+    with open("./sqls/excitement_curve_preset.json", "r") as f:
+        data = json.load(f)
+    response = {
+        "curve": data,
+        "max": 5,
+    }
+    return response
+
+
 def add_excitement_curve(song_id: int, curve: list[int], max_value: int):
-    insert_curve_values = [[song_id, i, value] for i, value in enumerate(curve)]
+    adjust_curve = [
+        value * (EXCITEMENT_VALUE_MAX - EXCITEMENT_VALUE_MIN) / max_value
+        for value in curve
+    ]
+    insert_curve_values = [[song_id, i, value] for i, value in enumerate(adjust_curve)]
     insert_curve_values = sum(insert_curve_values, [])
     insert_curve_values_sql = ",".join(
-        ["(%s, %s, %s)" for i, value in enumerate(curve)]
+        ["(%s, %s, %s)" for _ in range(len(adjust_curve))]
     )
     add_curve_sql = f"""
     INSERT INTO excitement_curve (song_id, index, value)
@@ -69,5 +86,7 @@ def add_excitement_curve(song_id: int, curve: list[int], max_value: int):
     with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute(add_curve_sql, tuple(insert_curve_values))
-            cur.execute(add_curve_info_sql, (song_id, len(curve), max_value))
+            cur.execute(
+                add_curve_info_sql, (song_id, len(adjust_curve), EXCITEMENT_VALUE_MAX)
+            )
             conn.commit()

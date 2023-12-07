@@ -6,3 +6,6 @@ selected_fix_determine = 0
 
 PARTS = ["Drums", "Bass", "Synth", "Sequence"]
 part_name2index = {"Drums": 0, "Bass": 1, "Synth": 2, "Sequence": 3}
+
+EXCITEMENT_VALUE_MAX = 5
+EXCITEMENT_VALUE_MIN = 0

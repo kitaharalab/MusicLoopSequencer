@@ -1,5 +1,9 @@
 from .connection import get_connection
-from .excitement_curve import add_excitement_curve, get_excitement_curve
+from .excitement_curve import (
+    add_excitement_curve,
+    get_excitement_curve,
+    get_excitement_curve_preset,
+)
 from .log import (
     check_song_loop_log,
     create_project_log,

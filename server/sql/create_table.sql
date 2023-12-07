@@ -87,7 +87,7 @@ CREATE TABLE
     excitement_curve (
         song_id INTEGER NOT NULL,
         INDEX INTEGER NOT NULL,
-        VALUE INTEGER NOT NULL,
+        VALUE real NOT NULL,
         FOREIGN KEY (song_id) REFERENCES songs (id),
         PRIMARY KEY (song_id, INDEX)
     );

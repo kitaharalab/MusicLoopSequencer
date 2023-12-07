@@ -21,6 +21,7 @@ from sqls import (
     sound_array_wrap,
     stop_song_log,
     update_song_evaluation,
+    get_excitement_curve_preset,
 )
 from verify import require_auth
 
@@ -91,6 +92,13 @@ def get_infomation_songs(projectid):
     return make_response(jsonify(response))
 
 
+@songs.route("/projects/<int:project_id>/songs/preset", methods=["GET"])
+def get_preset(project_id):
+    response = get_excitement_curve_preset()
+
+    return make_response(jsonify(response))
+
+
 # TODO: 誤字の修正
 @songs.route("/projects/<int:projectid>/songs/<int:songid>", methods=["GET"])
 def get_infomation_song(projectid, songid):
@@ -151,7 +159,9 @@ def download_song(projectid, songid):
     data = get_wav_data_from_song_id(songid)
 
     if data is None:
-        return make_response(jsonify({"message": "指定された楽曲ファイルは存在しません"})), 204
+        return make_response(
+            jsonify({"message": "指定された楽曲ファイルは存在しません"})
+        ), 204
 
     response = send_file(
         io.BytesIO(data),
@@ -171,7 +181,9 @@ def log_play_song(uid, projectid, songid):
     exsist_song = song_data is not None
 
     if not exsist_song:
-        return make_response(jsonify({"message": "指定された楽曲ファイルは存在しません"})), 204
+        return make_response(
+            jsonify({"message": "指定された楽曲ファイルは存在しません"})
+        ), 204
 
     params = request.get_json()
     response = make_response(jsonify({"message": "操作がログに書き込まれました"}))
