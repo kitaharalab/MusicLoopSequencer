@@ -12,12 +12,14 @@ import {
   ModalCloseButton,
   ModalBody,
   Text,
+  HStack,
 } from "@chakra-ui/react";
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 
 import Header from "./app/Header";
+import AudioControls from "./app/controls/AudioControls";
 import Controls from "./app/controls/Controls";
 import ExcitementCurve from "./app/excitementCurve/ExcitementCurve";
 import LoopTable from "./app/musicEdit/LoopTable";
@@ -102,7 +104,12 @@ function App() {
             <LoopMaterialView />
           </Box>
           <Card overflow="auto" width={{ base: "100%", lg: "65%" }}>
-            <CardHeader>music</CardHeader>
+            <CardHeader>
+              <HStack alignItems="center" spacing={3}>
+                <Text>曲の構成</Text>
+                <AudioControls projectId={projectId} />
+              </HStack>
+            </CardHeader>
             <CardBody overflow="auto" height="100%" paddingLeft={0}>
               <LoopTable measure={32} />
             </CardBody>

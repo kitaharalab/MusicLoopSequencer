@@ -11,7 +11,13 @@ export default function Header() {
   const projectId = useSelector(getProjectId);
   const songId = useSelector(getSongId);
   return (
-    <Heading as="h1" marginY={4}>
+    <Heading
+      as="h1"
+      marginY={4}
+      padding={2}
+      borderBottomWidth={3}
+      borderColor="purple.900"
+    >
       <Flex>
         <Box>
           <ButtonLink to="/">

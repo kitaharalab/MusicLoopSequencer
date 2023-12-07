@@ -1,5 +1,6 @@
-import { Button, ButtonGroup } from "@chakra-ui/react";
+import { ButtonGroup, IconButton, useBoolean } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
+import { BiPlayCircle, BiPauseCircle, BiStopCircle } from "react-icons/bi";
 import { useSelector } from "react-redux";
 
 import { sendSongPauseLog, sendSongPlayLog, sendSongStopLog } from "@/api/log";
@@ -10,6 +11,7 @@ export default function AudioControls() {
   const [audio, setAudio] = useState();
   const [audioUrl, setAudioUrl] = useState();
   const { projectId, songId } = useSelector(getApiParams);
+  const [isPlaying, setIsPlaying] = useBoolean();
 
   useEffect(() => {
     async function updateSongAudio() {
@@ -39,27 +41,25 @@ export default function AudioControls() {
 
   return (
     <ButtonGroup>
-      <Button
-        type="button"
+      <IconButton
+        icon={isPlaying ? <BiPauseCircle /> : <BiPlayCircle />}
+        disabled={audio == null || audioUrl == null}
+        fontSize="30"
         onClick={() => {
-          audio?.play();
-          sendSongPlayLog(projectId, songId);
+          if (isPlaying) {
+            audio?.pause();
+            sendSongPauseLog(projectId, songId);
+          } else {
+            audio?.play();
+            sendSongPlayLog(projectId, songId);
+          }
+          setIsPlaying.toggle();
         }}
-      >
-        play
-      </Button>
-
-      <Button
-        type="button"
-        onClick={() => {
-          audio?.pause();
-          sendSongPauseLog(projectId, songId);
-        }}
-      >
-        pause
-      </Button>
-      <Button
-        type="button"
+      />
+      <IconButton
+        icon={<BiStopCircle />}
+        disabled={audio == null || audioUrl == null}
+        fontSize="30"
         onClick={() => {
           if (!audio) {
             return;
@@ -68,10 +68,9 @@ export default function AudioControls() {
           audio.pause();
           audio.currentTime = 0;
           sendSongStopLog(projectId, songId);
+          setIsPlaying.off();
         }}
-      >
-        stop
-      </Button>
+      />
     </ButtonGroup>
   );
 }

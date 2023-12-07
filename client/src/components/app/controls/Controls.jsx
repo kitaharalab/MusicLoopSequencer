@@ -120,8 +120,7 @@ export default function Controls() {
             </FormControl>
           </Flex>
         </Box>
-        <Spacer />
-        <AudioControls projectId={projectId} />
+
         <Spacer />
         <Evaluation projectId={projectId} songId={songId} />
       </Flex>
