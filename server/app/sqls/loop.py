@@ -4,6 +4,31 @@ from .connection import get_connection
 from cache import cache
 
 
+def get_loop_id_from_id_chord(loop_id: int, chord: str):
+    get_name_sql = """
+    SELECT name
+    FROM loops
+    where id=%s
+    """
+    get_chord_loop_id_sql = """
+    SELECT id
+    FROM loops
+    where name=%s and chord=%s
+    """
+    response = None
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute(get_name_sql, (loop_id,))
+            result = cur.fetchone()
+            name = dict(result)["name"] if result is not None else None
+
+            cur.execute(get_chord_loop_id_sql, (name, chord))
+            result = cur.fetchone()
+            response = dict(result)["id"] if result is not None else None
+
+    return response
+
+
 def get_loop_positions_by_part(part_id: int):
     sql = """
     SELECT id, name, excitement, x, y
