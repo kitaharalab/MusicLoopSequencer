@@ -69,7 +69,7 @@ def choose_sound_randomly(user_id):
     random_sound_list = []
     for part in parts:
         sound_list = choose_sound_randomly_with_using_ratio_topic(
-            part["id"] - 1,
+            part["id"],
             topic_n_preferences_by_part_measure_topic[part["id"]],
             topic_n_ids,
         )
@@ -83,7 +83,7 @@ def choose_sound_randomly_with_using_ratio_topic(
     part_id, topic_n_preferences_by_excitement_topic, topic_n_ids
 ):
     # このパートの盛り上がり度ごとの音素材のIDとトピックが欲しい
-    all_loop_and_topics = get_loop_and_topics_from_part(part_id + 1)
+    all_loop_and_topics = get_loop_and_topics_from_part(part_id)
     all_n_loop_and_topics = list(
         filter(lambda x: x["topic_id"] in topic_n_ids, all_loop_and_topics)
     )
