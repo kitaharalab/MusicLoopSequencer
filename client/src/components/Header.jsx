@@ -1,4 +1,11 @@
-import { Box, Button, Divider, Flex, Heading, Spacer } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  Heading,
+  Spacer,
+  Text,
+} from "@chakra-ui/react";
 import {
   onAuthStateChanged,
   signOut,
@@ -31,9 +38,9 @@ export default function Header() {
   }, []);
 
   return (
-    <Heading marginBottom={3}>
-      <Flex>
-        Music Loop Sequencer
+    <Heading marginBottom={3} borderBottomWidth={3} borderColor="purple.900">
+      <Flex justifyContent="space-between" alignItems="center">
+        <Text padding={2}>Music Loop Sequencer</Text>
         <Spacer />
         {user === null || user === undefined ? (
           <Box>
@@ -49,7 +56,6 @@ export default function Header() {
           </Button>
         )}
       </Flex>
-      <Divider />
     </Heading>
   );
 }
