@@ -475,6 +475,7 @@ def insert_sound(projectid, songid, partid, measureid, musicloopid):
     sound_array = rewrite_music_data(measureid, partid, musicloopid, sound_array, drums_list, bass_list, synth_list, sequence_list, fix, adapt)
     #root = tk.Tk()                 
     #view = View(master=root)
+    sound_array = give_chord(sound_array)
     songid = connect_sound(sound_array, projectid, "insert", songid)
 
     save_music_data(projectid, songid, sound_array, drums_list, bass_list, synth_list, sequence_list)
