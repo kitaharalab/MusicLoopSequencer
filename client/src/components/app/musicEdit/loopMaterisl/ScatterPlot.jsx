@@ -11,7 +11,10 @@ export default function ScatterPlot({
   partColor,
 }) {
   const [selectId, setSelectId] = useState();
-  const loopPositions = useSelector((state) => state.musicData.loopPositions);
+  const rawLoopPositions = useSelector(
+    (state) => state.musicData.loopPositions,
+  );
+  const loopPositions = rawLoopPositions.filter(({ x, y }) => x && y);
   if (
     loopPositions.length === 0 ||
     loopPositions === undefined ||
