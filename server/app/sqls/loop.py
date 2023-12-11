@@ -1,4 +1,4 @@
-from psycopg2.extras import DictCursor  
+from psycopg2.extras import DictCursor
 
 from .connection import get_connection
 from cache import cache
@@ -9,9 +9,13 @@ def get_loop_id_from_id_chord(loop_id: int, chord: str):
     loop_name = get_loop_name_from_id(loop_id)
     if loop_name is None:
         return None
-    
+
     loop_id_by_chord = get_loop_id_by_chord_from_name(loop_name)
+    if list(loop_id_by_chord.keys())[0] is None:
+        return loop_id
+
     return loop_id_by_chord.get(chord, None)
+
 
 @cache.memoize()
 def get_loop_name_from_id(loop_id: int):
@@ -29,6 +33,7 @@ def get_loop_name_from_id(loop_id: int):
 
     return response
 
+
 @cache.memoize()
 def get_loop_id_by_chord_from_name(loop_name: str):
     sql = """
@@ -45,6 +50,7 @@ def get_loop_id_by_chord_from_name(loop_name: str):
             response = {row["chord"]: row["id"] for row in data}
 
     return response
+
 
 def get_loop_positions_by_part(part_id: int):
     sql = """
@@ -125,7 +131,7 @@ def get_loop_wav_from_loop_ids_by_measure_part(loop_ids_by_measure_part: list):
             if loop_id is None or loop_id == "null":
                 continue
             loop_ids.add(int(loop_id))
-    
+
     sql = """
     SELECT id, data
     FROM loops
@@ -138,7 +144,6 @@ def get_loop_wav_from_loop_ids_by_measure_part(loop_ids_by_measure_part: list):
         with conn.cursor() as cur:
             cur.execute(sql, (tuple(loop_ids),))
             wav_query_result = [list(row) for row in cur.fetchall()]
-    
 
     for row in wav_query_result:
         wav_data_by_id[row[0]] = row[1].tobytes()
