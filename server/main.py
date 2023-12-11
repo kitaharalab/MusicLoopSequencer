@@ -468,6 +468,7 @@ def insert_sound(projectid, songid, partid, measureid, musicloopid):
     req = request.args
     fix = req.get("fix")
     adapt = req.get("adapt")
+    
     sound_array = load_music_data("./project/" + projectid + "/songs/" + songid + "/song" + songid + ".txt")
     
     drums_list, bass_list, synth_list, sequence_list = get_sound_data()
