@@ -34,6 +34,7 @@ def insert_sound(uid, projectid, songid, partid, measureid, musicloopid):
     fix = int(fix_req) if fix_req is not None else 0
     adapt_req = params.get("adapt")
     adapt = int(adapt_req) if adapt_req is not None else 0
+
     update_song_details(
         songid,
         partid,

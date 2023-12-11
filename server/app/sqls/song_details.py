@@ -1,5 +1,6 @@
 from psycopg2.extras import DictCursor
 from util.const import fix_len
+from util.give_chord import get_chorded_loop_id
 
 from .connection import get_connection
 from .log import insert_loop_log
@@ -132,9 +133,10 @@ def update_song_details(
                 start = (measure - 1) // fix_length * fix_length + 1
                 end = start + fix_length
                 for i in range(start, end):
+                    chorded_loop_id = get_chorded_loop_id(loop_id, i)
                     cur.execute(
                         "UPDATE song_details SET loop_id=%s WHERE song_id=%s and part_id=%s and measure=%s",
-                        (loop_id, song_id, part_id, i),
+                        (chorded_loop_id, song_id, part_id, i),
                     )
         conn.commit()
 

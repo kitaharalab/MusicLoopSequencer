@@ -11,7 +11,10 @@ export default function ScatterPlot({
   partColor,
 }) {
   const [selectId, setSelectId] = useState();
-  const loopPositions = useSelector((state) => state.musicData.loopPositions);
+  const rawLoopPositions = useSelector(
+    (state) => state.musicData.loopPositions,
+  );
+  const loopPositions = rawLoopPositions.filter(({ x, y }) => x && y);
   if (
     loopPositions.length === 0 ||
     loopPositions === undefined ||
@@ -22,16 +25,17 @@ export default function ScatterPlot({
     return <g />;
   }
 
+  const r = width * 0.015;
   const xScale = d3
     .scaleLinear()
     .domain(d3.extent(loopPositions, ({ x }) => x))
-    .range([0, width])
-    .nice();
+    .range([r, width - r])
+    .nice(100);
   const yScale = d3
     .scaleLinear()
     .domain(d3.extent(loopPositions, ({ y }) => y))
-    .range([height, 0])
-    .nice();
+    .range([height - r, r])
+    .nice(100);
   const colorScale = d3
     .scaleSequential(d3.interpolate(theme.colors.gray[500], partColor))
     .domain([0, 4]);
@@ -44,7 +48,7 @@ export default function ScatterPlot({
           <circle
             key={id}
             transform={`translate(${xScale(x)} ${yScale(y)})`}
-            r={selectId === id ? "1.5%" : "1%"}
+            r={selectId === id ? r * 1.2 : r}
             stroke={
               selectId === undefined || selectId === id ? "black" : "none"
             }
