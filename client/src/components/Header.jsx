@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Heading, Spacer, Text } from "@chakra-ui/react";
+import { Box, Button, Container, Flex, Heading } from "@chakra-ui/react";
 import {
   onAuthStateChanged,
   signOut,
@@ -9,7 +9,7 @@ import React, { useEffect, useState } from "react";
 
 import { auth } from "@/api/authentication/firebase";
 
-export default function Header() {
+function AuthButton() {
   const [user, setUser] = useState(null);
 
   function handleClick() {
@@ -30,35 +30,33 @@ export default function Header() {
     return unsubscribe;
   }, []);
 
+  return user === null || user === undefined ? (
+    <Button onClick={handleClick}>Sign in</Button>
+  ) : (
+    <Button
+      onClick={() => {
+        signOut(auth);
+      }}
+    >
+      Sign Out
+    </Button>
+  );
+}
+
+export default function Header() {
   return (
-    <Heading marginBottom={3} paddingX={2}>
-      <Flex justifyContent="space-between" alignItems="center">
-        <Text
-          padding={2}
-          paddingX={4}
-          background="purple.900"
-          borderRadius="15"
-          textColor="white"
+    <Box px="4" bgColor="purple.400">
+      <Container maxW="container.lg">
+        <Flex
+          as="header"
+          py="4"
+          justifyContent="space-between"
+          alignItems="center"
         >
-          Music Loop Sequencer
-        </Text>
-        <Spacer />
-        {user === null || user === undefined ? (
-          <Box>
-            <Button onClick={handleClick}>sign in</Button>
-          </Box>
-        ) : (
-          <Box>
-            <Button
-              onClick={() => {
-                signOut(auth);
-              }}
-            >
-              Sign Out
-            </Button>
-          </Box>
-        )}
-      </Flex>
-    </Heading>
+          <Heading as="h1">Music Loop Sequencer</Heading>
+          <AuthButton />
+        </Flex>
+      </Container>
+    </Box>
   );
 }
