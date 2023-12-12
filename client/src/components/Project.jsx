@@ -1,18 +1,18 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { AddIcon } from "@chakra-ui/icons";
 import {
   Box,
   SimpleGrid,
   Card,
   CardBody,
   CardHeader,
-  IconButton,
   Text,
-  Flex,
   Button,
   Spinner,
+  Input,
+  Heading,
+  Flex,
 } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 
 import Link from "./Link/Link";
@@ -21,13 +21,53 @@ import { createProject, getProjects } from "@/api/project";
 import { setProjectId, setSongId } from "@/redux/apiParamSlice";
 import { signIn, useUser } from "./Auth";
 
+function NewProject({ onSubmit }) {
+  const user = useUser();
+  const [loading, setLoading] = useState(false);
+  const titleRef = useRef();
+
+  return (
+    <form
+      onSubmit={async (event) => {
+        event.preventDefault();
+        if (loading) {
+          return;
+        }
+        try {
+          setLoading(true);
+          const title = titleRef.current.value || null;
+          titleRef.current.value = "";
+          await onSubmit({ title });
+        } finally {
+          setLoading(false);
+        }
+      }}
+    >
+      <Flex>
+        <Input ref={titleRef} placeholder="プロジェクト名" size="lg" />
+        <Button
+          type="submit"
+          isDisabled={user == null}
+          ml="4"
+          size="lg"
+          colorScheme="purple"
+          alignSelf="center"
+          isLoading={loading}
+        >
+          作成
+        </Button>
+      </Flex>
+    </form>
+  );
+}
+
 function Project() {
   const user = useUser();
   const [projects, setProjects] = useState(null);
   const dispatch = useDispatch();
 
-  async function createNewProject() {
-    const newProjectId = await createProject();
+  async function createNewProject(project) {
+    const newProjectId = await createProject(project);
     setProjects([...projects, newProjectId]);
   }
 
@@ -46,62 +86,59 @@ function Project() {
   }, [user]);
 
   return (
-    <Box id="project">
-      <Flex>
-        <Card bgColor="darkslategrey" align="center" width="30vw">
-          <CardBody>
-            <Box>
-              <IconButton
-                type="button"
-                onClick={() => {
-                  createNewProject();
-                }}
-                isDisabled={user == null}
-                icon={<AddIcon />}
-                width="25%"
-                alignSelf="center"
-              />
-            </Box>
-            <Text color="white">プロジェクトを作る</Text>
-          </CardBody>
-        </Card>
-      </Flex>
-
-      {projects === null ? (
-        <Spinner />
-      ) : (
-        <SimpleGrid minChildWidth="30vw" spacing={4} marginTop={2}>
-          {projects.length === 0 ? (
-            <Card>
-              <CardHeader>プロジェクトをまだ作っていないようです👀</CardHeader>
-              <CardBody>
-                <Box>
-                  <Text>サインインしてプロジェクトを作成してみましょう</Text>
-                </Box>
-                {!user && (
-                  <Button
-                    variant="link"
-                    onClick={() => {
-                      signIn();
-                    }}
-                  >
-                    サインインはこちら
-                  </Button>
-                )}
-              </CardBody>
-            </Card>
-          ) : (
-            projects?.map(({ id, name }) => (
-              <Card key={id} width="30vw">
-                <Link to={`App?projectid=${id}`}>
-                  <CardHeader>{name}</CardHeader>
-                </Link>
+    <>
+      <Box mb="8">
+        <Heading size="lg" mb="4">
+          プロジェクト作成
+        </Heading>
+        <NewProject
+          onSubmit={async (project) => {
+            await createNewProject(project);
+          }}
+        />
+      </Box>
+      <Box mb="12">
+        <Heading size="lg" mb="4">
+          プロジェクト一覧
+        </Heading>
+        {projects === null ? (
+          <Spinner />
+        ) : (
+          <SimpleGrid minChildWidth="30vw" spacing={4} marginTop={2}>
+            {projects.length === 0 ? (
+              <Card>
+                <CardHeader>
+                  プロジェクトをまだ作っていないようです👀
+                </CardHeader>
+                <CardBody>
+                  <Box>
+                    <Text>サインインしてプロジェクトを作成してみましょう</Text>
+                  </Box>
+                  {!user && (
+                    <Button
+                      variant="link"
+                      onClick={() => {
+                        signIn();
+                      }}
+                    >
+                      サインインはこちら
+                    </Button>
+                  )}
+                </CardBody>
               </Card>
-            ))
-          )}
-        </SimpleGrid>
-      )}
-    </Box>
+            ) : (
+              projects?.map(({ id, name }) => (
+                <Card key={id} width="30vw">
+                  <Link to={`App?projectid=${id}`}>
+                    <CardHeader>{name}</CardHeader>
+                  </Link>
+                </Card>
+              ))
+            )}
+          </SimpleGrid>
+        )}
+      </Box>
+    </>
   );
 }
 
