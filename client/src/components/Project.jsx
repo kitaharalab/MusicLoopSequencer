@@ -9,69 +9,21 @@ import {
   IconButton,
   Text,
   Flex,
-  useDisclosure,
   Button,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
   Spinner,
 } from "@chakra-ui/react";
-import {
-  GoogleAuthProvider,
-  onAuthStateChanged,
-  signInWithPopup,
-} from "firebase/auth";
 import React, { useEffect, useState } from "react";
-import { flushSync } from "react-dom";
 import { useDispatch } from "react-redux";
-
-import { auth } from "../api/authentication/firebase";
 
 import Link from "./Link/Link";
 
 import { createProject, getProjects } from "@/api/project";
 import { setProjectId, setSongId } from "@/redux/apiParamSlice";
-
-function SignInModal({ isOpen, onOpen, onClose, setUser }) {
-  const [isPending, setPending] = useState(false);
-  const googleProvider = new GoogleAuthProvider();
-  googleProvider.setCustomParameters({
-    prompt: "select_account",
-  });
-
-  return (
-    <Modal isOpen={isOpen} onClose={onClose} isCentered>
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>サインインする</ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
-          <Button
-            disabled={isPending}
-            onClick={async () => {
-              flushSync(() => {
-                setPending(true);
-              });
-              const result = await signInWithPopup(auth, googleProvider);
-              setUser(result?.user);
-              onClose();
-            }}
-          >
-            Sign in with Google
-          </Button>
-        </ModalBody>
-      </ModalContent>
-    </Modal>
-  );
-}
+import { signIn, useUser } from "./Auth";
 
 function Project() {
+  const user = useUser();
   const [projects, setProjects] = useState(null);
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [user, setUser] = useState(auth.currentUser);
   const dispatch = useDispatch();
 
   async function createNewProject() {
@@ -85,15 +37,8 @@ function Project() {
   }
 
   useEffect(() => {
-    updateProjects();
-
-    const unsubscribe = onAuthStateChanged(auth, (authUser) => {
-      setUser(authUser);
-    });
     dispatch(setProjectId(undefined));
     dispatch(setSongId(undefined));
-
-    return unsubscribe;
   }, []);
 
   useEffect(() => {
@@ -109,12 +54,9 @@ function Project() {
               <IconButton
                 type="button"
                 onClick={() => {
-                  if (!auth.currentUser) {
-                    onOpen();
-                  } else {
-                    createNewProject();
-                  }
+                  createNewProject();
                 }}
+                isDisabled={user == null}
                 icon={<AddIcon />}
                 width="25%"
                 alignSelf="center"
@@ -124,13 +66,6 @@ function Project() {
           </CardBody>
         </Card>
       </Flex>
-
-      <SignInModal
-        isOpen={isOpen}
-        onClose={onClose}
-        onOpen={onOpen}
-        setUser={setUser}
-      />
 
       {projects === null ? (
         <Spinner />
@@ -144,7 +79,12 @@ function Project() {
                   <Text>サインインしてプロジェクトを作成してみましょう</Text>
                 </Box>
                 {!user && (
-                  <Button variant="link" onClick={onOpen}>
+                  <Button
+                    variant="link"
+                    onClick={() => {
+                      signIn();
+                    }}
+                  >
                     サインインはこちら
                   </Button>
                 )}

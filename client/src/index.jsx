@@ -12,6 +12,7 @@ import Project from "./components/Project";
 import { store } from "./redux/store";
 import reportWebVitals from "./reportWebVitals";
 import theme from "./theme";
+import { UserProvider } from "./components/Auth";
 
 const router = createBrowserRouter([
   {
@@ -66,7 +67,9 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <ChakraProvider>
-      <RouterProvider router={router} />
+      <UserProvider>
+        <RouterProvider router={router} />
+      </UserProvider>
     </ChakraProvider>
   </React.StrictMode>,
 );
