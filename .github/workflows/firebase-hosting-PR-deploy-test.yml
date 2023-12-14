@@ -1,9 +1,11 @@
-name: Deploy to Firebase Hosting on PR
+name: Deploy to Firebase Hosting on PR to origin
 "on":
   label:
     types: [created, deleted]
   pull_request_target:
     types: [labeled]
+  pull_request:
+    paths: "client/**"
 jobs:
   build_and_preview:
     runs-on: ubuntu-latest
