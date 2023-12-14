@@ -1,0 +1,45 @@
+name: Deploy to Firebase Hosting on PR
+"on":
+  pull_request:
+    paths: "client/**"
+jobs:
+  build_and_preview:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+    steps:
+      - uses: actions/checkout@v3
+      - run: yarn && yarn run build
+        env:
+          VITE_SERVER_URL: ${{ secrets.SERVER_URL }}
+          VITE_DEV_API_KEY: ${{secrets.FIREBASE_AUTH_API_KEY}}
+          VITE_DEV_AUTH_DOMAIN: ${{secrets.FIREBASE_AUTH_AUTH_DOMAIN}}
+          VITE_DEV_PROJECT_ID: ${{secrets.FIREBASE_AUTH_PROJECT_ID}}
+          VITE_DEV_STORAGE_BUCKET: ${{secrets.FIREBASE_AUTH_STORAGE_BUCKET}}
+          VITE_DEV_MESSAGING_SENDER_ID: ${{secrets.FIREBASE_AUTH_MESSAGING_SENDER_ID}}
+          VITE_DEV_APP_ID: ${{secrets.FIREBASE_AUTH_APP_ID}}
+          VITE_DEV_MEASUREMENT_ID: ${{secrets.FIREBASE_AUTH_MEASUREMENT_ID}}
+          VITE_MODE_FIX: ${{vars.VITE_MODE_FIX}}
+          VITE_MODE_STRUCTURE: ${{vars.VITE_MODE_STRUCTURE}}
+          VITE_MODE_ADAPT: ${{vars.VITE_MODE_ADAPT}}
+          VITE_MODE_EXPERIMENTAL: ${{vars.VITE_MODE_EXPERIMENTAL}}
+      - name: deploy to vdslab
+        id: deploy-to-vdslab
+        if: github.repository == 'vdslab/musicloopsequencer'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEVELOP }}"
+          projectId: project-musicloopsequencer
+          target: app
+
+      - name: deploy to loopsequencer
+        id: deploy-to-loopsequencer
+        if: steps.deploy-to-vdslab.conclusion == 'skipped'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_LOOPSEQUENCER }}"
+          projectId: loopsequencer
+          target: app
