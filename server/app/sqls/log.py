@@ -25,6 +25,7 @@ class LogEvent(Enum):
     REST_END = auto()
     ACTIVE = auto()
     INACTIVE = auto()
+    EVALUATION = auto()
 
 
 # EVENT TEXT NOT NULL,
@@ -294,3 +295,16 @@ def active_log(user_id: str, project_id: int, active: bool):
                 (event.name, user_id, project_id, active),
             )
             conn.commit()
+
+
+def evaluation_log(user_id: str, project_id: int, song_id: int, evaluation_value: int):
+    sql = """
+    insert into operation_logs (event, user_id, project_id, evaluation) values (%s, %s, %s, %s);
+    """
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                sql,
+                (LogEvent.EVALUATION.name, user_id, project_id, evaluation_value),
+            )
+        conn.commit()

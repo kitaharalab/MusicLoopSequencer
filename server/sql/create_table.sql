@@ -124,6 +124,7 @@ CREATE TABLE
         from_loop_id INTEGER,
         to_loop_id INTEGER,
         active boolean,
+        evaluation INTEGER,
         FOREIGN KEY (user_id) REFERENCES users (user_id),
         FOREIGN KEY (project_id) REFERENCES projects (id),
         FOREIGN KEY (song_id) REFERENCES songs (id),
