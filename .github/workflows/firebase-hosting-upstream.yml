@@ -1,16 +1,12 @@
-name: Deploy to Firebase Hosting on PR to origin
-on:
-  label:
-    types: [created, deleted]
-  pull_request_target:
-    types: [labeled]
-  pull_request:
+name: Deploy test on upstream merge
+"on":
+  push:
+    branches:
+      - upstream
     paths: "client/**"
 jobs:
-  build_and_preview:
+  build_and_deploy:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'pull_request' || (github.event_name == 'pull_request_target' && contains(github.event.pull_request.labels.*.name, 'safe to test'))  }}
-
     defaults:
       run:
         working-directory: client
