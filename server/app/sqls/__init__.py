@@ -18,6 +18,7 @@ from .log import (
     rest_log,
     stop_song_log,
     active_log,
+    evaluation_log,
 )
 from .loop import (
     get_loop_and_topics_from_part,
