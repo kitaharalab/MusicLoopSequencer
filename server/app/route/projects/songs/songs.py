@@ -22,6 +22,7 @@ from sqls import (
     stop_song_log,
     update_song_evaluation,
     get_excitement_curve_preset,
+    evaluation_log,
 )
 from verify import require_auth
 
@@ -141,6 +142,7 @@ def log(uid, projectid, songid):
 
     if evaluation is not None:
         update_song_evaluation(songid, evaluation)
+        evaluation_log(uid, projectid, songid, evaluation)
         return make_response(jsonify({"message": "update evaluation"}))
 
     if is_mute is None:
