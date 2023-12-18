@@ -1,15 +1,5 @@
 {
   "projects": {
-    "default": "loopsequencer"
-  },
-  "targets": {
-    "loopsequencer": {
-      "hosting": {
-        "target": [
-          "loopsequencer-kthelrab"
-        ]
-      }
-    }
-  },
-  "etags": {}
+    "default": "loopsequencer-a039e"
+  }
 }
