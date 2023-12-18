@@ -32,6 +32,7 @@ jobs:
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEVELOP }}"
+          channelId: live
           projectId: project-musicloopsequencer
           target: app
 
@@ -42,5 +43,6 @@ jobs:
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_LOOPSEQUENCER }}"
+          channelId: live
           projectId: loopsequencer
           target: app
