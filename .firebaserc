@@ -1,7 +1,7 @@
 {
   "projects": {
     "development": "project-musicloopsequencer",
-    "production": "loopsequencer"
+    "production": "loopsequencer-a039e"
   },
   "targets": {
     "project-musicloopsequencer": {
@@ -11,10 +11,10 @@
         ]
       }
     },
-    "loopsequencer": {
+    "loopsequencer-a039e": {
       "hosting": {
         "app": [
-          "loopsequencer-kthelrab"
+          "loopsequencer-a039e"
         ]
       }
     }
