@@ -1,24 +1,23 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-    xCoordinate: [],
-    yCoordinate: [],
-    rangeList: [],
-}
+  loopPositions: [],
+};
 
 export const musicDataSlice = createSlice({
-    name: 'musicData',
-    initialState,
-    reducers: {
-        setMusicData: (state, action) => {
-            const { xCoordinate, yCoordinate, rangeList } = action.payload;
-            state.xCoordinate = xCoordinate;
-            state.yCoordinate = yCoordinate;
-            state.rangeList = rangeList;
-        },
+  name: "musicData",
+  initialState,
+  reducers: {
+    setLoopPositions: (state, action) => {
+      const loopPositions = action.payload;
+      return {
+        ...state,
+        loopPositions,
+      };
     },
+  },
 });
 
-export const { setMusicData } = musicDataSlice.actions;
+export const { setLoopPositions } = musicDataSlice.actions;
 
 export default musicDataSlice.reducer;
