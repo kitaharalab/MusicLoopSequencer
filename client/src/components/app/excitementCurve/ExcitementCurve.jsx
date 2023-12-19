@@ -149,13 +149,13 @@ export default function ExcitementCurve({ measure }) {
       .range([0, curve.length])
       .nice();
     const yScale = d3.scaleLinear().domain([0, max]).range([0, height]).nice();
-    const lines = Array(canvasWidth)
+    const scaledLines = Array(canvasWidth)
       .fill(0)
       .map((_, i) => yScale(curve[Math.floor(xScale(i))]));
 
-    setLines(lines);
+    setLines(scaledLines);
     dispatch(setMax({ max: height }));
-    dispatch(setLine({ lines }));
+    dispatch(setLine({ lines: scaledLines }));
   }
 
   useEffect(() => {
