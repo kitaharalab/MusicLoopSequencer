@@ -1,5 +1,23 @@
 {
   "projects": {
-    "default": "loopsequencer-a039e"
-  }
+    "development": "project-musicloopsequencer",
+    "production": "loopsequencer-a039e"
+  },
+  "targets": {
+    "project-musicloopsequencer": {
+      "hosting": {
+        "app": [
+          "project-musicloopsequencer"
+        ]
+      }
+    },
+    "loopsequencer-a039e": {
+      "hosting": {
+        "app": [
+          "loopsequencer-a039e"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }
