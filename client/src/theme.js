@@ -4,10 +4,10 @@ const extendedTheme = extendTheme({
   colors: {
     part: {
       light: {
-        drums: theme.colors.red[200],
-        bass: theme.colors.yellow[200],
-        synth: theme.colors.green[200],
-        sequence: theme.colors.blue[200],
+        drums: theme.colors.red[100],
+        bass: theme.colors.yellow[100],
+        synth: theme.colors.green[100],
+        sequence: theme.colors.blue[100],
       },
       dark: {
         drums: theme.colors.red[500],
