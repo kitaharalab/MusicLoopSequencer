@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import { Box } from "@chakra-ui/react";
 import * as d3 from "d3";
 import React, { useEffect, useRef, useState } from "react";
@@ -55,7 +56,7 @@ function drawLineGrid(canvas, line, measure, division = 5) {
   ctx.fillStyle = "rgba(0,0,0,0.1)";
   for (let i = 0; i < measure; i++) {
     const gridLine = line.slice(i * gridWidth, (i + 1) * gridWidth);
-    const gridLineAvg = gridLine.reduce((a, b) => a + b) / gridLine.length;
+    const gridLineAvg = gridLine.reduce((a, b) => a + b, 0) / gridLine.length;
     const gridRatio = Math.ceil((gridLineAvg / height) * division);
     ctx.fillRect(
       i * gridWidth,
@@ -75,9 +76,10 @@ function drawBackground(canvas, measure) {
 }
 
 function drawLine(canvas, line) {
+  const isExperimental = Boolean(import.meta.env.VITE_MODE_EXPERIMENTAL);
   const ctx = canvas.getContext("2d");
   ctx.lineWidth = "3";
-  ctx.strokeStyle = "blue";
+  ctx.strokeStyle = isExperimental ? "gray" : "blue";
   ctx.beginPath();
   const step = 1;
   for (let i = 0; i < line.length - 1; i += step) {
@@ -96,7 +98,7 @@ export default function ExcitementCurve({ measure }) {
   const [lines, setLines] = useState([]);
   const { projectId, songId } = useSelector(getApiParams);
 
-  function resize() {
+  function drawItems() {
     const canvas = canvasRef.current;
     if (!canvas) {
       return;
@@ -109,6 +111,24 @@ export default function ExcitementCurve({ measure }) {
     drawBackground(canvas, measure);
     drawLine(canvas, lines);
     drawLineGrid(canvas, lines, measure);
+    const isExperimental = Boolean(import.meta.env.VITE_MODE_EXPERIMENTAL);
+    if (isExperimental) {
+      ctx.fillStyle = "rgba(0,0,0,0.1)";
+      ctx.fillRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+    }
+  }
+
+  function resize() {
+    const canvas = canvasRef.current;
+    if (!canvas) {
+      return;
+    }
+    const ctx = canvas?.getContext("2d");
+    ctx.canvas.height = wrapperRef.current.offsetHeight;
+    const width = wrapperRef.current.clientWidth ?? measure * 36;
+    const canvasWidth = (width / measure) * measure;
+    ctx.canvas.width = canvasWidth;
+    drawItems();
   }
 
   async function setExcitementCurve() {
@@ -157,10 +177,7 @@ export default function ExcitementCurve({ measure }) {
   }, [songId]);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    drawBackground(canvas, measure);
-    drawLine(canvas, lines);
-    drawLineGrid(canvas, lines, measure);
+    drawItems();
   }, [lines]);
 
   function updatePosition(x, y) {
@@ -232,6 +249,18 @@ export default function ExcitementCurve({ measure }) {
     dispatch(setLine({ lines }));
   };
 
+  const isExperimental = Boolean(import.meta.env.VITE_MODE_EXPERIMENTAL);
+  const drawFuncs = isExperimental
+    ? {}
+    : {
+        onMouseDown: startDraw,
+        onMouseUp: stopDraw,
+        onMouseMove: draw,
+        onTouchStart: startDraw,
+        onTouchEnd: stopDraw,
+        onTouchMove: draw,
+      };
+
   return (
     <Box ref={wrapperRef} height="100%" onMouseLeave={stopDraw}>
       <canvas
@@ -239,12 +268,7 @@ export default function ExcitementCurve({ measure }) {
         width="100px"
         height="100px"
         id="canvas1"
-        onMouseDown={startDraw}
-        onMouseUp={stopDraw}
-        onMouseMove={draw}
-        onTouchStart={startDraw}
-        onTouchEnd={stopDraw}
-        onTouchMove={draw}
+        {...drawFuncs}
       />
     </Box>
   );
