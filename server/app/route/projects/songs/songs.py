@@ -29,6 +29,7 @@ from verify import require_auth
 from .create_music import createMusic
 from .section import music_section_info_from_section_array
 from .util import format_list, name_to_id
+from cache import cache
 
 songs = Blueprint("songs", __name__)
 
@@ -102,6 +103,7 @@ def get_preset(project_id):
 
 # TODO: 誤字の修正
 @songs.route("/projects/<int:projectid>/songs/<int:songid>", methods=["GET"])
+@cache.memoize()
 def get_infomation_song(projectid, songid):
     part_name2index = {"Drums": 0, "Bass": 1, "Synth": 2, "Sequence": 3}
     parts = get_parts()
