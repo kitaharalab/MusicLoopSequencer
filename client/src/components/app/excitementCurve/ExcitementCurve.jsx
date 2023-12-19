@@ -160,6 +160,7 @@ export default function ExcitementCurve({ measure }) {
 
   useEffect(() => {
     window.addEventListener("resize", () => {
+      setExcitementCurve();
       resize();
     });
 
@@ -167,9 +168,7 @@ export default function ExcitementCurve({ measure }) {
 
     resize();
 
-    return window.removeEventListener("resize", () => {
-      resize();
-    });
+    return window.removeEventListener("resize", () => resize());
   }, []);
 
   useEffect(() => {
