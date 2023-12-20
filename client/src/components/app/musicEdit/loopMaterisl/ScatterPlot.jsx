@@ -1,20 +1,51 @@
 import { theme } from "@chakra-ui/react";
 import * as d3 from "d3";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
+import { getLoopByChord } from "@/api/loop";
+import selectBlock from "@/api/selectBlock";
+
 export default function ScatterPlot({
-  width,
-  height,
+  boxSize,
   handleOnClick,
   setInsertLoopId,
   partColor,
+  partId,
 }) {
-  const [selectId, setSelectId] = useState();
-  const rawLoopPositions = useSelector(
-    (state) => state.musicData.loopPositions,
-  );
-  const loopPositions = rawLoopPositions.filter(({ x, y }) => x && y);
+  const { width, height } = boxSize;
+  const { loopId } = useSelector((state) => state.sounds);
+  const [selectId, setSelectId] = useState(loopId);
+  const [positions, setPositions] = useState([]);
+
+  useEffect(() => {
+    (async () => {
+      const loopPositions = await selectBlock(partId);
+      setPositions(loopPositions);
+
+      if (loopId == null) {
+        setSelectId(undefined);
+        return;
+      }
+
+      const loopData = await getLoopByChord(partId, loopId);
+      if (!loopData) {
+        setSelectId(undefined);
+        return;
+      }
+
+      const loopIds = loopPositions.map(({ id }) => id);
+      const chord1LoopId = loopData[1];
+
+      if (loopIds.includes(chord1LoopId)) {
+        setSelectId(chord1LoopId);
+      } else {
+        setSelectId(undefined);
+      }
+    })();
+  }, [loopId, partId]);
+
+  const loopPositions = positions.filter(({ x, y }) => x && y);
   if (
     loopPositions.length === 0 ||
     loopPositions === undefined ||
@@ -25,7 +56,7 @@ export default function ScatterPlot({
     return <g />;
   }
 
-  const r = width * 0.015;
+  const r = width * 0.016;
   const xScale = d3
     .scaleLinear()
     .domain(d3.extent(loopPositions, ({ x }) => x))
@@ -54,8 +85,8 @@ export default function ScatterPlot({
             stroke={
               selectId === undefined || selectId === id ? "black" : "none"
             }
-            strokeWidth={1}
-            strokeOpacity={0.5}
+            strokeWidth={2}
+            strokeOpacity={0.8}
             fill={fillColor}
             fillOpacity={selectId === undefined || selectId === id ? 1 : 0.5}
             onClick={() => {
