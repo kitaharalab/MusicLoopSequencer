@@ -47,7 +47,12 @@ def get_loop_id_by_chord_from_name(loop_name: str):
             cur.execute(sql, (loop_name,))
             result = cur.fetchall()
             data = [dict(row) for row in result]
-            response = {row["chord"]: row["id"] for row in data}
+            response = dict()
+            for row in data:
+                if row["chord"] is None:
+                    response[1] = row["id"]
+                else:
+                    response[row["chord"]] = row["id"]
 
     return response
 
