@@ -28,6 +28,8 @@ from .loop import (
     get_loop_topics,
     get_loop_wav_from_loop_ids_by_measure_part,
     get_loop_id_from_id_chord,
+    get_loop_id_by_chord_from_name,
+    get_loop_name_from_id,
 )
 from .part import get_part_name, get_parts
 from .project import add_project, get_project, get_project_song_ids, get_projects
