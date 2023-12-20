@@ -4,6 +4,7 @@ const initialState = {
   parts: [],
   part: null,
   measure: null,
+  loopId: null,
 };
 
 export const soundsSlice = createSlice({
@@ -14,12 +15,10 @@ export const soundsSlice = createSlice({
       state.parts = action.payload;
     },
     setSelectedLoop: (state, action) => {
-      const { part, measure } = action.payload;
-      return {
-        ...state,
-        part,
-        measure,
-      };
+      const { part, measure, loopId } = action.payload;
+      state.loopId = loopId;
+      state.measure = measure;
+      state.part = part;
     },
   },
 });
