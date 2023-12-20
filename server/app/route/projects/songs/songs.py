@@ -95,6 +95,7 @@ def get_infomation_songs(projectid):
 
 
 @songs.route("/projects/<int:project_id>/songs/preset", methods=["GET"])
+@cache.memoize()
 def get_preset(project_id):
     response = get_excitement_curve_preset()
 
