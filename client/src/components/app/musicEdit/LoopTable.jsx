@@ -8,8 +8,7 @@ import {
   Tbody,
   useTheme,
 } from "@chakra-ui/react";
-import * as d3 from "d3";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import getParts from "@/api/getParts";
@@ -29,9 +28,11 @@ export default function LoopTable({ measure }) {
     measure: null,
     part: null,
   };
-  const [selectMeasurePart, setSelectMeasurePart] = useState(
+
+  const [hoverMeasurePart, setHoverMeasurePart] = useState(
     initSelectMeasurePart,
   );
+  const selectMeasurePart = useRef(initSelectMeasurePart);
 
   useEffect(() => {
     async function updateSongDetail() {
@@ -39,7 +40,7 @@ export default function LoopTable({ measure }) {
       setParts(songDetail);
     }
     updateSongDetail();
-    setSelectMeasurePart(initSelectMeasurePart);
+    selectMeasurePart.current = initSelectMeasurePart;
 
     return () => {
       dispatch(setLoopPositions([]));
@@ -66,16 +67,6 @@ export default function LoopTable({ measure }) {
 
   const measureRange = [...Array(measure)].map((_, i) => i);
 
-  const baseColor = partsInfo.map(
-    ({ name }) => theme.colors.part.light[name.toLowerCase()],
-  );
-  const colorScale = d3.scaleOrdinal().range(baseColor);
-
-  const borderColor = partsInfo.map(
-    ({ name }) => theme.colors.part.dark[name.toLowerCase()],
-  );
-  const borderColorScale = d3.scaleOrdinal().range(borderColor);
-
   const colorFilter = (select) => (select ? null : "contrast(60%)");
   async function handleOnClickMeasurePart(event) {
     const { dataset } = event.target;
@@ -93,13 +84,13 @@ export default function LoopTable({ measure }) {
       part,
     };
     const selectSame =
-      JSON.stringify(selectMeasurePart) ===
+      JSON.stringify(selectMeasurePart.current) ===
       JSON.stringify(newSelectMeasurePart);
-    const selectSamePart = part === selectMeasurePart.part;
+    const selectSamePart = part === selectMeasurePart.current.part;
 
-    setSelectMeasurePart(
-      selectSame ? initSelectMeasurePart : newSelectMeasurePart,
-    );
+    selectMeasurePart.current = selectSame
+      ? initSelectMeasurePart
+      : newSelectMeasurePart;
 
     dispatch(setMeasure(measureId + 1));
     dispatch(setPartId(part));
@@ -115,6 +106,19 @@ export default function LoopTable({ measure }) {
 
     const musicData = await selectBlock(part);
     dispatch(setLoopPositions(musicData));
+  }
+
+  function onLoopHover(e) {
+    const { dataset } = e.target;
+    const part = JSON.parse(dataset.part);
+    const measureId = JSON.parse(dataset.measure) - 1;
+
+    const newSelectMeasurePart = {
+      measure: measureId,
+      part,
+    };
+
+    setHoverMeasurePart(newSelectMeasurePart);
   }
 
   return (
@@ -146,35 +150,54 @@ export default function LoopTable({ measure }) {
           </Tr>
         </Thead>
         <Tbody>
-          {parts?.map(({ partId, sounds }) => (
-            <Tr key={partId} bgColor="white">
-              <Td position="sticky" left={0} zIndex="docked" bgColor="white">
-                {partsInfo.find(({ id }) => id === partId).name}
-              </Td>
-              {sounds.map((loopId, i) => {
-                const exist = loopId != null;
-                const isSelect =
-                  selectMeasurePart.measure === i &&
-                  selectMeasurePart.part === partId;
+          {parts?.map(({ partId, sounds }) => {
+            const partName = partsInfo.find(({ id }) => id === partId).name;
+            return (
+              <Tr key={partId} bgColor="white">
+                <Td position="sticky" left={0} zIndex="docked" bgColor="white">
+                  {partName}
+                </Td>
+                {sounds.map((loopId, i) => {
+                  const exist = loopId != null;
+                  const isSelect =
+                    selectMeasurePart.current.measure === i &&
+                    selectMeasurePart.current.part === partId;
+                  const isHover =
+                    hoverMeasurePart.measure === i &&
+                    hoverMeasurePart.part === partId;
+                  const isBackgroundHighlight = isSelect || isHover || exist;
 
-                return (
-                  <Td
-                    key={`${partId}-${i}`}
-                    bgColor={exist || isSelect ? colorScale(partId) : "white"}
-                    borderColor={borderColorScale(partId)}
-                    borderWidth={isSelect ? 3 : 1}
-                    borderRadius="8px"
-                    filter={colorFilter(isSelect || !exist)}
-                    data-part={partId}
-                    data-measure={i + 1}
-                    data-exist={exist}
-                    data-loop={loopId}
-                    onClick={handleOnClickMeasurePart}
-                  />
-                );
-              })}
-            </Tr>
-          ))}
+                  return (
+                    <Td
+                      key={`${partId}-${i}`}
+                      bgColor={
+                        isBackgroundHighlight
+                          ? theme.colors.part.light[partName.toLowerCase()]
+                          : "white"
+                      }
+                      borderColor={
+                        isSelect
+                          ? theme.colors.part.dark[partName.toLowerCase()]
+                          : "gray.200"
+                      }
+                      borderWidth={3}
+                      borderRadius="8px"
+                      filter={colorFilter(isSelect || isHover || !exist)}
+                      data-part={partId}
+                      data-measure={i + 1}
+                      data-exist={exist}
+                      data-loop={loopId}
+                      onClick={handleOnClickMeasurePart}
+                      onMouseEnter={onLoopHover}
+                      onMouseLeave={() =>
+                        setHoverMeasurePart(initSelectMeasurePart)
+                      }
+                    />
+                  );
+                })}
+              </Tr>
+            );
+          })}
         </Tbody>
       </Table>
     </TableContainer>

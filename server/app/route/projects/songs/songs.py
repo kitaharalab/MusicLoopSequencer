@@ -104,7 +104,6 @@ def get_preset(project_id):
 
 # TODO: 誤字の修正
 @songs.route("/projects/<int:projectid>/songs/<int:songid>", methods=["GET"])
-@cache.memoize()
 def get_infomation_song(projectid, songid):
     part_name2index = {"Drums": 0, "Bass": 1, "Synth": 2, "Sequence": 3}
     parts = get_parts()
