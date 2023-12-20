@@ -116,23 +116,42 @@ function Content({ handlePlayAudio }) {
   }
 
   const insertLoop = async (loopId) => {
+    if (partId == null || measure == null) {
+      insertToast({
+        title: "操作する対象の音素材が選択されていません",
+        description: "曲を作成した後，右側の表からどれかを選択してください",
+        status: "warning",
+        position: "bottom-left",
+        isClosable: true,
+      });
+      return;
+    }
+    if (loopId == null) {
+      insertToast({
+        title: "音素材が選択されていません",
+        description:
+          "右側の表から音素材を選択した後　左側に表示される図から音素材を選択してください",
+        status: "warning",
+        position: "bottom-left",
+        isClosable: true,
+      });
+      return;
+    }
     const inserting = insertSound(projectId, songId, partId, measure, loopId);
     insertToast.promise(inserting, {
       success: {
-        title: "Inserted",
-        description: "Loop material inserted successfully",
+        title: "追加完了",
         position: "bottom-left",
         isClosable: true,
       },
       error: {
-        title: "Error",
-        description: "Loop material insertion failed",
+        title: "追加失敗",
+        description: "操作に失敗しました．再度試すか，リロードしてください",
         position: "bottom-left",
         isClosable: true,
       },
       loading: {
-        title: "Inserting",
-        description: "Loop material is being inserted",
+        title: "追加処理中......",
         position: "bottom-left",
         isClosable: false,
       },
@@ -147,25 +166,30 @@ function Content({ handlePlayAudio }) {
 
   async function onDeleteLoop() {
     if (partId == null || measure == null) {
+      insertToast({
+        title: "操作する対象の音素材が選択されていません",
+        description: "右側の表から削除したいものを選択してください",
+        status: "warning",
+        position: "bottom-left",
+        isClosable: true,
+      });
       return;
     }
     const deleting = deleteLoop(projectId, songId, measure, partId);
     deleteToast.promise(deleting, {
       success: {
-        title: "Deleted",
-        description: "Loop material deleted successfully",
+        title: "削除完了",
         position: "bottom-left",
         isClosable: true,
       },
       error: {
-        title: "Error",
-        description: "Loop material deletion failed",
+        title: "削除失敗",
+        description: "操作に失敗しました．再度試すか，リロードしてください",
         position: "bottom-left",
         isClosable: true,
       },
       loading: {
-        title: "Deleting",
-        description: "Loop material is being deleted",
+        title: "削除処理中...",
         position: "bottom-left",
         isClosable: false,
       },
