@@ -189,7 +189,7 @@ function Content({ handlePlayAudio }) {
         isClosable: true,
       },
       loading: {
-        title: "削除処理中...",
+        title: "削除処理中......",
         position: "bottom-left",
         isClosable: false,
       },
