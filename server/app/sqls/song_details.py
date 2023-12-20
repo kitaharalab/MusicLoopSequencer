@@ -45,7 +45,6 @@ def get_song_details(song_id):
     return details_by_part_id
 
 
-@cache.memoize()
 def get_song_loop_ids(song_id):
     response = None
     with get_connection() as conn:
