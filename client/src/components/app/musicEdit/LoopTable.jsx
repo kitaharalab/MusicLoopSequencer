@@ -27,6 +27,7 @@ export default function LoopTable({ measure }) {
   const initSelectMeasurePart = {
     measure: null,
     part: null,
+    loopId: null,
   };
 
   const [hoverMeasurePart, setHoverMeasurePart] = useState(
@@ -82,30 +83,14 @@ export default function LoopTable({ measure }) {
     const newSelectMeasurePart = {
       measure: measureId,
       part,
+      loopId,
     };
-    const selectSame =
-      JSON.stringify(selectMeasurePart.current) ===
-      JSON.stringify(newSelectMeasurePart);
-    const selectSamePart = part === selectMeasurePart.current.part;
 
-    selectMeasurePart.current = selectSame
-      ? initSelectMeasurePart
-      : newSelectMeasurePart;
+    selectMeasurePart.current = newSelectMeasurePart;
 
     dispatch(setMeasure(measureId + 1));
     dispatch(setPartId(part));
-    dispatch(
-      setSelectedLoop(
-        selectSame ? initSelectMeasurePart : newSelectMeasurePart,
-      ),
-    );
-
-    if (selectSamePart) {
-      return;
-    }
-
-    const musicData = await selectBlock(part);
-    dispatch(setLoopPositions(musicData));
+    dispatch(setSelectedLoop(newSelectMeasurePart));
   }
 
   function onLoopHover(e) {

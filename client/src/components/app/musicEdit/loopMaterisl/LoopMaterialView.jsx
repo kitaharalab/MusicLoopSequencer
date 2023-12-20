@@ -13,7 +13,6 @@ import {
   useToast,
   useTheme,
 } from "@chakra-ui/react";
-import axios from "axios";
 import * as d3 from "d3";
 import React, { useEffect, useRef, useState } from "react";
 // import onMusicLoop from "./onMusicLoop";
@@ -29,6 +28,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import ScatterPlot from "./ScatterPlot";
 
+import getParts from "@/api/getParts";
 import { sendLoopMuteLog } from "@/api/log";
 import { onMusicLoop, insertSound, deleteLoop } from "@/api/loop";
 import { getApiParams, setSongId } from "@/redux/apiParamSlice";
@@ -70,11 +70,10 @@ function Chart({ zoomState, handleOnClick, setInsertLoopId, part }) {
   const [parts, setParts] = useState([]);
 
   useEffect(() => {
-    const url = `${import.meta.env.VITE_SERVER_URL}/parts`;
-    axios.get(url).then((response) => {
-      const { data } = response;
-      setParts(data.map(({ id, name }) => ({ id, name })));
-    });
+    (async () => {
+      const partData = await getParts();
+      setParts(partData);
+    })();
   }, []);
 
   const theme = useTheme();
@@ -88,11 +87,11 @@ function Chart({ zoomState, handleOnClick, setInsertLoopId, part }) {
   return (
     <ZoomableChart width={svgWidth} height={svgHeight} zoomState={zoomState}>
       <ScatterPlot
-        width={svgWidth}
-        height={svgHeight}
+        boxSize={{ width: svgWidth, height: svgHeight }}
         handleOnClick={handleOnClick}
         setInsertLoopId={setInsertLoopId}
         partColor={partColor}
+        partId={part}
       />
     </ZoomableChart>
   );
