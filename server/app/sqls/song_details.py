@@ -6,6 +6,7 @@ from .connection import get_connection
 from .log import insert_loop_log
 from .part import get_parts
 from .song import get_project_id_from_song_id
+from cache import cache
 
 
 def get_song_details(song_id):
