@@ -29,6 +29,7 @@ from verify import require_auth
 from .create_music import createMusic
 from .section import music_section_info_from_section_array
 from .util import format_list, name_to_id
+from cache import cache
 
 songs = Blueprint("songs", __name__)
 
@@ -94,6 +95,7 @@ def get_infomation_songs(projectid):
 
 
 @songs.route("/projects/<int:project_id>/songs/preset", methods=["GET"])
+@cache.memoize()
 def get_preset(project_id):
     response = get_excitement_curve_preset()
 
