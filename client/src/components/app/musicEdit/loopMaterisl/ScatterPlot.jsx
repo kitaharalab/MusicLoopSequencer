@@ -1,6 +1,6 @@
 import { theme } from "@chakra-ui/react";
 import * as d3 from "d3";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 
 import { getLoopByChord } from "@/api/loop";
@@ -17,6 +17,7 @@ export default function ScatterPlot({
   const { loopId } = useSelector((state) => state.sounds);
   const [selectId, setSelectId] = useState(loopId);
   const [positions, setPositions] = useState([]);
+  const [hoverId, setHoverId] = useState();
 
   useEffect(() => {
     (async () => {
@@ -81,12 +82,14 @@ export default function ScatterPlot({
           <circle
             key={id}
             transform={`translate(${xScale(x)} ${yScale(y)})`}
-            r={selectId === id ? r * 1.2 : r}
-            stroke={
-              selectId === undefined || selectId === id ? "black" : "none"
-            }
+            r={selectId === id || hoverId === id ? r * 1.7 : r}
+            stroke="black"
             strokeWidth={2}
-            strokeOpacity={0.8}
+            strokeOpacity={
+              selectId === undefined || selectId === id || hoverId === id
+                ? 0.8
+                : 0.2
+            }
             fill={fillColor}
             fillOpacity={selectId === undefined || selectId === id ? 1 : 0.5}
             onClick={() => {
@@ -96,6 +99,12 @@ export default function ScatterPlot({
               if (!reSelect) {
                 handleOnClick(id);
               }
+            }}
+            onMouseOver={() => {
+              setHoverId(id);
+            }}
+            onMouseLeave={() => {
+              setHoverId(undefined);
             }}
           />
         );
