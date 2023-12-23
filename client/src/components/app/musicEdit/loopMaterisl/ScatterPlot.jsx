@@ -1,6 +1,5 @@
-import { theme } from "@chakra-ui/react";
 import * as d3 from "d3";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 import { getLoopByChord } from "@/api/loop";
@@ -10,8 +9,8 @@ export default function ScatterPlot({
   boxSize,
   handleOnClick,
   setInsertLoopId,
-  partColor,
   partId,
+  colorScale,
 }) {
   const { width, height } = boxSize;
   const { loopId } = useSelector((state) => state.sounds);
@@ -68,11 +67,6 @@ export default function ScatterPlot({
     .domain(d3.extent(loopPositions, ({ y }) => y))
     .range([height - r, r])
     .nice(100);
-
-  const interpolate = d3.interpolate(theme.colors.gray[900], partColor);
-  const colorScale = d3
-    .scaleSequential((t) => interpolate(t ** 0.5))
-    .domain([0, 4]);
 
   return (
     <g>
