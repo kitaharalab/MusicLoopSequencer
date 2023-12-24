@@ -57,7 +57,7 @@ export default function ScatterPlot({
     return <g />;
   }
 
-  const r = width * 0.016;
+  const r = width * 0.02;
   const xScale = d3
     .scaleLinear()
     .domain(d3.extent(loopPositions, ({ x }) => x))
