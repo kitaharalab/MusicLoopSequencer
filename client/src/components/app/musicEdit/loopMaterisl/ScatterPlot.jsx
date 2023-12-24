@@ -10,7 +10,7 @@ export default function ScatterPlot({
   handleOnClick,
   setInsertLoopId,
   partId,
-  colorScale,
+  colors,
 }) {
   const { width, height } = boxSize;
   const { loopId } = useSelector((state) => state.sounds);
@@ -51,12 +51,13 @@ export default function ScatterPlot({
     loopPositions === undefined ||
     loopPositions === null ||
     !width ||
-    !height
+    !height ||
+    !colors
   ) {
     return <g />;
   }
 
-  const r = width * 0.016;
+  const r = width * 0.02;
   const xScale = d3
     .scaleLinear()
     .domain(d3.extent(loopPositions, ({ x }) => x))
@@ -70,39 +71,36 @@ export default function ScatterPlot({
 
   return (
     <g>
-      {loopPositions.map(({ x, y, id, excitement }) => {
-        const fillColor = colorScale(excitement);
-        return (
-          <circle
-            key={id}
-            transform={`translate(${xScale(x)} ${yScale(y)})`}
-            r={selectId === id || hoverId === id ? r * 1.7 : r}
-            stroke="black"
-            strokeWidth={2}
-            strokeOpacity={
-              selectId === undefined || selectId === id || hoverId === id
-                ? 0.8
-                : 0.2
+      {loopPositions.map(({ x, y, id, excitement }) => (
+        <circle
+          key={id}
+          transform={`translate(${xScale(x)} ${yScale(y)})`}
+          r={selectId === id || hoverId === id ? r * 1.7 : r}
+          stroke="black"
+          strokeWidth={2}
+          strokeOpacity={
+            selectId === undefined || selectId === id || hoverId === id
+              ? 0.8
+              : 0.2
+          }
+          fill={colors[excitement]}
+          fillOpacity={selectId === undefined || selectId === id ? 1 : 0.5}
+          onClick={() => {
+            const reSelect = selectId === id;
+            setSelectId(reSelect ? undefined : id);
+            setInsertLoopId(id);
+            if (!reSelect) {
+              handleOnClick(id);
             }
-            fill={fillColor}
-            fillOpacity={selectId === undefined || selectId === id ? 1 : 0.5}
-            onClick={() => {
-              const reSelect = selectId === id;
-              setSelectId(reSelect ? undefined : id);
-              setInsertLoopId(id);
-              if (!reSelect) {
-                handleOnClick(id);
-              }
-            }}
-            onMouseOver={() => {
-              setHoverId(id);
-            }}
-            onMouseLeave={() => {
-              setHoverId(undefined);
-            }}
-          />
-        );
-      })}
+          }}
+          onMouseOver={() => {
+            setHoverId(id);
+          }}
+          onMouseLeave={() => {
+            setHoverId(undefined);
+          }}
+        />
+      ))}
     </g>
   );
 }
