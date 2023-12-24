@@ -65,11 +65,8 @@ function LegendAxis({ legendColor, x, fontSize }) {
   ));
 }
 
-export default function Legend({ partColor, property, colorScale, colors }) {
+export default function Legend({ partColor, property, colors }) {
   const { boxSize, margin, barSize, padding, fontSize } = property;
-  // const domain = colorScale.domain();
-  // const colors = d3.range(domain[0], domain[1] + 1).map((i) => colorScale(i));
-  // const legendColor = d3.scaleQuantize([0, 4], colors);
   const x = d3
     .scaleLinear()
     .domain([-1, (colors?.length ?? 5) - 1])
