@@ -82,14 +82,10 @@ function Chart({ zoomState, handleOnClick, setInsertLoopId, part }) {
 
   const partName = parts.find(({ id }) => id === part)?.name?.toLowerCase();
   const partColor = partName ? theme.colors.part.light[partName] : null;
+  const colors = theme.colors.part.sequence[partName] ?? null;
 
   const svgWidth = 500;
   const svgHeight = 500;
-
-  const interpolate = d3.interpolate(theme.colors.gray[900], partColor);
-  const colorScale = d3
-    .scaleSequential((t) => interpolate(t ** 0.5))
-    .domain([0, 4]);
 
   function remToPx(rem) {
     return (
@@ -119,11 +115,7 @@ function Chart({ zoomState, handleOnClick, setInsertLoopId, part }) {
 
   return (
     <Stack spacing={3}>
-      <Legend
-        partColor={partColor}
-        property={legendProperty}
-        colorScale={colorScale}
-      />
+      <Legend partColor={partColor} property={legendProperty} colors={colors} />
       <ZoomableChart width={svgWidth} height={svgHeight} zoomState={zoomState}>
         <ScatterPlot
           boxSize={{ width: svgWidth, height: svgHeight }}
@@ -131,7 +123,7 @@ function Chart({ zoomState, handleOnClick, setInsertLoopId, part }) {
           setInsertLoopId={setInsertLoopId}
           partColor={partColor}
           partId={part}
-          colorScale={colorScale}
+          colors={colors}
         />
       </ZoomableChart>
     </Stack>
