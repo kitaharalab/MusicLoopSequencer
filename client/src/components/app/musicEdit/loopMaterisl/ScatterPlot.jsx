@@ -11,6 +11,7 @@ export default function ScatterPlot({
   setInsertLoopId,
   partId,
   colorScale,
+  colors,
 }) {
   const { width, height } = boxSize;
   const { loopId } = useSelector((state) => state.sounds);
@@ -51,7 +52,8 @@ export default function ScatterPlot({
     loopPositions === undefined ||
     loopPositions === null ||
     !width ||
-    !height
+    !height ||
+    !colors
   ) {
     return <g />;
   }
@@ -84,7 +86,7 @@ export default function ScatterPlot({
                 ? 0.8
                 : 0.2
             }
-            fill={fillColor}
+            fill={colors[excitement]}
             fillOpacity={selectId === undefined || selectId === id ? 1 : 0.5}
             onClick={() => {
               const reSelect = selectId === id;

@@ -36,25 +36,23 @@ function LegendTitle({ margin, padding, fontSize, boxSize }) {
 }
 
 function LegendContent({ legendColor, padding, x, barSize }) {
-  return legendColor
-    .range()
-    .map((color, i) => (
-      <rect
-        key={color}
-        x={x(i - 1)}
-        y={padding}
-        width={x(i) - x(i - 1)}
-        height={barSize.height - padding * 2}
-        fill={color}
-      />
-    ));
+  return legendColor.map((color, i) => (
+    <rect
+      key={color}
+      x={x(i - 1)}
+      y={padding}
+      width={x(i) - x(i - 1)}
+      height={barSize.height - padding * 2}
+      fill={color}
+    />
+  ));
 }
 
 function LegendAxis({ legendColor, x, fontSize }) {
-  return legendColor.range().map((threshold, i) => (
+  return legendColor.map((color, i) => (
     <text
       transform={`translate(${x(i - 1)}, 0)`}
-      key={threshold}
+      key={color}
       x={(x(i) - x(i - 1)) / 2}
       y={0}
       textAnchor="middle"
@@ -67,14 +65,14 @@ function LegendAxis({ legendColor, x, fontSize }) {
   ));
 }
 
-export default function Legend({ partColor, property, colorScale }) {
+export default function Legend({ partColor, property, colorScale, colors }) {
   const { boxSize, margin, barSize, padding, fontSize } = property;
-  const domain = colorScale.domain();
-  const colors = d3.range(domain[0], domain[1] + 1).map((i) => colorScale(i));
-  const legendColor = d3.scaleQuantize([0, 4], colors);
+  // const domain = colorScale.domain();
+  // const colors = d3.range(domain[0], domain[1] + 1).map((i) => colorScale(i));
+  // const legendColor = d3.scaleQuantize([0, 4], colors);
   const x = d3
     .scaleLinear()
-    .domain([-1, legendColor.range().length - 1])
+    .domain([-1, (colors?.length ?? 5) - 1])
     .rangeRound([margin.left, boxSize.width - margin.right]);
 
   return (
@@ -82,7 +80,7 @@ export default function Legend({ partColor, property, colorScale }) {
       viewBox={`0 0 ${boxSize.width} ${boxSize.height}`}
       style={{ userSelect: "none" }}
     >
-      {partColor && (
+      {partColor && colors && (
         <>
           <g transform={`translate(0, ${padding})`}>
             <LegendTitle
@@ -94,14 +92,14 @@ export default function Legend({ partColor, property, colorScale }) {
           </g>
           <g transform={`translate(0, ${margin.top})`}>
             <LegendContent
-              legendColor={legendColor}
+              legendColor={colors}
               padding={padding}
               x={x}
               barSize={barSize}
             />
           </g>
           <g transform={`translate(0, ${margin.top + barSize.height})`}>
-            <LegendAxis legendColor={legendColor} x={x} fontSize={fontSize} />
+            <LegendAxis legendColor={colors} x={x} fontSize={fontSize} />
           </g>
         </>
       )}
