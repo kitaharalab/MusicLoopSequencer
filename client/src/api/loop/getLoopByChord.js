@@ -8,6 +8,9 @@ export default async function getLoopByChord(partId, musicLoopId) {
 
   const response = await axios.get(url);
   const { data } = response;
+  if (!data[1]) {
+    data[1] = musicLoopId;
+  }
 
   return data;
 }
