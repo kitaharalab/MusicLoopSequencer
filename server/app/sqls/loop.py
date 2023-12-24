@@ -49,10 +49,7 @@ def get_loop_id_by_chord_from_name(loop_name: str):
             data = [dict(row) for row in result]
             response = dict()
             for row in data:
-                if row["chord"] is None:
-                    response[1] = row["id"]
-                else:
-                    response[row["chord"]] = row["id"]
+                response[row["chord"]] = row["id"]
 
     return response
 
