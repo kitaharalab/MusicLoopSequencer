@@ -12,6 +12,7 @@ import {
   Divider,
   useToast,
   useTheme,
+  Stack,
 } from "@chakra-ui/react";
 import * as d3 from "d3";
 import React, { useEffect, useRef, useState } from "react";
@@ -26,6 +27,7 @@ import {
 } from "react-icons/bi";
 import { useDispatch, useSelector } from "react-redux";
 
+import Legend from "./Legend";
 import ScatterPlot from "./ScatterPlot";
 
 import getParts from "@/api/getParts";
@@ -79,21 +81,60 @@ function Chart({ zoomState, handleOnClick, setInsertLoopId, part }) {
   const theme = useTheme();
 
   const partName = parts.find(({ id }) => id === part)?.name?.toLowerCase();
-  const partColor = partName ? theme.colors.part.light[partName] : "red";
+  const partColor = partName ? theme.colors.part.light[partName] : null;
 
   const svgWidth = 500;
   const svgHeight = 500;
 
+  const interpolate = d3.interpolate(theme.colors.gray[900], partColor);
+  const colorScale = d3
+    .scaleSequential((t) => interpolate(t ** 0.5))
+    .domain([0, 4]);
+
+  function remToPx(rem) {
+    return (
+      rem * parseFloat(getComputedStyle(document.documentElement).fontSize)
+    );
+  }
+
+  const legendFontSize = remToPx(1.5);
+  const legendSize = { width: svgWidth, height: legendFontSize * 4 };
+  const legendMargin = {
+    top: legendSize.height / 4.0,
+    bottom: legendSize.height / 4.0,
+    left: legendSize.width / 16.0,
+    right: legendSize.width / 16.0,
+  };
+  const legendBarSize = {
+    width: legendSize.width - legendMargin.left - legendMargin.right,
+    height: legendFontSize * 2,
+  };
+  const legendProperty = {
+    boxSize: legendSize,
+    margin: legendMargin,
+    barSize: legendBarSize,
+    padding: legendSize.height / 16.0,
+    fontSize: legendFontSize,
+  };
+
   return (
-    <ZoomableChart width={svgWidth} height={svgHeight} zoomState={zoomState}>
-      <ScatterPlot
-        boxSize={{ width: svgWidth, height: svgHeight }}
-        handleOnClick={handleOnClick}
-        setInsertLoopId={setInsertLoopId}
+    <Stack spacing={3}>
+      <Legend
         partColor={partColor}
-        partId={part}
+        property={legendProperty}
+        colorScale={colorScale}
       />
-    </ZoomableChart>
+      <ZoomableChart width={svgWidth} height={svgHeight} zoomState={zoomState}>
+        <ScatterPlot
+          boxSize={{ width: svgWidth, height: svgHeight }}
+          handleOnClick={handleOnClick}
+          setInsertLoopId={setInsertLoopId}
+          partColor={partColor}
+          partId={part}
+          colorScale={colorScale}
+        />
+      </ZoomableChart>
+    </Stack>
   );
 }
 
