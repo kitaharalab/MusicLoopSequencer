@@ -82,6 +82,7 @@ function Chart({ zoomState, handleOnClick, setInsertLoopId, part }) {
 
   const partName = parts.find(({ id }) => id === part)?.name?.toLowerCase();
   const partColor = partName ? theme.colors.part.light[partName] : null;
+  const colors = theme.colors.part.sequence[partName] ?? null;
 
   const svgWidth = 500;
   const svgHeight = 500;
@@ -123,6 +124,7 @@ function Chart({ zoomState, handleOnClick, setInsertLoopId, part }) {
         partColor={partColor}
         property={legendProperty}
         colorScale={colorScale}
+        colors={colors}
       />
       <ZoomableChart width={svgWidth} height={svgHeight} zoomState={zoomState}>
         <ScatterPlot
@@ -132,6 +134,7 @@ function Chart({ zoomState, handleOnClick, setInsertLoopId, part }) {
           partColor={partColor}
           partId={part}
           colorScale={colorScale}
+          colors={colors}
         />
       </ZoomableChart>
     </Stack>
