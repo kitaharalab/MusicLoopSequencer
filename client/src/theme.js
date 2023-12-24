@@ -18,7 +18,7 @@ const extendedTheme = extendTheme({
       sequence: {
         drums: ["#320E0E", "#802323", "#E53E3E", "#FF9999", "#FFD9D9"],
         bass: ["#33260B", "#805E1B", "#D69E2E", "#FFDD99", "#FFF2D9"],
-        synth: ["#100D1A", "#654D99", "#AF91F2", "#AAE7F2", "#F6F2FF"],
+        synth: ["#100D1A", "#654D99", "#AF91F2", "#D1C2F2", "#F6F2FF"],
         sequence: ["#002B33", "#3D8B99", "#57C3D9", "#9DE5F2", "#E6FBFF"],
       },
     },
