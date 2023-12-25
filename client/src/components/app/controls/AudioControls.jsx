@@ -2,6 +2,7 @@ import { ButtonGroup, IconButton, useBoolean } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { BiPlayCircle, BiPauseCircle, BiStopCircle } from "react-icons/bi";
 import { useSelector } from "react-redux";
+import { unstable_useBlocker as useBlocker } from "react-router";
 
 import { sendSongPauseLog, sendSongPlayLog, sendSongStopLog } from "@/api/log";
 import { getSongAudio } from "@/api/song";
@@ -12,6 +13,11 @@ export default function AudioControls() {
   const [audioUrl, setAudioUrl] = useState();
   const { projectId, songId } = useSelector(getApiParams);
   const [isPlaying, setIsPlaying] = useBoolean();
+
+  useBlocker(() => {
+    audio?.pause();
+    return false;
+  });
 
   useEffect(() => {
     async function updateSongAudio() {

@@ -44,6 +44,10 @@ export default function Evaluation() {
                 setEvaluation(newEvaluation);
                 sendEvaluation(projectId, songId, newEvaluation);
               }}
+              _active={{
+                transform: "scale(0.8)",
+              }}
+              transition="all 0.1s ease-in-out"
             />
           );
         })}

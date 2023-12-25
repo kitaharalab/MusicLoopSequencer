@@ -1,8 +1,8 @@
 from sqls import (
-    get_loop_topics,
     get_topic_id_ns,
     get_topic_preferences_from_part_excitement,
     update_topic_preferences_from_topic_preferences,
+    get_loop_info_topics,
 )
 
 
@@ -13,8 +13,10 @@ def update_topic_ratio(partid, loop_id, user_id, topic_n=4):
         map(lambda x: x["id"], filter(lambda x: x["number"] == topic_n, topic_id_ns))
     )
 
-    topic_preferences = get_topic_preferences_from_part_excitement(user_id, partid, 0)
-    loop_info = get_loop_topics(loop_id)
+    loop_info = get_loop_info_topics(loop_id)
+    topic_preferences = get_topic_preferences_from_part_excitement(
+        user_id, partid, loop_info[0]["excitement"]
+    )
 
     topic_n_preferences = list(
         filter(lambda x: x["topic_id"] in topic_n_ids, topic_preferences)
