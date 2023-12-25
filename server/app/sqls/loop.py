@@ -179,3 +179,25 @@ def get_loop_topics(loop_id: int):
             response = [dict(row) for row in cur.fetchall()]
 
     return response if len(response) > 0 else None
+
+
+def get_loop_info_topics(loop_id: int):
+    sql = """
+    select
+        loops.id,
+        loops.name,
+        loops.excitement,
+        loop_topics.topic_id,
+        loop_topics.value
+    from loops, loop_topics
+    where
+        loops.id = loop_topics.loop_id
+        and loops.id = %s
+    """
+    response = None
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute(sql, (loop_id,))
+            response = [dict(row) for row in cur.fetchall()]
+
+    return response if len(response) > 0 else None
