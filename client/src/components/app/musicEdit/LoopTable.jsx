@@ -8,15 +8,14 @@ import {
   Tbody,
   useTheme,
 } from "@chakra-ui/react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import getParts from "@/api/getParts";
 import { sendCheckSongLoopLog } from "@/api/log";
 import { getSongDetail } from "@/api/song";
-import { getApiParams, setMeasure, setPartId } from "@/redux/apiParamSlice";
+import { getApiParams, setApiParam } from "@/redux/apiParamSlice";
 import { setLoopPositions } from "@/redux/musicDataSlice";
-import { setSelectedLoop } from "@/redux/soundsSlice";
 
 export default function LoopTable({ measure }) {
   const { projectId, songId } = useSelector(getApiParams);
@@ -32,7 +31,9 @@ export default function LoopTable({ measure }) {
   const [hoverMeasurePart, setHoverMeasurePart] = useState(
     initSelectMeasurePart,
   );
-  const selectMeasurePart = useRef(initSelectMeasurePart);
+  const [selectMeasurePart, setSelectMeasurePart] = useState(
+    initSelectMeasurePart,
+  );
 
   useEffect(() => {
     async function updateSongDetail() {
@@ -40,7 +41,7 @@ export default function LoopTable({ measure }) {
       setParts(songDetail);
     }
     updateSongDetail();
-    selectMeasurePart.current = initSelectMeasurePart;
+    setSelectMeasurePart(initSelectMeasurePart);
 
     return () => {
       dispatch(setLoopPositions([]));
@@ -55,7 +56,7 @@ export default function LoopTable({ measure }) {
       setPartsInfo(partData);
     }
     initPartsInfo();
-    dispatch(setSelectedLoop(initSelectMeasurePart));
+    dispatch(setApiParam(initSelectMeasurePart));
   }, []);
 
   if (parts === undefined) {
@@ -86,11 +87,8 @@ export default function LoopTable({ measure }) {
       loopId,
     };
 
-    selectMeasurePart.current = newSelectMeasurePart;
-
-    dispatch(setMeasure(measureId + 1));
-    dispatch(setPartId(part));
-    dispatch(setSelectedLoop(newSelectMeasurePart));
+    setSelectMeasurePart(newSelectMeasurePart);
+    dispatch(setApiParam({ measure: measureId + 1, partId: part, loopId }));
   }
 
   function onLoopHover(e) {
@@ -145,8 +143,8 @@ export default function LoopTable({ measure }) {
                 {sounds.map((loopId, i) => {
                   const exist = loopId != null;
                   const isSelect =
-                    selectMeasurePart.current.measure === i &&
-                    selectMeasurePart.current.part === partId;
+                    selectMeasurePart.measure === i &&
+                    selectMeasurePart.part === partId;
                   const isHover =
                     hoverMeasurePart.measure === i &&
                     hoverMeasurePart.part === partId;
