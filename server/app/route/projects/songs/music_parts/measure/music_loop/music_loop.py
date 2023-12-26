@@ -5,6 +5,8 @@ from sqls import (
     get_song_loop_ids,
     update_song_details,
     update_wav_data,
+    get_loop_id,
+    get_loop_id_from_id_chord,
 )
 from util.connect_sound import connect_sound
 from util.const import fix_len, topic_n
@@ -26,9 +28,29 @@ def insert_sound(uid, projectid, songid, partid, measureid, musicloopid):
         check_song_loop_log(projectid, songid, partid, measureid + 1, musicloopid, uid)
         return make_response(jsonify({"message": "check song loop log"}))
 
+    measure = measureid + 1
     parts = get_parts()
     # part_name2index = {"Drums": 0, "Bass": 1, "Synth": 2, "Sequence": 3}
     parts = sorted(parts, key=lambda x: x["id"])
+
+    source_loop_id = get_loop_id(songid, partid, measure)
+    source_loop_id_chord1 = get_loop_id_from_id_chord(source_loop_id, 1)
+
+    target_loop_id_chord1 = get_loop_id_from_id_chord(musicloopid, 1)
+
+    if source_loop_id_chord1 == target_loop_id_chord1:
+        song_details = get_song_loop_ids(song_id=songid)
+        response = {"songId": int(songid), "parts": []}
+        for part in parts:
+            response["parts"].append(
+                {
+                    "partId": part["id"],
+                    "partName": part["name"],
+                    "sounds": song_details[part["id"]],
+                }
+            )
+
+        return make_response(jsonify(response))
 
     fix_req = params.get("fix")
     fix = int(fix_req) if fix_req is not None else 0
@@ -38,7 +60,7 @@ def insert_sound(uid, projectid, songid, partid, measureid, musicloopid):
     update_song_details(
         songid,
         partid,
-        measureid + 1,
+        measure,
         musicloopid,
         uid,
         fix=fix,
