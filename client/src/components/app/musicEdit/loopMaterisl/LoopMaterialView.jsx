@@ -188,7 +188,9 @@ function Content({ handlePlayAudio }) {
         isClosable: false,
       },
     });
-    const music = await inserting;
+    const music = await inserting.finally(() => {
+      setInsertLoopId(undefined);
+    });
 
     flushSync(() => {
       dispatch(setSongId(undefined));
