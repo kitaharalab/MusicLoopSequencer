@@ -11,7 +11,6 @@ import React, { useEffect, useState } from "react";
 import { flushSync } from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
 
-import AudioControls from "./AudioControls";
 import Evaluation from "./Evaluation";
 
 import { auth } from "@/api/authentication/firebase";

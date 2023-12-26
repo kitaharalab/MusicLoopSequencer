@@ -9,3 +9,5 @@ part_name2index = {"Drums": 0, "Bass": 1, "Synth": 2, "Sequence": 3}
 
 EXCITEMENT_VALUE_MAX = 5
 EXCITEMENT_VALUE_MIN = 0
+
+CHORD_BY_MEASURE = [2, 5, 3, 6, 4, 6, 7, 1]
