@@ -16,7 +16,6 @@ import {
 } from "@chakra-ui/react";
 import * as d3 from "d3";
 import React, { useEffect, useRef, useState } from "react";
-// import onMusicLoop from "./onMusicLoop";
 import { flushSync } from "react-dom";
 import {
   BiVolumeFull,
@@ -33,7 +32,7 @@ import ScatterPlot from "./ScatterPlot";
 import getParts from "@/api/getParts";
 import { sendLoopMuteLog } from "@/api/log";
 import { onMusicLoop, insertSound, deleteLoop } from "@/api/loop";
-import { getApiParams, setSongId } from "@/redux/apiParamSlice";
+import { getApiParams, resetApiParam, setSongId } from "@/redux/apiParamSlice";
 
 function ZoomableChart({ width, height, children, zoomState }) {
   const { zoomTransform, setZoomTransform } = zoomState;
@@ -68,7 +67,7 @@ function ZoomableChart({ width, height, children, zoomState }) {
   );
 }
 
-function Chart({ zoomState, handleOnClick, setInsertLoopId, part }) {
+function Chart({ zoomState, handleOnClick, part }) {
   const [parts, setParts] = useState([]);
 
   useEffect(() => {
@@ -120,7 +119,6 @@ function Chart({ zoomState, handleOnClick, setInsertLoopId, part }) {
         <ScatterPlot
           boxSize={{ width: svgWidth, height: svgHeight }}
           handleOnClick={handleOnClick}
-          setInsertLoopId={setInsertLoopId}
           partColor={partColor}
           partId={part}
           colors={colors}
@@ -133,10 +131,10 @@ function Chart({ zoomState, handleOnClick, setInsertLoopId, part }) {
 function Content({ handlePlayAudio }) {
   const [isMute, setIsMute] = useState(false);
   const [zoomTransform, setZoomTransform] = useState(d3.zoomIdentity);
-  const { projectId, songId, measure, partId } = useSelector(getApiParams);
+  const { projectId, songId, measure, partId, loopId } =
+    useSelector(getApiParams);
   const zoomState = { zoomTransform, setZoomTransform };
 
-  const [insertLoopId, setInsertLoopId] = useState();
   const insertToast = useToast();
   const deleteToast = useToast();
   const dispatch = useDispatch();
@@ -147,7 +145,7 @@ function Content({ handlePlayAudio }) {
     }
   }
 
-  const insertLoop = async (loopId) => {
+  const insertLoop = async () => {
     if (partId == null || measure == null) {
       insertToast({
         title: "操作する対象の音素材が選択されていません",
@@ -189,7 +187,13 @@ function Content({ handlePlayAudio }) {
       },
     });
     const music = await inserting.finally(() => {
-      setInsertLoopId(undefined);
+      dispatch(
+        resetApiParam({
+          measure: true,
+          partId: true,
+          loopId: true,
+        }),
+      );
     });
 
     flushSync(() => {
@@ -242,13 +246,15 @@ function Content({ handlePlayAudio }) {
         <ButtonGroup>
           <IconButton
             icon={<Icon as={BiPlus} />}
-            onClick={() => {
-              insertLoop(insertLoopId);
+            onClick={(event) => {
+              event.preventDefault();
+              insertLoop();
             }}
           />
           <IconButton
             icon={<Icon as={BiSolidTrashAlt} />}
-            onClick={async () => {
+            onClick={async (event) => {
+              event.preventDefault();
               await onDeleteLoop();
 
               flushSync(() => {
@@ -259,7 +265,8 @@ function Content({ handlePlayAudio }) {
           />
           <IconButton
             icon={<Icon as={isMute ? BiSolidVolumeMute : BiVolumeFull} />}
-            onClick={async () => {
+            onClick={async (event) => {
+              event.preventDefault();
               const mute = !isMute;
 
               setIsMute(mute);
@@ -268,7 +275,8 @@ function Content({ handlePlayAudio }) {
           />
           <IconButton
             icon={<Icon as={BiRefresh} />}
-            onClick={() => {
+            onClick={(event) => {
+              event.preventDefault();
               setZoomTransform(d3.zoomIdentity);
             }}
           />
@@ -279,7 +287,6 @@ function Content({ handlePlayAudio }) {
         <Chart
           zoomState={zoomState}
           handleOnClick={handleOnClick}
-          setInsertLoopId={setInsertLoopId}
           part={partId}
         />
       </Box>
