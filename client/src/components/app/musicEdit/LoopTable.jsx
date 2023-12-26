@@ -33,7 +33,6 @@ export default function LoopTable({ measure }) {
     initSelectMeasurePart,
   );
   const selectMeasurePart = useRef(initSelectMeasurePart);
-  dispatch(setSelectedLoop(initSelectMeasurePart));
 
   useEffect(() => {
     async function updateSongDetail() {
@@ -56,6 +55,7 @@ export default function LoopTable({ measure }) {
       setPartsInfo(partData);
     }
     initPartsInfo();
+    dispatch(setSelectedLoop(initSelectMeasurePart));
   }, []);
 
   if (parts === undefined) {
