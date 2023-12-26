@@ -13,7 +13,6 @@ import { useSelector, useDispatch } from "react-redux";
 
 import getParts from "@/api/getParts";
 import { sendCheckSongLoopLog } from "@/api/log";
-import selectBlock from "@/api/selectBlock";
 import { getSongDetail } from "@/api/song";
 import { getApiParams, setMeasure, setPartId } from "@/redux/apiParamSlice";
 import { setLoopPositions } from "@/redux/musicDataSlice";
@@ -34,6 +33,7 @@ export default function LoopTable({ measure }) {
     initSelectMeasurePart,
   );
   const selectMeasurePart = useRef(initSelectMeasurePart);
+  dispatch(setSelectedLoop(initSelectMeasurePart));
 
   useEffect(() => {
     async function updateSongDetail() {
