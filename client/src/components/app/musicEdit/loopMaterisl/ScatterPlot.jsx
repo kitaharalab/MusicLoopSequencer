@@ -1,22 +1,23 @@
 import * as d3 from "d3";
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { getLoopByChord } from "@/api/loop";
 import selectBlock from "@/api/selectBlock";
+import { getLoopId, setLoopId } from "@/redux/apiParamSlice";
 
 export default function ScatterPlot({
   boxSize,
   handleOnClick,
-  setInsertLoopId,
   partId,
   colors,
 }) {
   const { width, height } = boxSize;
-  const { loopId } = useSelector((state) => state.sounds);
+  const loopId = useSelector(getLoopId);
   const [selectId, setSelectId] = useState(loopId);
   const [positions, setPositions] = useState([]);
   const [hoverId, setHoverId] = useState();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     (async () => {
@@ -88,7 +89,7 @@ export default function ScatterPlot({
           onClick={() => {
             const reSelect = selectId === id;
             setSelectId(reSelect ? undefined : id);
-            setInsertLoopId(id);
+            dispatch(setLoopId(id));
             if (!reSelect) {
               handleOnClick(id);
             }

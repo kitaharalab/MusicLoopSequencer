@@ -1,12 +1,10 @@
 from psycopg2.extras import DictCursor
 from util.const import fix_len
-from util.give_chord import get_chorded_loop_id
 
 from .connection import get_connection
-from .log import insert_loop_log
 from .part import get_parts
-from .song import get_project_id_from_song_id
-from cache import cache
+from .loop import get_loop_id_from_id_chord
+from util.const import CHORD_BY_MEASURE
 
 
 def get_song_details(song_id):
@@ -114,31 +112,33 @@ def update_song_details(
        - measure (int): 変更したい小節の番号
        - loop_id (int): 変更先の音素材のID
     """
-    from_loop_id = get_loop_id(song_id, part_id, measure)
-    project_id = get_project_id_from_song_id(song_id)
 
-    # log
-    insert_loop_log(
-        project_id, song_id, part_id, measure, from_loop_id, loop_id, user_id
-    )
+    if fix == 0:
+        with get_connection() as conn:
+            with conn.cursor() as cur:
+                chord = CHORD_BY_MEASURE[measure % len(CHORD_BY_MEASURE)]
+                chorded_loop_id = get_loop_id_from_id_chord(loop_id, chord)
+
+                cur.execute(
+                    "UPDATE song_details SET loop_id=%s WHERE song_id=%s and part_id=%s and measure=%s",
+                    (chorded_loop_id, song_id, part_id, measure),
+                )
+            conn.commit()
+        return
 
     # update
     with get_connection() as conn:
         with conn.cursor() as cur:
-            if fix == 0:
+            start = (measure - 1) // fix_length * fix_length + 1
+            end = start + fix_length
+            for i in range(start, end):
+                chord = CHORD_BY_MEASURE[i % len(CHORD_BY_MEASURE)]
+                chorded_loop_id = get_loop_id_from_id_chord(loop_id, chord)
+
                 cur.execute(
                     "UPDATE song_details SET loop_id=%s WHERE song_id=%s and part_id=%s and measure=%s",
-                    (loop_id, song_id, part_id, measure),
+                    (chorded_loop_id, song_id, part_id, i),
                 )
-            else:
-                start = (measure - 1) // fix_length * fix_length + 1
-                end = start + fix_length
-                for i in range(start, end):
-                    chorded_loop_id = get_chorded_loop_id(loop_id, i)
-                    cur.execute(
-                        "UPDATE song_details SET loop_id=%s WHERE song_id=%s and part_id=%s and measure=%s",
-                        (chorded_loop_id, song_id, part_id, i),
-                    )
         conn.commit()
 
 
