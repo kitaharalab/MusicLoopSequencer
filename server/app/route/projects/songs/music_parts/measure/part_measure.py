@@ -9,6 +9,8 @@ from sqls import (
 )
 from util.connect_sound import connect_sound
 from verify import require_auth
+from util.const import fix_len
+from util.give_chord import get_chorded_loop_id
 
 part_measure = Blueprint("part_measure", __name__)
 
@@ -56,28 +58,38 @@ def get_infomation_of_inserted_sound(projectid, songid, partid, measureid):
 
 # TODO: デリートの実装
 @part_measure.route(
-    "/projects/<int:projectid>/songs/<int:songid>/parts/<int:partid>/measures/<int:measureid>",
+    "/projects/<int:project_id>/songs/<int:song_id>/parts/<int:part_id>/measures/<int:measure>",
     methods=["DELETE"],
 )
 @require_auth
-def delete_sound(uid, projectid, songid, partid, measureid):
+def delete_sound(uid, project_id, song_id, part_id, measure):
     req = request.args
     fix_req = req.get("fix")
     fix = int(fix_req) if fix_req is not None else 0
-    # if fix -> int(measure/fix_len) ~ int(measure/fix_len) + fix_len to delete
-    loop_id = get_loop_id(songid, partid, measureid + 1)
-    delete_loop_log(projectid, songid, partid, measureid, loop_id, uid)
-    delete_song_details(songid, partid, measureid + 1, fix=fix)
+
+    if fix == 0:
+        loop_id = get_loop_id(song_id, part_id, measure)
+        delete_loop_log(project_id, song_id, part_id, measure, loop_id, uid)
+    else:
+        start = (measure - 1) // fix_len * fix_len + 1
+        end = start + fix_len
+        for m in range(start, end):
+            loop_id = get_loop_id(song_id, part_id, m)
+            delete_loop_log(project_id, song_id, part_id, measure, loop_id, uid)
+
+    delete_song_details(song_id, part_id, measure, fix=fix)
 
     parts = get_parts()
     # part_name2index = {"Drums": 0, "Bass": 1, "Synth": 2, "Sequence": 3}
     parts = sorted(parts, key=lambda x: x["id"])
-    song_details = get_song_loop_ids(song_id=songid)
+    song_details = get_song_loop_ids(song_id=song_id)
     sound_ids_by_part_measure = [song_details[part["id"]] for part in parts]
     sound_ids_by_measure_part = [list(arr) for arr in zip(*sound_ids_by_part_measure)]
 
-    _, wav_data = connect_sound(sound_ids_by_measure_part, projectid, "delete", songid)
-    update_wav_data(songid, wav_data)
+    _, wav_data = connect_sound(
+        sound_ids_by_measure_part, project_id, "delete", song_id
+    )
+    update_wav_data(song_id, wav_data)
 
     return make_response(jsonify({"message": "delete"}))
 
