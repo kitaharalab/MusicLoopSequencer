@@ -46,14 +46,6 @@ def require_auth(f):
 
         uid = decoded_token.get("uid")
 
-        exist_user = get_user(uid) is not None
-        if not exist_user:
-            add_user(uid)
-
-        exist_topic_preferences = get_topic_preferences(uid) is not None
-        if not exist_topic_preferences:
-            add_topic_preferences(uid)
-
         return f(uid, *args, **kwargs)
 
     return wrapper
