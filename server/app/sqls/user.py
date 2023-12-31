@@ -1,5 +1,4 @@
 from psycopg2.extras import DictCursor
-from verify import AuthError
 
 from .connection import get_connection
 from .topic import add_topic_preferences, get_topic_preferences
@@ -25,10 +24,12 @@ def get_user(user_id: str):
 def register_user(user_id: str, user_own_id: str):
     exist_user = get_user(user_id) is not None
     if exist_user:
-        raise AuthError("already exist user")
+        return False
 
     add_user(user_id, user_own_id)
 
     exist_topic_preferences = get_topic_preferences(user_id) is not None
     if not exist_topic_preferences:
         add_topic_preferences(user_id)
+
+    return True
