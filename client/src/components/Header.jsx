@@ -1,7 +1,8 @@
 import { Box, Button, Flex, Heading } from "@chakra-ui/react";
 import React from "react";
 
-import { signOut, signIn, useUser } from "./Auth";
+import { signOut, useUser } from "./Auth";
+import ButtonLink from "./Link/ButtonLink";
 
 function AuthButton() {
   const user = useUser();
@@ -14,13 +15,7 @@ function AuthButton() {
       Sign Out
     </Button>
   ) : (
-    <Button
-      onClick={() => {
-        signIn();
-      }}
-    >
-      Sign in
-    </Button>
+    <ButtonLink to={"/signin"}>Sign in</ButtonLink>
   );
 }
 
