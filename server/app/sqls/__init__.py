@@ -57,7 +57,7 @@ from .topic import (
     get_topic_preferences_from_part_excitement,
     update_topic_preferences_from_topic_preferences,
 )
-from .user import add_user, get_user
+from .user import add_user, get_user, register_user
 
 __all__ = [
     "get_connection",

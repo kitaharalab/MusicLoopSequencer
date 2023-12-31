@@ -1,12 +1,12 @@
 from psycopg2.extras import DictCursor
-from verify import get_user_own_id
+from verify import AuthError
 
 from .connection import get_connection
 from .topic import add_topic_preferences, get_topic_preferences
 
 
-def add_user(user_id: str, own_id):
-    create_sql = "INSERT INTO users (user_id, lancers_id) VALUES (%s, %s)"
+def add_user(user_id: str, own_id: str):
+    create_sql = "INSERT INTO users (user_id, own_id) VALUES (%s, %s)"
     with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute(create_sql, (user_id, own_id))
@@ -22,11 +22,12 @@ def get_user(user_id: str):
             return dict(result) if result is not None else None
 
 
-def register_user(user_id: str, user_own_id):
+def register_user(user_id: str, user_own_id: str):
     exist_user = get_user(user_id) is not None
-    if not exist_user:
-        own_id = get_user_own_id()
-        add_user(user_id, own_id)
+    if exist_user:
+        raise AuthError("already exist user")
+
+    add_user(user_id, user_own_id)
 
     exist_topic_preferences = get_topic_preferences(user_id) is not None
     if not exist_topic_preferences:
