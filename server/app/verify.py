@@ -2,7 +2,6 @@ from functools import wraps
 
 from firebase_admin import auth
 from flask import request
-from sqls import add_topic_preferences, add_user, get_topic_preferences, get_user
 
 
 class AuthError(Exception):
