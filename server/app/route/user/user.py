@@ -13,4 +13,5 @@ def add_user(user_id):
     if user_own_id is None:
         raise AuthError("Missing user own id")
 
-    register_user(user_id, user_own_id)
+    register_status = register_user(user_id, user_own_id)
+    return {"result": register_status}, 200
