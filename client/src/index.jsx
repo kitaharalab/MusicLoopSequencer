@@ -13,6 +13,7 @@ import { store } from "./redux/store";
 import reportWebVitals from "./reportWebVitals";
 import theme from "./theme";
 import { UserProvider } from "./components/Auth";
+import SignIn from "./components/signIn/SignIn";
 
 const router = createBrowserRouter([
   {
@@ -60,6 +61,10 @@ const router = createBrowserRouter([
         },
       },
     ],
+  },
+  {
+    path: "/signin",
+    element: <SignIn />,
   },
 ]);
 
