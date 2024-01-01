@@ -5,11 +5,11 @@ from .topic import add_topic_preferences, get_topic_preferences
 
 
 def add_user(user_id: str, own_id: str):
-    create_sql = "INSERT INTO users (user_id, own_id) VALUES (%s, %s)"
+    create_sql = "INSERT INTO users (firebase_id, own_id) VALUES (%s, %s)"
     with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute(create_sql, (user_id, own_id))
-            conn.commit()
+        conn.commit()
 
 
 def get_user(user_id: str):
@@ -26,7 +26,10 @@ def register_user(user_id: str, user_own_id: str):
     if exist_user:
         return False
 
-    add_user(user_id, user_own_id)
+    try:
+        add_user(user_id, user_own_id)
+    except Exception:
+        return False
 
     exist_topic_preferences = get_topic_preferences(user_id) is not None
     if not exist_topic_preferences:
