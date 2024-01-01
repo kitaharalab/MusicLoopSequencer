@@ -4,14 +4,10 @@ DROP TABLE IF EXISTS users CASCADE;
 CREATE TABLE
     users (
         id serial PRIMARY KEY,
-        user_id TEXT UNIQUE NOT NULL
+        firebase_id TEXT UNIQUE NOT NULL,
+        own_id TEXT NOT NULL
     );
 
-INSERT INTO
-    users (user_id)
-VALUES
-    ('user_test'),
-    ('experiment_user');
 
 -- 楽器テーブル
 DROP TABLE IF EXISTS parts CASCADE;
@@ -35,22 +31,10 @@ CREATE TABLE
         id serial PRIMARY KEY,
         NAME TEXT NOT NULL,
         user_id TEXT NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES users (user_id)
+        FOREIGN KEY (user_id) REFERENCES users (firebase_id)
     );
 
-INSERT INTO
-    projects (NAME, user_id)
-VALUES
-    ('test', 'user_test'),
-    ('second', 'user_test');
 
--- 実験用プロジェクト
-INSERT INTO
-    projects (NAME, user_id)
-VALUES
-    ('ExperimentUserApplicable', 'experiment_user'),
-    ('ExperimentUserNotApplicable', 'experiment_user'),
-    ('ExperimentRandomApplicable', 'experiment_user');
 
 -- 楽曲テーブル
 -- projectが保有している楽曲
@@ -125,7 +109,7 @@ CREATE TABLE
         to_loop_id INTEGER,
         active boolean,
         evaluation INTEGER,
-        FOREIGN KEY (user_id) REFERENCES users (user_id),
+        FOREIGN KEY (user_id) REFERENCES users (firebase_id),
         FOREIGN KEY (project_id) REFERENCES projects (id),
         FOREIGN KEY (song_id) REFERENCES songs (id),
         FOREIGN KEY (part_id) REFERENCES parts (id),
