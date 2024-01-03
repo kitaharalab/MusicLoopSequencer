@@ -5,49 +5,42 @@ from .topic import add_topic_preferences, get_topic_preferences
 
 
 def add_user_by_firebase_id(firebase_id: str) -> int:
-    """
-    return: user id
-    """
-    response = None
-    create_sql = "INSERT INTO users (firebase_id) VALUES (%s) RETURNING id"
+    create_sql = "INSERT INTO users (firebase_id) VALUES (%s)"
     with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute(create_sql, (firebase_id,))
-            response = cur.fetchone()
         conn.commit()
 
-    return response
 
-
-def update_own_id(user_id: int, own_id: str):
-    update_sql = "UPDATE users SET own_id=%s WHERE id=%s"
+def update_own_id(firebase_id: int, own_id: str):
+    update_sql = "UPDATE users SET own_id=%s WHERE firebase_id=%s"
     with get_connection() as conn:
         with conn.cursor() as cur:
-            cur.execute(update_sql, (own_id, user_id))
+            cur.execute(update_sql, (own_id, firebase_id))
         conn.commit()
 
 
-def get_user(user_id: str):
+def get_user(firebase_id: str):
     select_sql = "SELECT * FROM users WHERE firebase_id = %s"
     with get_connection() as conn:
         with conn.cursor(cursor_factory=DictCursor) as cur:
-            cur.execute(select_sql, (user_id,))
+            cur.execute(select_sql, (firebase_id,))
             result = cur.fetchone()
             return dict(result) if result is not None else None
 
 
-def register_user(user_id: str, user_own_id: str):
-    exist_user = get_user(user_id) is not None
+def register_user(firebase_id: str, user_own_id: str):
+    exist_user = get_user(firebase_id) is not None
     if exist_user:
         return False
 
     try:
-        add_user_by_firebase_id(user_id, user_own_id)
+        add_user_by_firebase_id(firebase_id, user_own_id)
     except Exception:
         return False
 
-    exist_topic_preferences = get_topic_preferences(user_id) is not None
+    exist_topic_preferences = get_topic_preferences(firebase_id) is not None
     if not exist_topic_preferences:
-        add_topic_preferences(user_id)
+        add_topic_preferences(firebase_id)
 
     return True
