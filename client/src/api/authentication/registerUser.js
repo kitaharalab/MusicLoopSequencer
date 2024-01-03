@@ -18,5 +18,5 @@ export default async function registerUser(ownId) {
     .catch((error) => error.response);
   const data = response?.data;
 
-  return data.status;
+  return data?.status;
 }
