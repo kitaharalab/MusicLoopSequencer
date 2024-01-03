@@ -4,11 +4,26 @@ from .connection import get_connection
 from .topic import add_topic_preferences, get_topic_preferences
 
 
-def add_user(user_id: str, own_id: str):
-    create_sql = "INSERT INTO users (firebase_id, own_id) VALUES (%s, %s)"
+def add_user_by_firebase_id(firebase_id: str) -> int:
+    """
+    return: user id
+    """
+    response = None
+    create_sql = "INSERT INTO users (firebase_id) VALUES (%s) RETURNING id"
     with get_connection() as conn:
         with conn.cursor() as cur:
-            cur.execute(create_sql, (user_id, own_id))
+            cur.execute(create_sql, (firebase_id,))
+            response = cur.fetchone()
+        conn.commit()
+
+    return response
+
+
+def update_own_id(user_id: int, own_id: str):
+    update_sql = "UPDATE users SET own_id=%s WHERE id=%s"
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(update_sql, (own_id, user_id))
         conn.commit()
 
 
@@ -27,7 +42,7 @@ def register_user(user_id: str, user_own_id: str):
         return False
 
     try:
-        add_user(user_id, user_own_id)
+        add_user_by_firebase_id(user_id, user_own_id)
     except Exception:
         return False
 
