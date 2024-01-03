@@ -42,6 +42,18 @@ def get_user_own_id(firebase_id: str):
     return response
 
 
+def check_user_own_id_null(firebase_id: str) -> bool:
+    response = None
+    select_sql = "SELECT own_id FROM users WHERE firebase_id = %s AND own_id IS NULL"
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute(select_sql, (firebase_id,))
+            result = cur.fetchone()
+            response = result is not None
+
+    return response
+
+
 def check_user_own_id(firebase_id: str, user_own_id: str):
     exist_user = get_user(firebase_id) is not None
     if not exist_user:
@@ -71,6 +83,10 @@ def check_sign_in(firebase_id: str, user_own_id: str):
     exist_user = get_user(firebase_id) is not None
     if exist_user:
         return False
+
+    if check_user_own_id_null(firebase_id):
+        update_own_id(firebase_id, user_own_id)
+        return True
 
     return check_user_own_id(firebase_id, user_own_id)
 
