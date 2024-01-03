@@ -24,6 +24,7 @@
       }
     ],
     "react/prop-types": ["error", { "skipUndeclared": true }],
+    "react/react-in-jsx-scope": "off",
     "import/no-extraneous-dependencies": ["off"],
     "import/order": [
       "error",
