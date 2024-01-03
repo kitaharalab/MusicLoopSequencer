@@ -1,8 +1,6 @@
 from psycopg2.extras import DictCursor
-from psycopg2 import Error
 
 from .connection import get_connection
-from .topic import add_topic_preferences, get_topic_preferences
 
 
 def add_user_by_firebase_id(firebase_id: str) -> int:
@@ -52,53 +50,3 @@ def check_user_own_id_null(firebase_id: str) -> bool:
             response = result is not None
 
     return response
-
-
-def check_user_own_id(firebase_id: str, user_own_id: str):
-    exist_user = get_user(firebase_id) is not None
-    if not exist_user:
-        return False
-
-    registered_own_id = get_user_own_id(firebase_id)
-    if registered_own_id == user_own_id:
-        return True
-
-    return False
-
-
-def register_firebase_id(firebase_id: str):
-    exist_user = get_user(firebase_id) is not None
-    if exist_user:
-        return False
-
-    try:
-        add_user_by_firebase_id(firebase_id)
-    except Error:
-        return False
-
-    return True
-
-
-def check_sign_in(firebase_id: str, user_own_id: str):
-    exist_user = get_user(firebase_id) is not None
-    if exist_user:
-        return False
-
-    if check_user_own_id_null(firebase_id):
-        update_own_id(firebase_id, user_own_id)
-        return True
-
-    return check_user_own_id(firebase_id, user_own_id)
-
-
-def register_user(firebase_id: str, user_own_id: str):
-    try:
-        register_firebase_id(firebase_id)
-        update_own_id(firebase_id, user_own_id)
-        exist_topic_preferences = get_topic_preferences(firebase_id) is not None
-        if not exist_topic_preferences:
-            add_topic_preferences(firebase_id)
-    except Error:
-        return False
-
-    return True

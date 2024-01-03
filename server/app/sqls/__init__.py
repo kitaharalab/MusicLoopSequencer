@@ -57,7 +57,14 @@ from .topic import (
     get_topic_preferences_from_part_excitement,
     update_topic_preferences_from_topic_preferences,
 )
-from .user import add_user_by_firebase_id, get_user, register_user, check_sign_in
+from .user import (
+    add_user_by_firebase_id,
+    get_user,
+    check_user_own_id_null,
+    update_own_id,
+    get_user_own_id,
+    check_user_own_id,
+)
 
 __all__ = [
     "get_connection",
