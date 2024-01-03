@@ -12,6 +12,7 @@ import {
   Stack,
 } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import { useNavigate } from "react-router-dom";
 
 import { signIn as firebaseSignIn, signOut, useUser } from "../Auth";
@@ -19,7 +20,7 @@ import { signIn as firebaseSignIn, signOut, useUser } from "../Auth";
 import checkSignIn from "@/api/authentication/checkSignIn";
 import registerUser from "@/api/authentication/registerUser";
 
-function SignInUI({ handleSignIn, isError }) {
+function SignInUI({ handleSignIn, isError, isLoading }) {
   return (
     <Container>
       <Stack spacing={8}>
@@ -35,17 +36,18 @@ function SignInUI({ handleSignIn, isError }) {
                 const userOwnId = elements.id.value;
                 const wantRegister = elements.register.checked;
                 handleSignIn(userOwnId, wantRegister);
-
                 elements.id.value = "";
               }}
             >
               <Stack spacing="6">
-                <FormControl isRequired>
+                <FormControl isRequired isDisabled={isLoading}>
                   <FormLabel>ID</FormLabel>
                   <Input type="text" name="id" />
                 </FormControl>
                 <FormControl isInvalid={isError}>
-                  <Checkbox name="register">IDを登録する</Checkbox>
+                  <Checkbox name="register" isDisabled={isLoading}>
+                    IDを登録する
+                  </Checkbox>
                   <FormHelperText>
                     以前にIDを登録したことがある場合は上書きされます
                   </FormHelperText>
@@ -54,7 +56,9 @@ function SignInUI({ handleSignIn, isError }) {
                   </FormErrorMessage>
                 </FormControl>
 
-                <Button type="submit">Sign in with Google</Button>
+                <Button type="submit" isLoading={isLoading}>
+                  Sign in with Google
+                </Button>
               </Stack>
             </form>
 
@@ -72,6 +76,7 @@ export default function SignIn() {
   const user = useUser();
   const [userOwnId, setUserOwnId] = useState("");
   const [wantRegister, setWantRegister] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const isError = useRef(false);
   const navigate = useNavigate();
 
@@ -100,11 +105,15 @@ export default function SignIn() {
       return;
     }
 
-    if (wantRegister) {
-      signInWithRegister();
-    } else {
-      signIn();
-    }
+    (async () => {
+      if (wantRegister) {
+        await signInWithRegister();
+      } else {
+        await signIn();
+      }
+
+      setIsLoading(false);
+    })();
   }, [user, userOwnId]);
 
   return (
@@ -112,9 +121,13 @@ export default function SignIn() {
       handleSignIn={(inputUserOwnId, userWantRegister) => {
         setUserOwnId(inputUserOwnId);
         setWantRegister(userWantRegister);
+        flushSync(() => {
+          setIsLoading(true);
+        });
         firebaseSignIn();
       }}
       isError={isError.current}
+      isLoading={isLoading}
     />
   );
 }
