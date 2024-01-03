@@ -39,22 +39,24 @@ function SignInUI({ handleSignIn, isError, isLoading }) {
                 elements.id.value = "";
               }}
             >
-              <Stack spacing="6">
-                <FormControl isRequired isDisabled={isLoading}>
-                  <FormLabel>ID</FormLabel>
-                  <Input type="text" name="id" />
-                </FormControl>
-                <FormControl isInvalid={isError}>
-                  <Checkbox name="register" isDisabled={isLoading}>
-                    IDを登録する
-                  </Checkbox>
-                  <FormHelperText>
-                    以前にIDを登録したことがある場合は上書きされます
-                  </FormHelperText>
-                  <FormErrorMessage>
-                    IDを忘れた場合、このボタンをクリックして再度ログインしてください。
-                  </FormErrorMessage>
-                </FormControl>
+              <Stack spacing={12}>
+                <Stack spacing={2}>
+                  <FormControl isRequired isDisabled={isLoading}>
+                    <FormLabel>ログインID</FormLabel>
+                    <Input type="text" name="id" />
+                  </FormControl>
+                  <FormControl isInvalid={isError}>
+                    <Checkbox name="register" isDisabled={isLoading}>
+                      ログインIDを登録する
+                    </Checkbox>
+                    <FormHelperText>
+                      以前にIDを登録したことがある場合は上書きされます
+                    </FormHelperText>
+                    <FormErrorMessage>
+                      IDを忘れた場合、改めてIDを登録してください
+                    </FormErrorMessage>
+                  </FormControl>
+                </Stack>
 
                 <Button type="submit" isLoading={isLoading}>
                   Sign in with Google
