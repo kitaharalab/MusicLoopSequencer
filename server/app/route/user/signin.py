@@ -8,7 +8,7 @@ from sqls import (
 
 def check_sign_in(firebase_id: str, user_own_id: str):
     exist_user = get_user(firebase_id) is not None
-    if exist_user:
+    if not exist_user:
         return False
 
     if check_user_own_id_null(firebase_id):
