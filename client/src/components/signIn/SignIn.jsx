@@ -12,6 +12,7 @@ import {
   Stack,
 } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import { useNavigate } from "react-router-dom";
 
 import { signIn as firebaseSignIn, signOut, useUser } from "../Auth";
@@ -19,7 +20,7 @@ import { signIn as firebaseSignIn, signOut, useUser } from "../Auth";
 import checkSignIn from "@/api/authentication/checkSignIn";
 import registerUser from "@/api/authentication/registerUser";
 
-function SignInUI({ handleSignIn, isError }) {
+function SignInUI({ handleSignIn, isError, isLoading }) {
   return (
     <Container>
       <Stack spacing={8}>
@@ -35,26 +36,31 @@ function SignInUI({ handleSignIn, isError }) {
                 const userOwnId = elements.id.value;
                 const wantRegister = elements.register.checked;
                 handleSignIn(userOwnId, wantRegister);
-
                 elements.id.value = "";
               }}
             >
-              <Stack spacing="6">
-                <FormControl isRequired>
-                  <FormLabel>ID</FormLabel>
-                  <Input type="text" name="id" />
-                </FormControl>
-                <FormControl isInvalid={isError}>
-                  <Checkbox name="register">IDを登録する</Checkbox>
-                  <FormHelperText>
-                    以前にIDを登録したことがある場合は上書きされます
-                  </FormHelperText>
-                  <FormErrorMessage>
-                    IDを忘れた場合、このボタンをクリックして再度ログインしてください。
-                  </FormErrorMessage>
-                </FormControl>
+              <Stack spacing={12}>
+                <Stack spacing={2}>
+                  <FormControl isRequired isDisabled={isLoading}>
+                    <FormLabel>ログインID</FormLabel>
+                    <Input type="text" name="id" />
+                  </FormControl>
+                  <FormControl isInvalid={isError}>
+                    <Checkbox name="register" isDisabled={isLoading}>
+                      ログインIDを登録する
+                    </Checkbox>
+                    <FormHelperText>
+                      以前にIDを登録したことがある場合は上書きされます
+                    </FormHelperText>
+                    <FormErrorMessage>
+                      IDを忘れた場合、改めてIDを登録してください
+                    </FormErrorMessage>
+                  </FormControl>
+                </Stack>
 
-                <Button type="submit">Sign in with Google</Button>
+                <Button type="submit" isLoading={isLoading}>
+                  Sign in with Google
+                </Button>
               </Stack>
             </form>
 
@@ -72,6 +78,7 @@ export default function SignIn() {
   const user = useUser();
   const [userOwnId, setUserOwnId] = useState("");
   const [wantRegister, setWantRegister] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const isError = useRef(false);
   const navigate = useNavigate();
 
@@ -100,11 +107,15 @@ export default function SignIn() {
       return;
     }
 
-    if (wantRegister) {
-      signInWithRegister();
-    } else {
-      signIn();
-    }
+    (async () => {
+      if (wantRegister) {
+        await signInWithRegister();
+      } else {
+        await signIn();
+      }
+
+      setIsLoading(false);
+    })();
   }, [user, userOwnId]);
 
   return (
@@ -112,9 +123,13 @@ export default function SignIn() {
       handleSignIn={(inputUserOwnId, userWantRegister) => {
         setUserOwnId(inputUserOwnId);
         setWantRegister(userWantRegister);
+        flushSync(() => {
+          setIsLoading(true);
+        });
         firebaseSignIn();
       }}
       isError={isError.current}
+      isLoading={isLoading}
     />
   );
 }
