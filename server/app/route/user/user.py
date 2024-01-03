@@ -32,7 +32,7 @@ def sign_in(user_id):
     ), 401
 
 
-@user.route("/user/register", methods=["POST"])
+@user.route("/user", methods=["POST"])
 @require_auth
 def register(user_id):
     params = request.get_json()
