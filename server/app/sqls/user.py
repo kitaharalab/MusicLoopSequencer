@@ -2,7 +2,7 @@ from psycopg2.extras import DictCursor
 from psycopg2 import Error
 
 from .connection import get_connection
-from .topic import add_topic_preferences, get_topic_preferences
+from .topic import add_topic_preferences
 
 
 def add_user_by_firebase_id(firebase_id: str) -> int:
