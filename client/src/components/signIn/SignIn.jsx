@@ -13,7 +13,7 @@ import { Navigate } from "react-router-dom";
 
 import { signIn, useUser } from "../Auth";
 
-import registerUser from "@/api/registerUser";
+import registerUser from "@/api/authentication/registerUser";
 
 function SignInUI({ handleSignIn }) {
   return (
