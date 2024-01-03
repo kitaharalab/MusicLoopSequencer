@@ -9,7 +9,6 @@ user = Blueprint("user", __name__)
 @user.route("/user/signin", methods=["POST"])
 @require_auth
 def sign_in(user_id):
-    # firebase側では既にログインされているので，ここではIDのチェックと登録を主にする
     params = request.get_json()
     user_own_id = params.get("own_id")
     if user_own_id is None:
