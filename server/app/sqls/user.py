@@ -30,14 +30,56 @@ def get_user(firebase_id: str):
             return dict(result) if result is not None else None
 
 
-def register_user(firebase_id: str, user_own_id: str):
+def get_user_own_id(firebase_id: str):
+    response = None
+    select_sql = "SELECT own_id FROM users WHERE firebase_id = %s"
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute(select_sql, (firebase_id,))
+            result = cur.fetchone()
+            response = result["own_id"] if result is not None else None
+
+    return response
+
+
+def check_user_own_id(firebase_id: str, user_own_id: str):
     exist_user = get_user(firebase_id) is not None
-    exist_topic_preferences = get_topic_preferences(firebase_id) is not None
+    if not exist_user:
+        return False
+
+    registered_own_id = get_user_own_id(firebase_id)
+    if registered_own_id == user_own_id:
+        return True
+
+    return False
+
+
+def register_firebase_id(firebase_id: str):
+    exist_user = get_user(firebase_id) is not None
+    if exist_user:
+        return False
 
     try:
-        if not exist_user:
-            add_user_by_firebase_id(firebase_id)
+        add_user_by_firebase_id(firebase_id)
+    except Error:
+        return False
+
+    return True
+
+
+def check_sign_in(firebase_id: str, user_own_id: str):
+    exist_user = get_user(firebase_id) is not None
+    if exist_user:
+        return False
+
+    return check_user_own_id(firebase_id, user_own_id)
+
+
+def register_user(firebase_id: str, user_own_id: str):
+    try:
+        register_firebase_id(firebase_id)
         update_own_id(firebase_id, user_own_id)
+        exist_topic_preferences = get_topic_preferences(firebase_id) is not None
         if not exist_topic_preferences:
             add_topic_preferences(firebase_id)
     except Error:
