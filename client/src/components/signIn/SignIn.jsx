@@ -109,9 +109,9 @@ export default function SignIn() {
 
   return (
     <SignInUI
-      handleSignIn={(inputUserOwnId, wantRegister) => {
+      handleSignIn={(inputUserOwnId, userWantRegister) => {
         setUserOwnId(inputUserOwnId);
-        setWantRegister(wantRegister);
+        setWantRegister(userWantRegister);
         firebaseSignIn();
       }}
       isError={isError.current}
