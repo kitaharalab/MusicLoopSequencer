@@ -2,7 +2,7 @@ from psycopg2.extras import DictCursor
 from psycopg2 import Error
 
 from .connection import get_connection
-from .topic import add_topic_preferences
+from .topic import add_topic_preferences, get_topic_preferences
 
 
 def add_user_by_firebase_id(firebase_id: str) -> int:
@@ -32,13 +32,14 @@ def get_user(firebase_id: str):
 
 def register_user(firebase_id: str, user_own_id: str):
     exist_user = get_user(firebase_id) is not None
-    if exist_user:
-        return False
+    exist_topic_preferences = get_topic_preferences(firebase_id) is not None
 
     try:
-        add_user_by_firebase_id(firebase_id)
+        if not exist_user:
+            add_user_by_firebase_id(firebase_id)
         update_own_id(firebase_id, user_own_id)
-        add_topic_preferences(firebase_id)
+        if not exist_topic_preferences:
+            add_topic_preferences(firebase_id)
     except Error:
         return False
 
