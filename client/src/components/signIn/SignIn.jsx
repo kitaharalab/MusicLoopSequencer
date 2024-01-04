@@ -65,7 +65,7 @@ function SignInUI({ handleSignIn, isError, isLoading }) {
             </form>
 
             <FormErrorMessage>
-              ログインに失敗しました。GoogleアカウントやIDを確認してください
+              サインインに失敗しました。GoogleアカウントやIDを確認してください
             </FormErrorMessage>
           </FormControl>
         </Box>
