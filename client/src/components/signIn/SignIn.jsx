@@ -25,7 +25,7 @@ function SignInUI({ handleSignIn, isError, isLoading }) {
     <Container>
       <Stack spacing={8}>
         <Box textAlign="center" marginTop={8}>
-          <Heading size="sm">IDを入力してログイン</Heading>
+          <Heading size="sm">ランサーIDを入力してログイン</Heading>
         </Box>
         <Box>
           <FormControl isInvalid={isError}>
@@ -42,12 +42,12 @@ function SignInUI({ handleSignIn, isError, isLoading }) {
               <Stack spacing={12}>
                 <Stack spacing={2}>
                   <FormControl isRequired isDisabled={isLoading}>
-                    <FormLabel>ログインID</FormLabel>
+                    <FormLabel>ランサーID</FormLabel>
                     <Input type="text" name="id" />
                   </FormControl>
                   <FormControl isInvalid={isError}>
                     <Checkbox name="register" isDisabled={isLoading}>
-                      ログインIDを登録する
+                      ランサーIDを登録する
                     </Checkbox>
                     <FormHelperText>
                       以前にIDを登録したことがある場合は上書きされます
@@ -65,7 +65,7 @@ function SignInUI({ handleSignIn, isError, isLoading }) {
             </form>
 
             <FormErrorMessage>
-              ログインに失敗しました。GoogleアカウントやIDを確認してください
+              サインインに失敗しました。GoogleアカウントやIDを確認してください
             </FormErrorMessage>
           </FormControl>
         </Box>
