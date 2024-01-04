@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import {
   Box,
   SimpleGrid,
@@ -12,14 +11,14 @@ import {
   Heading,
   Flex,
 } from "@chakra-ui/react";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 
+import { useUser } from "./Auth";
 import Link from "./Link/Link";
 
 import { createProject, getProjects } from "@/api/project";
 import { setProjectId, setSongId } from "@/redux/apiParamSlice";
-import { signIn, useUser } from "./Auth";
 
 function NewProject({ onSubmit }) {
   const user = useUser();
@@ -115,13 +114,8 @@ function Project() {
                     <Text>サインインしてプロジェクトを作成してみましょう</Text>
                   </Box>
                   {!user && (
-                    <Button
-                      variant="link"
-                      onClick={() => {
-                        signIn();
-                      }}
-                    >
-                      サインインはこちら
+                    <Button variant="link">
+                      <Link to="/signin">サインインはこちら</Link>
                     </Button>
                   )}
                 </CardBody>
