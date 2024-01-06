@@ -98,41 +98,43 @@ export default function ExcitementCurve({ measure }) {
   const [lines, setLines] = useState([]);
   const { projectId, songId } = useSelector(getApiParams);
 
-  function drawItems() {
+  function setCanvasSize() {
     const canvas = canvasRef.current;
     if (!canvas) {
       return;
     }
     const ctx = canvas?.getContext("2d");
     ctx.canvas.height = wrapperRef.current.offsetHeight;
-    const width = wrapperRef.current.clientWidth ?? measure * 36;
+    const width = wrapperRef.current.offsetWidth ?? measure * 36;
     const canvasWidth = (width / measure) * measure;
     ctx.canvas.width = canvasWidth;
+  }
+
+  function drawItems() {
+    const canvas = canvasRef.current;
+    if (!canvas) {
+      return;
+    }
+
+    setCanvasSize();
     drawBackground(canvas, measure);
     drawLine(canvas, lines);
     drawLineGrid(canvas, lines, measure);
     const isExperimental = Boolean(import.meta.env.VITE_MODE_EXPERIMENTAL);
     if (isExperimental) {
+      const ctx = canvas?.getContext("2d");
       ctx.fillStyle = "rgba(0,0,0,0.1)";
       ctx.fillRect(0, 0, canvas.clientWidth, canvas.clientHeight);
     }
   }
 
   function resize() {
-    const canvas = canvasRef.current;
-    if (!canvas) {
-      return;
-    }
-    const ctx = canvas?.getContext("2d");
-    ctx.canvas.height = wrapperRef.current.offsetHeight;
-    const width = wrapperRef.current.clientWidth ?? measure * 36;
-    const canvasWidth = (width / measure) * measure;
-    ctx.canvas.width = canvasWidth;
+    setCanvasSize();
     drawItems();
   }
 
   async function setExcitementCurve() {
-    const width = wrapperRef.current?.clientWidth ?? measure * 36;
+    const width = wrapperRef.current?.offsetWidth ?? measure * 36;
     const height = wrapperRef.current?.offsetHeight ?? 300;
     const canvasWidth = (width / measure) * measure;
 
