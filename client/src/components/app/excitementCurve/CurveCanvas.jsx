@@ -89,50 +89,57 @@ export default function CurveCanvas({ measure, curve: initCurve, curveMax }) {
     dispatch(setLine({ lines: curveRef.current }));
   }, [curveRef.current]);
 
+  function drawStart(event) {
+    flushSync(() => setDrawing(true));
+    const { offsetX, offsetY } = event.nativeEvent;
+    const currentPosition = handleMouseDown(event, {
+      x: offsetX,
+      y: offsetY,
+    });
+    setPosition(currentPosition);
+  }
+
+  function draw(event) {
+    const { offsetX, offsetY } = event.nativeEvent;
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    ctx.fillRect(offsetX, offsetY, 10, 10);
+    if (!drawing) {
+      return;
+    }
+
+    const { position: currentPosition, curve: newCurve } = handleMouseMove(
+      event,
+      curveRef.current,
+      curveMax,
+      canvasRef.current,
+      position,
+    );
+    setPosition(currentPosition);
+    curveRef.current = newCurve;
+  }
+
+  function drawStop(event) {
+    setDrawing(false);
+    const { offsetX, offsetY } = event.nativeEvent;
+    setPosition({ x: offsetX, y: offsetY });
+  }
+
+  const isExperimental = Boolean(import.meta.env.VITE_MODE_EXPERIMENTAL);
+  const drawFunctions = isExperimental
+    ? {}
+    : {
+        onMouseDown: drawStart,
+        onMouseMove: draw,
+        onMouseUp: drawStop,
+        onMouseLeave: () => {
+          setDrawing(false);
+        },
+      };
+
   return (
     <Box ref={wrapperRef} height="100%">
-      <canvas
-        ref={canvasRef}
-        onMouseDown={(event) => {
-          flushSync(() => setDrawing(true));
-          const { offsetX, offsetY } = event.nativeEvent;
-          const currentPosition = handleMouseDown(event, {
-            x: offsetX,
-            y: offsetY,
-          });
-          setPosition(currentPosition);
-        }}
-        onMouseMove={(event) => {
-          const { offsetX, offsetY } = event.nativeEvent;
-          const canvas = canvasRef.current;
-          const ctx = canvas.getContext("2d");
-          ctx.fillRect(offsetX, offsetY, 10, 10);
-          if (!drawing) {
-            return;
-          }
-
-          const { position: currentPosition, curve: newCurve } =
-            handleMouseMove(
-              event,
-              curveRef.current,
-              curveMax,
-              canvasRef.current,
-              position,
-            );
-          setPosition(currentPosition);
-          curveRef.current = newCurve;
-        }}
-        onMouseUp={(event) => {
-          setDrawing(false);
-          const { offsetX, offsetY } = event.nativeEvent;
-          setPosition({ x: offsetX, y: offsetY });
-        }}
-        onMouseLeave={() => {
-          setDrawing(false);
-        }}
-        width="100px"
-        height="100px"
-      />
+      <canvas ref={canvasRef} {...drawFunctions} width="100px" height="100px" />
     </Box>
   );
 }
