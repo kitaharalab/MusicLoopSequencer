@@ -34,7 +34,7 @@ function drawBackgroundGrid(canvas, measure, division = 5) {
 }
 
 function drawLineGrid(canvas, curve, curveMax, measure, division = 5) {
-  if (!curve || curve.length === 0) {
+  if (!curve || curve.length === 0 || !canvas) {
     return;
   }
   const ctx = canvas.getContext("2d");
