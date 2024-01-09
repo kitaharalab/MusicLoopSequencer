@@ -1,13 +1,16 @@
 import axios from "axios";
 
-import { auth } from "@/api/authentication/firebase";
-
 export default async function onMusicLoop(
   projectId,
   songId,
   partId,
   musicLoopId,
+  user,
 ) {
+  if (!user) {
+    return Promise.reject(new Error("User is not signed in"));
+  }
+
   const url = `${import.meta.env.VITE_SERVER_URL}/parts/${String(
     partId,
   )}/musicloops/${String(musicLoopId)}/wav`;
@@ -20,7 +23,7 @@ export default async function onMusicLoop(
   const data = new Audio(FILE);
 
   // ログをとるためのPOSTリクエスト
-  const idToken = await auth.currentUser?.getIdToken();
+  const idToken = await user.getIdToken();
   axios.post(
     url,
     { projectId, songId },
