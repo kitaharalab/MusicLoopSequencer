@@ -83,7 +83,7 @@ export default function SignIn() {
   const navigate = useNavigate();
 
   async function signIn() {
-    const canSignIn = await checkSignIn(userOwnId);
+    const canSignIn = await checkSignIn(userOwnId, user);
     if (canSignIn) {
       navigate("/");
     } else {
