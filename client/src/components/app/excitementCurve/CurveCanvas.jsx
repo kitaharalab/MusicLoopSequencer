@@ -100,10 +100,6 @@ export default function CurveCanvas({ measure, curve: initCurve, curveMax }) {
   }
 
   function draw(event) {
-    const { offsetX, offsetY } = event.nativeEvent;
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    ctx.fillRect(offsetX, offsetY, 10, 10);
     if (!drawing) {
       return;
     }
