@@ -13,7 +13,7 @@ export async function getPresetCurve(projectId) {
     },
   });
   const { data } = response;
-  const { curve, max_value: max } = data;
+  const { curve, max } = data;
 
   return { curve, max };
 }
