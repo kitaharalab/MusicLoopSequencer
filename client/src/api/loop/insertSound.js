@@ -1,15 +1,17 @@
 import axios from "axios";
 
-import { auth } from "@/api/authentication/firebase";
-
 export default async function insertSound(
   projectId,
   songId,
   partId,
   measureId,
   musicLoopId,
+  user,
 ) {
-  // TODO: partIdはindexが入ってるので，idに変換する必要がある．
+  if (!user) {
+    return Promise.reject(new Error("User is not signed in"));
+  }
+
   const url = new URL(
     `/projects/${projectId}/songs/${songId}/parts/${partId}/measures/${measureId}/musicloops/${musicLoopId}`,
     import.meta.env.VITE_SERVER_URL,
@@ -20,7 +22,7 @@ export default async function insertSound(
     adapt: import.meta.env.VITE_MODE_ADAPT,
   };
 
-  const idToken = await auth.currentUser?.getIdToken();
+  const idToken = await user.getIdToken();
   const response = await axios.post(url, modeParam, {
     headers: {
       Authorization: `Bearer ${idToken}`,

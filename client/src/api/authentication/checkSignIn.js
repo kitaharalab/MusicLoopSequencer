@@ -1,10 +1,12 @@
 import axios from "axios";
 
-import { auth } from "./firebase";
+export default async function checkSignIn(ownId, user) {
+  if (!user) {
+    return false;
+  }
 
-export default async function checkSignIn(ownId) {
   const url = `${import.meta.env.VITE_SERVER_URL}/user/signin`;
-  const idToken = await auth.currentUser?.getIdToken();
+  const idToken = await user.getIdToken();
   const response = await axios
     .post(
       url,

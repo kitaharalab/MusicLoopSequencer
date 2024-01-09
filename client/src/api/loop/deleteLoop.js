@@ -1,13 +1,21 @@
 import axios from "axios";
 
-import { auth } from "../authentication/firebase";
-
-export default async function deleteLoop(projectId, songId, measure, part) {
+export default async function deleteLoop(
+  projectId,
+  songId,
+  measure,
+  part,
+  user,
+) {
   if (measure == null || part == null) {
     return Promise.reject(new RangeError("No measure or part selected"));
   }
   if (projectId == null || songId == null) {
     return Promise.reject(new RangeError("No project or song selected"));
+  }
+
+  if (!user) {
+    return Promise.reject(new Error("User is not signed in"));
   }
 
   const deleteUrl = `${
@@ -21,7 +29,7 @@ export default async function deleteLoop(projectId, songId, measure, part) {
   );
   url.searchParams.append("adapt", import.meta.env.VITE_MODE_ADAPT ?? 0);
 
-  const idToken = await auth.currentUser?.getIdToken();
+  const idToken = await user.getIdToken();
   return axios.delete(url, {
     headers: {
       Authorization: `Bearer ${idToken}`,

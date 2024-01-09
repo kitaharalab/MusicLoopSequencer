@@ -1,12 +1,14 @@
 import axios from "axios";
 
-import { auth } from "./authentication/firebase";
+export async function sendSongPlayLog(projectId, songId, user) {
+  if (!user) {
+    return;
+  }
 
-export async function sendSongPlayLog(projectId, songId) {
   const url = `${
     import.meta.env.VITE_SERVER_URL
   }/projects/${projectId}/songs/${songId}/wav`;
-  const idToken = await auth.currentUser?.getIdToken();
+  const idToken = await user.getIdToken();
   axios.post(
     url,
     { play: true },
@@ -14,11 +16,14 @@ export async function sendSongPlayLog(projectId, songId) {
   );
 }
 
-export async function sendSongPauseLog(projectId, songId) {
+export async function sendSongPauseLog(projectId, songId, user) {
+  if (!user) {
+    return;
+  }
   const url = `${
     import.meta.env.VITE_SERVER_URL
   }/projects/${projectId}/songs/${songId}/wav`;
-  const idToken = await auth.currentUser?.getIdToken();
+  const idToken = await user.getIdToken();
   axios.post(
     url,
     { pause: true },
@@ -26,11 +31,14 @@ export async function sendSongPauseLog(projectId, songId) {
   );
 }
 
-export async function sendSongStopLog(projectId, songId) {
+export async function sendSongStopLog(projectId, songId, user) {
+  if (!user) {
+    return;
+  }
   const url = `${
     import.meta.env.VITE_SERVER_URL
   }/projects/${projectId}/songs/${songId}/wav`;
-  const idToken = await auth.currentUser?.getIdToken();
+  const idToken = await user.getIdToken();
   axios.post(
     url,
     { stop: true },
@@ -38,12 +46,15 @@ export async function sendSongStopLog(projectId, songId) {
   );
 }
 
-export async function sendLoopMuteLog(projectId, songId, isMute) {
+export async function sendLoopMuteLog(projectId, songId, isMute, user) {
+  if (!user) {
+    return;
+  }
   const url = `${
     import.meta.env.VITE_SERVER_URL
   }/projects/${projectId}/songs/${songId}`;
 
-  const idToken = await auth.currentUser?.getIdToken();
+  const idToken = await user.getIdToken();
   axios.post(
     url,
     { mute: isMute },
@@ -61,12 +72,16 @@ export async function sendCheckSongLoopLog(
   part,
   measureId,
   loopId,
+  user,
 ) {
+  if (!user) {
+    return;
+  }
   const url = new URL(
     `/projects/${projectId}/songs/${songId}/parts/${part}/measures/${measureId}/musicloops/${loopId}`,
     import.meta.env.VITE_SERVER_URL,
   );
-  const idToken = await auth.currentUser?.getIdToken();
+  const idToken = await user.getIdToken();
   axios.post(
     url,
     { check: true },
@@ -78,9 +93,15 @@ export async function sendCheckSongLoopLog(
   );
 }
 
-export async function sendActiveLog(projectId, active) {
-  const url = new URL(`/projects/${projectId}/log/active`, import.meta.env.VITE_SERVER_URL);
-  const idToken = await auth.currentUser?.getIdToken();
+export async function sendActiveLog(projectId, active, user) {
+  if (!user) {
+    return;
+  }
+  const url = new URL(
+    `/projects/${projectId}/log/active`,
+    import.meta.env.VITE_SERVER_URL,
+  );
+  const idToken = await user.getIdToken();
   axios.post(
     url,
     { active },

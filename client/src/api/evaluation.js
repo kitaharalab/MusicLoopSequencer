@@ -1,12 +1,14 @@
 import axios from "axios";
 
-import { auth } from "./authentication/firebase";
-
-export async function getEvaluation(projectId, songId) {
+export async function getEvaluation(projectId, songId, user) {
   if (songId == null || projectId == null) {
     return 0;
   }
-  const idToken = await auth.currentUser?.getIdToken();
+  if (!user) {
+    return 0;
+  }
+
+  const idToken = await user.getIdToken();
   const url = `${
     import.meta.env.VITE_SERVER_URL
   }/projects/${projectId}/songs/${songId}`;
@@ -21,8 +23,11 @@ export async function getEvaluation(projectId, songId) {
   return evaluation;
 }
 
-export async function sendEvaluation(projectId, songId, evaluation) {
+export async function sendEvaluation(projectId, songId, evaluation, user) {
   if (songId == null || projectId == null) {
+    return;
+  }
+  if (!user) {
     return;
   }
 
@@ -30,7 +35,7 @@ export async function sendEvaluation(projectId, songId, evaluation) {
     import.meta.env.VITE_SERVER_URL
   }/projects/${projectId}/songs/${songId}`;
 
-  const idToken = await auth.currentUser?.getIdToken();
+  const idToken = await user.getIdToken();
   axios.post(
     url,
     { evaluation },

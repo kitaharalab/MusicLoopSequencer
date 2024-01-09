@@ -14,6 +14,7 @@ import { useSelector, useDispatch } from "react-redux";
 import getParts from "@/api/getParts";
 import { sendCheckSongLoopLog } from "@/api/log";
 import { getSongDetail } from "@/api/song";
+import { useUser } from "@/components/Auth";
 import { getApiParams, setApiParam } from "@/redux/apiParamSlice";
 import { setLoopPositions } from "@/redux/musicDataSlice";
 
@@ -27,6 +28,7 @@ export default function LoopTable({ measure }) {
     part: null,
     loopId: null,
   };
+  const user = useUser();
 
   const [hoverMeasurePart, setHoverMeasurePart] = useState(
     initSelectMeasurePart,
@@ -78,7 +80,7 @@ export default function LoopTable({ measure }) {
       dataset.loop !== undefined ? JSON.parse(dataset.loop) : undefined;
 
     if (loopId !== undefined) {
-      sendCheckSongLoopLog(projectId, songId, part, measureId, loopId);
+      sendCheckSongLoopLog(projectId, songId, part, measureId, loopId, user);
     }
 
     const newSelectMeasurePart = {
