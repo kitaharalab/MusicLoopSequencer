@@ -2,24 +2,25 @@ import axios from "axios";
 
 import { auth } from "../authentication/firebase";
 
-export default async function getExcitementCurve(projectId, songId) {
-  // "/projects/<int:projectid>/songs/<int:songid>"
-  if (projectId == null) {
-    return Promise.reject(new Error("projectId or songId is null"));
-  }
+export async function getPresetCurve(projectId) {
+  const url = new URL(
+    `${import.meta.env.VITE_SERVER_URL}/projects/${projectId}/songs/preset`,
+  );
+  const idToken = await auth.currentUser?.getIdToken();
+  const response = await axios.get(url, {
+    headers: {
+      Authorization: `Bearer ${idToken}`,
+    },
+  });
+  const { data } = response;
+  const { curve, max } = data;
 
-  if (songId == null) {
-    const url = new URL(
-      `${import.meta.env.VITE_SERVER_URL}/projects/${projectId}/songs/preset`,
-    );
-    const idToken = await auth.currentUser?.getIdToken();
-    const response = await axios.get(url, {
-      headers: {
-        Authorization: `Bearer ${idToken}`,
-      },
-    });
-    const { data } = response;
-    return data;
+  return { curve, max };
+}
+
+export async function getExcitementCurve(projectId, songId) {
+  if (projectId == null || songId == null) {
+    return Promise.reject(new Error("projectId or songId is null"));
   }
 
   const url = new URL(
