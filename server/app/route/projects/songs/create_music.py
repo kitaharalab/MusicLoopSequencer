@@ -23,7 +23,7 @@ def createMusic(array, projectid, user_id, structure=1, fix=0):
         outro_hmm_model,
     ) = initialize_Hmm()
     hmm_array = ""
-    section_array = ""
+    section_array = None
     if structure == 0:
         hmm_array = use_HMM(array, no_part_hmm_model)
     else:
