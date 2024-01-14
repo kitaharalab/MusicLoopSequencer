@@ -1,33 +1,29 @@
 import axios from "axios";
 
-import { auth } from "../authentication/firebase";
-
 export async function getPresetCurve(projectId) {
   const url = new URL(
     `${import.meta.env.VITE_SERVER_URL}/projects/${projectId}/songs/preset`,
   );
-  const idToken = await auth.currentUser?.getIdToken();
-  const response = await axios.get(url, {
-    headers: {
-      Authorization: `Bearer ${idToken}`,
-    },
-  });
+  const response = await axios.get(url);
   const { data } = response;
   const { curve, max } = data;
 
   return { curve, max };
 }
 
-export async function getExcitementCurve(projectId, songId) {
+export async function getExcitementCurve(projectId, songId, user) {
   if (projectId == null || songId == null) {
     return Promise.reject(new Error("projectId or songId is null"));
+  }
+  if (!user) {
+    return Promise.reject(new Error("User is not signed in"));
   }
 
   const url = new URL(
     `${import.meta.env.VITE_SERVER_URL}/projects/${projectId}/songs/${songId}`,
   );
 
-  const idToken = await auth.currentUser?.getIdToken();
+  const idToken = await user.getIdToken();
   const response = await axios.get(url, {
     headers: {
       Authorization: `Bearer ${idToken}`,

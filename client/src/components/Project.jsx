@@ -66,12 +66,12 @@ function Project() {
   const dispatch = useDispatch();
 
   async function createNewProject(project) {
-    const newProjectId = await createProject(project);
+    const newProjectId = await createProject(project, user);
     setProjects([...projects, newProjectId]);
   }
 
   async function updateProjects() {
-    const data = await getProjects();
+    const data = await getProjects(user);
     setProjects(data);
   }
 

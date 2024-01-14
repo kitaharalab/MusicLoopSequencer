@@ -13,9 +13,9 @@ import { useDispatch, useSelector } from "react-redux";
 
 import Evaluation from "./Evaluation";
 
-import { auth } from "@/api/authentication/firebase";
 import { getSongs } from "@/api/project";
 import { createMusic } from "@/api/song";
+import { useUser } from "@/components/Auth";
 import { getProjectId, getSongId, setSongId } from "@/redux/apiParamSlice";
 
 export default function Controls() {
@@ -26,6 +26,7 @@ export default function Controls() {
   const [songHistory, setSongHistory] = useState([]);
   const songCreatedToast = useToast();
   const [creating, setCreating] = useState(false);
+  const user = useUser();
 
   const handleSelectedSongChange = (e) => {
     const selectSongId = parseInt(e.target.value, 10);
@@ -63,7 +64,7 @@ export default function Controls() {
       projectId,
       lines.filter((y) => y),
       max,
-      auth.currentUser?.uid,
+      user,
     );
     songCreatedToast.promise(creatingMusic, {
       success: {
