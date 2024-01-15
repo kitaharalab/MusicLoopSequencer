@@ -1,12 +1,9 @@
 import numpy as np
-from sqls import (
-    get_loop_and_topics_from_part,
-    get_parts,
-    get_topic_id_ns,
-    get_topic_preferences,
-)
-from util.const import excitement_len, fix_len, topic_n
 from cache import cache
+from sqls import get_loop_and_topics_from_part  # get_topic_preferences,
+from sqls import get_parts, get_topic_id_ns
+from sqls.topic_preferences import get_topic_preferences_dict
+from util.const import excitement_len, fix_len, topic_n
 
 part_name2index = {"Drums": 0, "Bass": 1, "Synth": 2, "Sequence": 3}
 
@@ -40,7 +37,7 @@ def get_topic_preferences_by_topic_n(user_id):
         map(lambda x: x["id"], filter(lambda x: x["number"] == topic_n, topic_id_ns))
     )
 
-    topic_preferences = get_topic_preferences(user_id)
+    topic_preferences = get_topic_preferences_dict(user_id)
     topic_n_preferences = list(
         filter(lambda x: x["topic_id"] in topic_n_ids, topic_preferences)
     )
