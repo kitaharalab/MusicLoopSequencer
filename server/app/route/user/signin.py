@@ -1,9 +1,4 @@
-from sqls import (
-    get_user,
-    update_own_id,
-    check_user_own_id_null,
-    get_user_own_id,
-)
+from sqls import check_user_own_id_null, get_user, get_user_own_id, update_own_id
 
 
 def check_sign_in(firebase_id: str, user_own_id: str):

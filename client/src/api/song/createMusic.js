@@ -1,8 +1,10 @@
 import axios from "axios";
 
-import { auth } from "@/api/authentication/firebase";
+export default async function createMusic(projectid, linesY, max, user) {
+  if (!user) {
+    return Promise.reject(new Error("User is not signed in"));
+  }
 
-export default async function createMusic(projectid, linesY, max) {
   const excitementArray = new Array(32);
   const range = Math.floor(linesY.length / excitementArray.length);
   const excitementStep = 5;
@@ -28,7 +30,7 @@ export default async function createMusic(projectid, linesY, max) {
     adapt: import.meta.env.VITE_MODE_ADAPT,
   };
 
-  const idToken = await auth.currentUser?.getIdToken();
+  const idToken = await user.getIdToken();
   const response = await axios.post(
     url,
     { ...data, ...modeParam },

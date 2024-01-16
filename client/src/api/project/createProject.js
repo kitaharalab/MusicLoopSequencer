@@ -1,10 +1,12 @@
 import axios from "axios";
 
-import { auth } from "../authentication/firebase";
+export default async function createProject(project = {}, user = null) {
+  if (!user) {
+    return Promise.reject(new Error("User is not signed in"));
+  }
 
-export default async function createProject(project = {}) {
   const url = `${import.meta.env.VITE_SERVER_URL}/projects`;
-  const idToken = await auth.currentUser?.getIdToken();
+  const idToken = await user.getIdToken();
   const response = await axios
     .post(url, project, {
       headers: {

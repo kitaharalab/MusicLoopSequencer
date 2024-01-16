@@ -6,6 +6,7 @@ import { useBlocker } from "react-router";
 
 import { sendSongPauseLog, sendSongPlayLog, sendSongStopLog } from "@/api/log";
 import { getSongAudio } from "@/api/song";
+import { useUser } from "@/components/Auth";
 import { getApiParams } from "@/redux/apiParamSlice";
 
 export default function AudioControls() {
@@ -13,6 +14,7 @@ export default function AudioControls() {
   const [audioUrl, setAudioUrl] = useState();
   const { projectId, songId } = useSelector(getApiParams);
   const [isPlaying, setIsPlaying] = useBoolean();
+  const user = useUser();
 
   useBlocker(() => {
     audio?.pause();
@@ -54,10 +56,10 @@ export default function AudioControls() {
         onClick={() => {
           if (isPlaying) {
             audio?.pause();
-            sendSongPauseLog(projectId, songId);
+            sendSongPauseLog(projectId, songId, user);
           } else {
             audio?.play();
-            sendSongPlayLog(projectId, songId);
+            sendSongPlayLog(projectId, songId, user);
           }
           setIsPlaying.toggle();
         }}
@@ -73,7 +75,7 @@ export default function AudioControls() {
 
           audio.pause();
           audio.currentTime = 0;
-          sendSongStopLog(projectId, songId);
+          sendSongStopLog(projectId, songId, user);
           setIsPlaying.off();
         }}
       />
