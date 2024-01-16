@@ -1,25 +1,30 @@
+from util.structure import Structure
+
+
 def music_section_info_from_section_array(section_array):
+    if section_array is None:
+        return None
+
     music_section = []
-    id, start, end = 0, 0, 0
-    section_name = ["intro", "breakdown", "buildup", "drop", "outro"]
-    for i in range(len(section_array)):
-        if id != section_array[i]:
-            end = i - 1
-            section = {
-                "start": start,
-                "end": end,
-                "section_name": section_name[section_array[i - 1]],
+    structure = list(Structure)
+    index = 0
+    while index < len(section_array):
+        # section_arrayの値が同じであるような範囲の探索：[start,end]
+        start = index
+        end = index
+        for i in range(index, len(section_array)):
+            if section_array[index] != section_array[i]:
+                break
+            end = i
+
+        # 小節番号は1始まり
+        music_section.append(
+            {
+                "start": start + 1,
+                "end": end + 1,
+                "section_name": structure[section_array[start]].value,
             }
-            music_section.append(section)
-            start = i
-            id = section_array[i]
-        if i == len(section_array) - 1:
-            end = len(section_array) - 1
-            section = {
-                "start": start,
-                "end": end,
-                "section_name": section_name[section_array[i]],
-            }
-            music_section.append(section)
+        )
+        index = end + 1
 
     return music_section

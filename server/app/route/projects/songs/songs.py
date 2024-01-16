@@ -24,6 +24,7 @@ from sqls import (
     get_excitement_curve_preset,
     evaluation_log,
 )
+from sqls.song_structure import save_song_structure
 from verify import require_auth
 
 from .create_music import createMusic
@@ -69,6 +70,9 @@ def create_song(uid, projectid):
     }
 
     section = music_section_info_from_section_array(section_array)
+    if section:
+        save_song_structure(song_id, section)
+
     response = {"songId": song_id, "parts": [], "section": section}
 
     for part in parts:

@@ -32,6 +32,7 @@ import ScatterPlot from "./ScatterPlot";
 import getParts from "@/api/getParts";
 import { sendLoopMuteLog } from "@/api/log";
 import { onMusicLoop, insertSound, deleteLoop } from "@/api/loop";
+import { useUser } from "@/components/Auth";
 import { getApiParams, resetApiParam, setSongId } from "@/redux/apiParamSlice";
 
 function ZoomableChart({ width, height, children, zoomState }) {
@@ -139,6 +140,8 @@ function Content({ handlePlayAudio }) {
   const deleteToast = useToast();
   const dispatch = useDispatch();
 
+  const user = useUser();
+
   function handleOnClick(id) {
     if (!isMute) {
       handlePlayAudio(id);
@@ -167,7 +170,14 @@ function Content({ handlePlayAudio }) {
       });
       return;
     }
-    const inserting = insertSound(projectId, songId, partId, measure, loopId);
+    const inserting = insertSound(
+      projectId,
+      songId,
+      partId,
+      measure,
+      loopId,
+      user,
+    );
     insertToast.promise(inserting, {
       success: {
         title: "追加完了",
@@ -213,7 +223,7 @@ function Content({ handlePlayAudio }) {
       });
       return;
     }
-    const deleting = deleteLoop(projectId, songId, measure, partId);
+    const deleting = deleteLoop(projectId, songId, measure, partId, user);
     deleteToast.promise(deleting, {
       success: {
         title: "削除完了",
@@ -270,7 +280,7 @@ function Content({ handlePlayAudio }) {
               const mute = !isMute;
 
               setIsMute(mute);
-              sendLoopMuteLog(projectId, songId, mute);
+              sendLoopMuteLog(projectId, songId, mute, user);
             }}
           />
           <IconButton
@@ -298,10 +308,12 @@ export default function LoopMaterialView() {
   const { projectId, songId, partId } = useSelector(getApiParams);
   const [audio, setAudio] = useState();
 
+  const user = useUser();
+
   function handlePlayAudio(id, part) {
     async function getAndPlayMusicLoop() {
       audio?.pause();
-      const loop = await onMusicLoop(projectId, songId, part, id);
+      const loop = await onMusicLoop(projectId, songId, part, id, user);
       setAudio(loop);
       loop.volume = 0.5;
       loop.play();

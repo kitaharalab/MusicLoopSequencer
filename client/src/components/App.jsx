@@ -18,6 +18,7 @@ import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 
+import { useUser } from "./Auth";
 import Header from "./app/Header";
 import AudioControls from "./app/controls/AudioControls";
 import Controls from "./app/controls/Controls";
@@ -30,14 +31,16 @@ import { setProjectId } from "@/redux/apiParamSlice";
 
 function VisibleChangeModal({ projectId }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const user = useUser();
+
   function windowBlur() {
     onOpen();
-    sendActiveLog(projectId, false);
+    sendActiveLog(projectId, false, user);
   }
   function tabVisibility() {
     if (document.visibilityState !== "visible") {
       onOpen();
-      sendActiveLog(projectId, false);
+      sendActiveLog(projectId, false, user);
     }
   }
 
