@@ -27,7 +27,13 @@ def get_topic_preferences_tuple(firebase_id: str):
         return None
     # firebase_id, part_id, curve_excitement, topic_id, value
     tupled_topic_preferences = [
-        (tp["user_id"], tp["part_id"], tp["excitement"], tp["topic_id"], tp["value"])
+        (
+            tp["user_id"],
+            tp["part_id"],
+            tp["excitement"],
+            tp["topic_id"],
+            tp["value"],
+        )
         for tp in topic_preferences
     ]
 
