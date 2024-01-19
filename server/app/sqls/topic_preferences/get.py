@@ -30,7 +30,7 @@ def get_topic_preferences_tuple(firebase_id: str):
         (
             tp["user_id"],
             tp["part_id"],
-            tp.get("excitement"),
+            tp["excitement"],
             tp["topic_id"],
             tp["value"],
         )
