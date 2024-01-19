@@ -36,7 +36,7 @@ def get_default_topic_preferences(firebase_id: str):
             # for topic in topics_with_excitement:
             for topic in topics:
                 default_value = get_default_topic_preference_value(
-                    curve_excitement, topic["excitement"]
+                    curve_excitement, topic.get("excitement")
                 )
 
                 insert_topic_preferences.append(
