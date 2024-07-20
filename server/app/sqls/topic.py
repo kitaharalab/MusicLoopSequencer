@@ -14,7 +14,7 @@ def get_topic_id_ns():
         FROM
             topics
         where
-            excitement is not null
+            excitement is null
     """
     response = None
     with get_connection() as conn:
