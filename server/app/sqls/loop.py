@@ -1,7 +1,7 @@
+from cache import cache
 from psycopg2.extras import DictCursor
 
 from .connection import get_connection
-from cache import cache
 
 
 @cache.memoize()
@@ -105,7 +105,7 @@ def get_loop_topic_by_id(loop_id: int):
 @cache.memoize()
 def get_loop_and_topics_from_part(part_id: int):
     sql = """
-    SELECT
+    SELECT DISTINCT
         loops.id,
         loops.name,
         loops.excitement,
