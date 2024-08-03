@@ -1,19 +1,21 @@
+
 from flask import Blueprint, jsonify, make_response, request
 from sqls import (
     check_song_loop_log,
-    get_parts,
-    get_song_loop_ids,
-    update_song_details,
-    update_wav_data,
     get_loop_id,
     get_loop_id_from_id_chord,
+    get_parts,
+    get_song_loop_ids,
     insert_loop_log,
+    update_song_details,
+    update_wav_data,
 )
 from util.connect_sound import connect_sound
-from util.const import fix_len, topic_n
-from util.topic import update_topic_ratio
-from verify import require_auth
+from util.const import fix_len
 from util.give_chord import get_chorded_loop_id
+from verify import require_auth
+
+from .update_topic_preferences import update_topic_preferences
 
 mesure_music_loop = Blueprint("mesure_music_loop", __name__)
 
@@ -106,8 +108,7 @@ def insert_sound(uid, project_id, song_id, part_id, measure, musicloop_id):
     sound_ids_by_measure_part = [list(arr) for arr in zip(*sound_ids_by_part_measure)]
 
     if adapt == 1:
-        update_topic_ratio(part_id, musicloop_id, uid, topic_n=topic_n)
-
+        update_topic_preferences(uid, musicloop_id)
     _, wav_data = connect_sound(
         sound_ids_by_measure_part, project_id, "insert", song_id
     )
