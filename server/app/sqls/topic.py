@@ -13,8 +13,6 @@ def get_topic_id_ns():
             number
         FROM
             topics
-        where
-            excitement is null
     """
     response = None
     with get_connection() as conn:
