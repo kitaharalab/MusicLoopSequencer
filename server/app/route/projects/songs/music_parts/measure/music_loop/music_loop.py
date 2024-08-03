@@ -59,7 +59,6 @@ def insert_sound(uid, project_id, song_id, part_id, measure, musicloop_id):
     fix = int(fix_req) if fix_req is not None else 0
     adapt_req = params.get("adapt")
     adapt = int(adapt_req) if adapt_req is not None else 0
-    print(f"fix: {fix}, adapt: {adapt}")
 
     if fix == 0:
         target_loop_id = get_chorded_loop_id(musicloop_id, measure)
