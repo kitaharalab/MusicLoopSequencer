@@ -1,8 +1,8 @@
+from cache import cache
 from psycopg2.extras import DictCursor
 
 from .connection import get_connection
 from .part import get_parts
-from cache import cache
 
 
 @cache.memoize()
@@ -13,6 +13,8 @@ def get_topic_id_ns():
             number
         FROM
             topics
+        where
+            excitement is null
     """
     response = None
     with get_connection() as conn:
