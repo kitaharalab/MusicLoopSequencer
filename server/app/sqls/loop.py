@@ -183,7 +183,7 @@ def get_loop_topics(loop_id: int):
 
 def get_loop_info_topics(loop_id: int):
     sql = """
-    select
+    select distinct
         loops.id,
         loops.name,
         loops.excitement,
