@@ -1,15 +1,16 @@
 import os
-import numpy as np
-from sklearn import preprocessing
-import math
-import statistics
-import librosa
 
+# import numpy as np
+# from sklearn import preprocessing
+# import math
+# import statistics
+# import librosa
 import psycopg2
 from dotenv import load_dotenv
 from psycopg2.extras import DictCursor
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+
+# import matplotlib.pyplot as plt
+# from mpl_toolkits.mplot3d import Axes3D
 
 
 load_dotenv()
