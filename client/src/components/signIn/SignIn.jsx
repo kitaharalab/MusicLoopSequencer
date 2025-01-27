@@ -1,6 +1,6 @@
 import {
   Box,
-  Button,
+  Center,
   Checkbox,
   Container,
   FormControl,
@@ -16,6 +16,8 @@ import { flushSync } from "react-dom";
 import { useNavigate } from "react-router-dom";
 
 import { signIn as firebaseSignIn, signOut, useUser } from "../Auth";
+
+import GoogleLoginButton from "./GoogleLoginButton";
 
 import checkSignIn from "@/api/authentication/checkSignIn";
 import registerUser from "@/api/authentication/registerUser";
@@ -58,9 +60,9 @@ function SignInUI({ handleSignIn, isError, isLoading }) {
                   </FormControl>
                 </Stack>
 
-                <Button type="submit" isLoading={isLoading}>
-                  Sign in with Google
-                </Button>
+                <Center>
+                  <GoogleLoginButton disable={isLoading} />
+                </Center>
               </Stack>
             </form>
 
