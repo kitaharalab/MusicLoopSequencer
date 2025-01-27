@@ -26,19 +26,16 @@ export function UserProvider({ children }) {
   return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
 }
 
-export function signIn() {
+export async function signIn() {
   const googleProvider = new GoogleAuthProvider();
   googleProvider.setCustomParameters({
     prompt: "select_account",
   });
 
-  firebaseSignIn(auth, googleProvider)
-    .then((result) => {
-      console.log(result);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+  const result = await firebaseSignIn(auth, googleProvider).catch(
+    (error) => error,
+  );
+  console.log(result);
 }
 
 export function signOut() {
