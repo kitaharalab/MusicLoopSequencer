@@ -1,6 +1,6 @@
 import {
   Box,
-  Button,
+  Center,
   Checkbox,
   Container,
   FormControl,
@@ -17,6 +17,8 @@ import { useNavigate } from "react-router-dom";
 
 import { signIn as firebaseSignIn, signOut, useUser } from "../Auth";
 
+import GoogleLoginButton from "./GoogleLoginButton";
+
 import checkSignIn from "@/api/authentication/checkSignIn";
 import registerUser from "@/api/authentication/registerUser";
 
@@ -25,7 +27,7 @@ function SignInUI({ handleSignIn, isError, isLoading }) {
     <Container>
       <Stack spacing={8}>
         <Box textAlign="center" marginTop={8}>
-          <Heading size="sm">ランサーIDを入力してログイン</Heading>
+          <Heading size="sm">IDを入力してログイン</Heading>
         </Box>
         <Box>
           <FormControl isInvalid={isError}>
@@ -42,12 +44,12 @@ function SignInUI({ handleSignIn, isError, isLoading }) {
               <Stack spacing={12}>
                 <Stack spacing={2}>
                   <FormControl isRequired isDisabled={isLoading}>
-                    <FormLabel>ランサーID</FormLabel>
+                    <FormLabel>ID</FormLabel>
                     <Input type="text" name="id" />
                   </FormControl>
                   <FormControl isInvalid={isError}>
                     <Checkbox name="register" isDisabled={isLoading}>
-                      ランサーIDを登録する
+                      IDを登録する
                     </Checkbox>
                     <FormHelperText>
                       以前にIDを登録したことがある場合は上書きされます
@@ -58,9 +60,9 @@ function SignInUI({ handleSignIn, isError, isLoading }) {
                   </FormControl>
                 </Stack>
 
-                <Button type="submit" isLoading={isLoading}>
-                  Sign in with Google
-                </Button>
+                <Center>
+                  <GoogleLoginButton disable={isLoading} />
+                </Center>
               </Stack>
             </form>
 
@@ -120,13 +122,16 @@ export default function SignIn() {
 
   return (
     <SignInUI
-      handleSignIn={(inputUserOwnId, userWantRegister) => {
+      handleSignIn={async (inputUserOwnId, userWantRegister) => {
         setUserOwnId(inputUserOwnId);
         setWantRegister(userWantRegister);
         flushSync(() => {
           setIsLoading(true);
         });
-        firebaseSignIn();
+        await firebaseSignIn();
+        flushSync(() => {
+          setIsLoading(false);
+        });
       }}
       isError={isError.current}
       isLoading={isLoading}
